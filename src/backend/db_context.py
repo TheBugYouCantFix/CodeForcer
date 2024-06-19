@@ -1,4 +1,7 @@
 import sqlite3
+from _typeshed import SupportsLenAndGetItem
+from typing import Mapping
+
 from singleton_meta import SingletonMeta
 
 
@@ -14,5 +17,8 @@ class DBContext(metaclass=SingletonMeta):
     def close(self) -> None:
         self.connection.close()
 
-    def execute_command(self, command: str) -> sqlite3.Cursor:
-        return self.cursor.execute(command)
+    def execute_command(self, command: str,
+                        parameters: SupportsLenAndGetItem[str | int | float | None]
+                                    | Mapping[str, str | int | float | None] = ()
+                        ) -> sqlite3.Cursor:
+        return self.cursor.execute(command, parameters)
