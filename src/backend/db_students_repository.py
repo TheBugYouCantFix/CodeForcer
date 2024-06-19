@@ -10,34 +10,36 @@ class DBStudentRepository(IStudentRepository):
 
     def add_student(self, student: Student):
         self.db_context.execute_command(
-   "INSERT INTO students(email, handle) VALUES (?, ?)",
+            "INSERT INTO students(email, handle) VALUES (?, ?)",
             (student.email, student.handle)
         )
         self.db_context.commit()
 
-    def get_student_by_email(self, email: EmailStr) -> Student:
+    def get_student_by_email(self, email: EmailStr) -> Student | None:
         result = self.db_context.execute_command(
             "SELECT email, handle FROM students WHERE email = ?",
-            (email,)
+            email
         ).fetchone()
 
         if not result:
             print(f"Student with email {email} not found")
             return None
 
-        return Student(result[0], result[1])
+        (email, handle) = result
+        return Student(email=email, handle=handle)
 
-    def get_student_by_handle(self, handle: str) -> Student:
+    def get_student_by_handle(self, handle: str) -> Student | None:
         result = self.db_context.execute_command(
             "SELECT email, handle FROM students WHERE handle = ?",
-            (handle,)
+            handle
         ).fetchone()
 
         if not result:
             print(f"Student with handle {handle} not found")
             return None
 
-        return Student(result[0], result[1])
+        (email, handle) = result
+        return Student(email=email, handle=handle)
 
     def update_user(self, email: EmailStr, new_student: Student) -> None:
         self.db_context.execute_command(
@@ -49,7 +51,7 @@ class DBStudentRepository(IStudentRepository):
     def delete_user(self, email: EmailStr) -> None:
         self.db_context.execute_command(
             "DELETE FROM students WHERE email = ?",
-            (email,)
+            email
         )
         self.db_context.commit()
 
