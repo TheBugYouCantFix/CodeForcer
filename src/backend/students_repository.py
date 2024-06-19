@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
-from pydantic import BaseModel, EmailStr
+from pydantic import EmailStr
 from domain.student import Student
 
 
-class IStudentRepository(ABC):
+class IStudentsRepository(ABC):
     @abstractmethod
     def add_student(self, student: Student):
         pass

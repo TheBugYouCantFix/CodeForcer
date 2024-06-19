@@ -10,4 +10,3 @@ def create_students_db() -> None:
     );
     """)
     db_context.commit()
-

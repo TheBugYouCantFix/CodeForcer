@@ -1,10 +1,10 @@
 from pydantic import EmailStr
 from domain.student import Student
-from students_repository import IStudentRepository
+from students_repository import IStudentsRepository
 from db_context import DBContext
 
 
-class DBStudentRepository(IStudentRepository):
+class DBStudentsRepository(IStudentsRepository):
     def __init__(self, db_name: str) -> None:
         self.db_context = DBContext(db_name)
 
@@ -54,4 +54,3 @@ class DBStudentRepository(IStudentRepository):
             email
         )
         self.db_context.commit()
-
