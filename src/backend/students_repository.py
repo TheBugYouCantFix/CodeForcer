@@ -17,9 +17,9 @@ class IStudentsRepository(ABC):
         pass
 
     @abstractmethod
-    def update_user(self, email: EmailStr, new_student: Student) -> None:
+    def update_student(self, email: EmailStr, new_student: Student) -> None:
         pass
 
     @abstractmethod
-    def delete_user(self, email: EmailStr) -> None:
+    def delete_student(self, email: EmailStr) -> None:
         pass

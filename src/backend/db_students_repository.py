@@ -57,7 +57,7 @@ class DBStudentsRepository(IStudentsRepository):
         (email, handle) = result
         return Student(email=email, handle=handle)
 
-    def update_user(self, email: EmailStr, new_student: Student) -> None:
+    def update_student(self, email: EmailStr, new_student: Student) -> None:
         if not self.email_exists(email):
             raise HTTPException(status_code=400, detail="Student does not exist")
 
@@ -67,7 +67,7 @@ class DBStudentsRepository(IStudentsRepository):
         )
         self.db_context.commit()
 
-    def delete_user(self, email: EmailStr) -> None:
+    def delete_student(self, email: EmailStr) -> None:
         if not self.email_exists(email):
             raise HTTPException(status_code=400, detail="Student does not exist")
 
