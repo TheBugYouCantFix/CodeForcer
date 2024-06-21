@@ -11,12 +11,14 @@ class StudentsService:
     def __init__(self, students_repository: IStudentsRepository):
         self.students_repository = students_repository
 
-    def create_student(self, student_data: StudentData) -> Student:
+    def student_data_to_student(self, student_data: StudentData) -> Student:
         email = student_data.email
         handle = student_data.handle
 
-        student = Student(email=email, handle=handle)
+        return Student(email=email, handle=handle)
 
+    def create_student(self, student_data: StudentData) -> Student:
+        student = self.student_data_to_student(student_data)
         self.students_repository.add_student(student)
 
         return student
@@ -31,3 +33,10 @@ class StudentsService:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
         return response
+
+    def update_student(self, email: str, updated_student: StudentData):
+        student = self.student_data_to_student(updated_student)
+        self.students_repository.update_student(email, student)
+
+    def delete_student(self, email: str):
+        self.students_repository.delete_student(email)
