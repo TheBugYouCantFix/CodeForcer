@@ -1,5 +1,4 @@
 import sqlite3
-from typing import Tuple
 from singleton_meta import SingletonMeta
 
 
