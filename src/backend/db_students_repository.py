@@ -1,4 +1,4 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from pydantic import EmailStr
 from domain.student import Student
 from students_repository import IStudentsRepository
@@ -22,7 +22,8 @@ class DBStudentsRepository(IStudentsRepository):
 
     def add_student(self, student: Student) -> None | HTTPException:
         if self.email_exists(student.email):
-            return HTTPException(status_code=400, detail="Student already exists")
+            print(f"Student with email {student.email} already exists")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Student already exists")
 
         self.db_context.execute_command(
             "INSERT INTO students(email, handle) VALUES (?, ?)",
@@ -58,7 +59,7 @@ class DBStudentsRepository(IStudentsRepository):
 
     def update_user(self, email: EmailStr, new_student: Student) -> None | HTTPException:
         if not self.email_exists(email):
-            return HTTPException(status_code=400, detail="Student does not exist")
+            raise HTTPException(status_code=400, detail="Student does not exist")
 
         self.db_context.execute_command(
             "UPDATE students SET email = ?, handle = ? WHERE email = ?",
@@ -68,7 +69,7 @@ class DBStudentsRepository(IStudentsRepository):
 
     def delete_user(self, email: EmailStr) -> None | HTTPException:
         if not self.email_exists(email):
-            return HTTPException(status_code=400, detail="Student does not exist")
+            raise HTTPException(status_code=400, detail="Student does not exist")
 
         self.db_context.execute_command(
             "DELETE FROM students WHERE email = ?",

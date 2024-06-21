@@ -15,7 +15,7 @@ service = StudentsService(repository)
 async def http_exception_handler(request, exc):
     return JSONResponse(
         status_code=exc.status_code,
-        content={"message": exc.detail},
+        content={"message": str(exc)},
     )
 
 
@@ -24,13 +24,13 @@ async def root():
     return "initial project"
 
 
-@app.post("/students")
-async def create_student(student: StudentData, status_code=status.HTTP_201_CREATED):
+@app.post("/students", status_code=status.HTTP_201_CREATED)
+async def create_student(student: StudentData):
     return service.create_student(student)
 
 
-@app.get("/students/{email_or_handle}")
-async def get_student_by_email_or_handle(email_or_handle: str, status_code=status.HTTP_200_OK):
+@app.get("/students/{email_or_handle}", status_code=status.HTTP_200_OK)
+async def get_student_by_email_or_handle(email_or_handle: str):
     return service.get_student_by_email_or_handle(email_or_handle)
 
 

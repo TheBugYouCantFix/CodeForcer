@@ -16,5 +16,4 @@ class DBContext(metaclass=SingletonMeta):
         self.connection.close()
 
     def execute_command(self, command: str, parameters=()) -> sqlite3.Cursor:
-        print(parameters, type(parameters))
         return self.cursor.execute(command, parameters)
