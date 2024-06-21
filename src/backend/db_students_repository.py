@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from pydantic import EmailStr
 from domain.student import Student
 from students_repository import IStudentsRepository
@@ -10,7 +11,19 @@ class DBStudentsRepository(IStudentsRepository):
         create_students_db(db_name)
         self.db_context = DBContext(db_name)
 
-    def add_student(self, student: Student):
+    def email_exists(self, email: EmailStr) -> bool:
+        return self.get_student_by_email(email) is not None
+
+    def handle_exists(self, handle: str) -> bool:
+        return self.get_student_by_handle(handle) is not None
+
+    def student_exists(self, student: Student) -> bool:
+        return self.email_exists(student.email) and self.handle_exists(student.handle)
+
+    def add_student(self, student: Student) -> None | HTTPException:
+        if self.email_exists(student.email):
+            return HTTPException(status_code=400, detail="Student already exists")
+
         self.db_context.execute_command(
             "INSERT INTO students(email, handle) VALUES (?, ?)",
             (student.email, student.handle, )
@@ -43,14 +56,20 @@ class DBStudentsRepository(IStudentsRepository):
         (email, handle) = result
         return Student(email=email, handle=handle)
 
-    def update_user(self, email: EmailStr, new_student: Student) -> None:
+    def update_user(self, email: EmailStr, new_student: Student) -> None | HTTPException:
+        if not self.email_exists(email):
+            return HTTPException(status_code=400, detail="Student does not exist")
+
         self.db_context.execute_command(
             "UPDATE students SET email = ?, handle = ? WHERE email = ?",
             (new_student.email, new_student.handle, email, )
         )
         self.db_context.commit()
 
-    def delete_user(self, email: EmailStr) -> None:
+    def delete_user(self, email: EmailStr) -> None | HTTPException:
+        if not self.email_exists(email):
+            return HTTPException(status_code=400, detail="Student does not exist")
+
         self.db_context.execute_command(
             "DELETE FROM students WHERE email = ?",
             (email, )
