@@ -10,6 +10,8 @@ const GlobalStyles = createGlobalStyle`
     --color-brand-50: #ecfdf5;
     --color-brand-100: #d1fae5;
     --color-brand-200: #a7f3d0;
+    --color-brand-300: #86efac;
+    --color-brand-400: #34d399;
     --color-brand-500: #10b981;
     --color-brand-600: #059669;
     --color-brand-700: #047857;
