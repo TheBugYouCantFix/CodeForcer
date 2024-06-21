@@ -2,23 +2,25 @@ from pydantic import EmailStr
 from domain.student import Student
 from students_repository import IStudentsRepository
 from db_context import DBContext
+from students_db_creation import create_students_db
 
 
 class DBStudentsRepository(IStudentsRepository):
     def __init__(self, db_name: str) -> None:
+        create_students_db(db_name)
         self.db_context = DBContext(db_name)
 
     def add_student(self, student: Student):
         self.db_context.execute_command(
             "INSERT INTO students(email, handle) VALUES (?, ?)",
-            (student.email, student.handle)
+            (student.email, student.handle, )
         )
         self.db_context.commit()
 
     def get_student_by_email(self, email: EmailStr) -> Student | None:
         result = self.db_context.execute_command(
             "SELECT email, handle FROM students WHERE email = ?",
-            email
+            (email, )
         ).fetchone()
 
         if not result:
@@ -31,7 +33,7 @@ class DBStudentsRepository(IStudentsRepository):
     def get_student_by_handle(self, handle: str) -> Student | None:
         result = self.db_context.execute_command(
             "SELECT email, handle FROM students WHERE handle = ?",
-            handle
+            (handle, )
         ).fetchone()
 
         if not result:
@@ -44,13 +46,13 @@ class DBStudentsRepository(IStudentsRepository):
     def update_user(self, email: EmailStr, new_student: Student) -> None:
         self.db_context.execute_command(
             "UPDATE students SET email = ?, handle = ? WHERE email = ?",
-            (new_student.email, new_student.handle, email)
+            (new_student.email, new_student.handle, email, )
         )
         self.db_context.commit()
 
     def delete_user(self, email: EmailStr) -> None:
         self.db_context.execute_command(
             "DELETE FROM students WHERE email = ?",
-            email
+            (email, )
         )
         self.db_context.commit()

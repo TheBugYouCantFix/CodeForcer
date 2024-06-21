@@ -1,5 +1,5 @@
 import sqlite3
-
+from typing import Tuple
 from singleton_meta import SingletonMeta
 
 
@@ -16,4 +16,5 @@ class DBContext(metaclass=SingletonMeta):
         self.connection.close()
 
     def execute_command(self, command: str, parameters=()) -> sqlite3.Cursor:
+        print(parameters, type(parameters))
         return self.cursor.execute(command, parameters)
