@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { NavLink } from "react-router-dom";
-import { HiHome, HiOutlineUsers } from "react-icons/hi2";
+import { HiHome } from "react-icons/hi2";
 import { SiMoodle, SiCodeforces } from "react-icons/si";
 import { FaDatabase } from "react-icons/fa6";
 
@@ -54,13 +54,13 @@ function MainNav() {
     <nav>
       <NavList>
         <li>
-          <StyledNavLink to="/dashboard">
+          <StyledNavLink to="/home">
             <HiHome />
             <span>Home</span>
           </StyledNavLink>
         </li>
         <li>
-          <StyledNavLink to="/upload">
+          <StyledNavLink to="/submit">
             <SiMoodle />
             <span>Submit Grades</span>
           </StyledNavLink>
@@ -72,7 +72,7 @@ function MainNav() {
           </StyledNavLink>
         </li>
         <li>
-          <StyledNavLink to="/users">
+          <StyledNavLink to="/handles">
             <FaDatabase />
             <span>Edit Handles</span>
           </StyledNavLink>

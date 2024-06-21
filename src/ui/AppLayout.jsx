@@ -15,6 +15,7 @@ const Main = styled.main`
 `;
 
 const Container = styled.div`
+  min-height: 100%;
   max-width: 120rem;
   margin: 0 auto;
   display: flex;

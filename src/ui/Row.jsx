@@ -2,9 +2,17 @@ import styled, { css } from "styled-components";
 
 const Row = styled.div`
   display: flex;
+  gap: 1.6rem;
 
   ${(props) =>
-    props.type === "horizontal" &&
+    props.type === "filled" &&
+    css`
+      & > * {
+        flex: 1 1 0;
+      }
+    `}
+  ${(props) =>
+    props.type === "splitted" &&
     css`
       align-items: center;
       justify-content: space-between;
@@ -13,12 +21,11 @@ const Row = styled.div`
     props.type === "vertical" &&
     css`
       flex-direction: column;
-      gap: 1.6rem;
     `}
 `;
 
 Row.defaultProps = {
-  type: "vertical",
+  type: "horizontal",
 };
 
 export default Row;
