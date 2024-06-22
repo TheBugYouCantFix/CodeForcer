@@ -6,8 +6,11 @@ import FormElement from "../ui/FormElement.jsx";
 import Button from "../ui/Button.jsx";
 import { FaDatabase } from "react-icons/fa6";
 import { useForm } from "react-hook-form";
+import { useRef } from "react";
 
 function Handles() {
+  const ref = useRef(null);
+
   const {
     register,
     handleSubmit,
@@ -15,8 +18,9 @@ function Handles() {
     formState: { errors },
   } = useForm();
 
+  const watchFileInput = watch("file");
+
   const onSubmit = (data) => console.log(data);
-  console.log(watch("file"));
 
   return (
     <>
@@ -26,7 +30,12 @@ function Handles() {
       </Heading>
       <Form onSubmit={handleSubmit(onSubmit)}>
         <FormElement label="File from Local Storage" type="file">
-          <FileInput text="*.csv, *.xls, *.xlsx" {...register("file")} />
+          <FileInput
+            edited={watchFileInput && true}
+            text={watchFileInput ? watchFileInput[0].name : "*.csv, *.xls, *.xlsx"}
+            ref={ref}
+            {...register("file")}
+          />
         </FormElement>
         <FormElement label="Link to Google Sheets">
           <Input
@@ -34,7 +43,6 @@ function Handles() {
             {...register("link")}
           />
         </FormElement>
-        <input type="file" {...register("example")} />
         <Button as="input" type="submit" value="Submit" />
       </Form>
     </>
