@@ -60,15 +60,15 @@ function MainNav() {
           </StyledNavLink>
         </li>
         <li>
-          <StyledNavLink to="/submit">
-            <SiMoodle />
-            <span>Submit Grades</span>
-          </StyledNavLink>
-        </li>
-        <li>
           <StyledNavLink to="/download">
             <SiCodeforces />
             <span>Download Submissions</span>
+          </StyledNavLink>
+        </li>
+        <li>
+          <StyledNavLink to="/submit">
+            <SiMoodle />
+            <span>Submit Grades</span>
           </StyledNavLink>
         </li>
         <li>

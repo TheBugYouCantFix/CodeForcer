@@ -13,12 +13,12 @@ function Home() {
         Home page
       </Heading>
       <Row type="filled">
-        <Card title="Submit Grades" icon={SiMoodle} to="/submit" />
         <Card
           title="Download Submissions"
           icon={SiCodeforces}
           to="/submissions"
         />
+        <Card title="Submit Grades" icon={SiMoodle} to="/submit" />
         <Card title="Edit Handles" icon={FaDatabase} to="/handles" />
       </Row>
     </>
