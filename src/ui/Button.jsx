@@ -49,6 +49,7 @@ const variations = {
 };
 
 const Button = styled.button`
+  cursor: pointer;
   border: none;
   border-radius: var(--border-radius-sm);
   box-shadow: var(--shadow-sm);

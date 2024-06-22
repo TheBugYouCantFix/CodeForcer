@@ -12,6 +12,9 @@ const StyledLabel = styled.label`
   & > input {
     width: 100%;
   }
+  & > input + input {
+    margin-top: 1.4rem;
+  }
   &:not(:last-child) {
     padding-bottom: 2rem;
     border-bottom: 1px solid var(--color-grey-100);

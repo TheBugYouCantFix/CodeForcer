@@ -60,7 +60,7 @@ function MainNav() {
           </StyledNavLink>
         </li>
         <li>
-          <StyledNavLink to="/download">
+          <StyledNavLink to="/submissions">
             <SiCodeforces />
             <span>Download Submissions</span>
           </StyledNavLink>

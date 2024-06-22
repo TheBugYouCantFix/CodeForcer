@@ -29,6 +29,7 @@ function Handles() {
         Edit Handles
       </Heading>
       <Form onSubmit={handleSubmit(onSubmit)}>
+        <Heading as="h2">Choose one of the options</Heading>
         <FormElement label="File from Local Storage" type="file">
           <FileInput
             edited={watchFileInput && true}
