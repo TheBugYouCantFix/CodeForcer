@@ -2,8 +2,8 @@ from fastapi import HTTPException, status
 from pydantic import EmailStr
 from domain.student import Student
 from students_repository import IStudentsRepository
-from db_context import DBContext
-from students_db_creation import ensure_students_db_is_created
+from infrastructure.persistence.db_context import DBContext
+from infrastructure.persistence.students_db_creation import ensure_students_db_is_created
 
 
 class DBStudentsRepository(IStudentsRepository):
