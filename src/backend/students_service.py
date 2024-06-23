@@ -5,20 +5,21 @@ from validate_email import validate_email
 from fastapi import HTTPException, status
 
 
+def student_data_to_student(student_data: StudentData) -> Student:
+    email = student_data.email
+    handle = student_data.handle
+
+    return Student(email=email, handle=handle)
+
+
 class StudentsService:
     students_repository: IStudentsRepository
 
     def __init__(self, students_repository: IStudentsRepository):
         self.students_repository = students_repository
 
-    def student_data_to_student(self, student_data: StudentData) -> Student:
-        email = student_data.email
-        handle = student_data.handle
-
-        return Student(email=email, handle=handle)
-
     def create_student(self, student_data: StudentData) -> Student:
-        student = self.student_data_to_student(student_data)
+        student = student_data_to_student(student_data)
         self.students_repository.add_student(student)
 
         return student
@@ -34,8 +35,8 @@ class StudentsService:
 
         return response
 
-    def update_student(self, email: str, updated_student: StudentData):
-        student = self.student_data_to_student(updated_student)
+    def update_student(self, email: str, updated_student_data: StudentData):
+        student = student_data_to_student(updated_student_data)
         self.students_repository.update_student(email, student)
 
     def delete_student(self, email: str):
