@@ -1,12 +1,11 @@
 from db_context import DBContext
 
 
-def create_students_db(db_name: str) -> None:
-    db_context = DBContext(db_name)
+def ensure_students_db_is_created(db_context: DBContext) -> None:
     db_context.execute_command("""
-        CREATE TABLE IF NOT EXISTS students (
-        email TEXT PRIMARY KEY,
-        handle TEXT
-    );
-    """)
+            CREATE TABLE IF NOT EXISTS students (
+            email TEXT PRIMARY KEY,
+            handle TEXT
+        );
+        """)
     db_context.commit()
