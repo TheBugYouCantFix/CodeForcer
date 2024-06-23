@@ -1,8 +1,9 @@
-from contracts.student_data import StudentData
-from domain.student import Student
-from students_repository import IStudentsRepository
 from validate_email import validate_email
 from fastapi import HTTPException, status
+
+from domain.student import Student
+from students_repository import IStudentsRepository
+from contracts.student_data import StudentData
 
 
 def student_data_to_student(student_data: StudentData) -> Student:

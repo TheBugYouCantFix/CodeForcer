@@ -1,4 +1,5 @@
 import sqlite3
+
 from singleton_meta import SingletonMeta
 
 
