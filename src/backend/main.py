@@ -34,14 +34,14 @@ async def get_student_by_email_or_handle(email_or_handle: str):
     return service.get_student_by_email_or_handle(email_or_handle)
 
 
-@app.delete("/students/{email}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_student(email: str):
-    return service.delete_student(email)
-
-
 @app.put("/students/{email}", status_code=status.HTTP_200_OK)
 async def update_student(email: str, updated_student: StudentData):
     return service.update_student(email, updated_student)
+
+
+@app.delete("/students/{email}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_student(email: str):
+    return service.delete_student(email)
 
 
 if __name__ == '__main__':
