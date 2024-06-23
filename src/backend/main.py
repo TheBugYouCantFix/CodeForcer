@@ -3,7 +3,7 @@ from uvicorn import run
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.responses import JSONResponse
 
-from students_service import StudentsService
+from application.students.students_service import StudentsService
 from infrastructure.persistence.db_students_repository import DBStudentsRepository
 from contracts.student_data import StudentData
 
