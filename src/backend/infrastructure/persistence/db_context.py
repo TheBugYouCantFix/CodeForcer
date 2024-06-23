@@ -1,6 +1,6 @@
 import sqlite3
 
-from singleton_meta import SingletonMeta
+from utils.singleton_meta import SingletonMeta
 
 
 class DBContext(metaclass=SingletonMeta):
