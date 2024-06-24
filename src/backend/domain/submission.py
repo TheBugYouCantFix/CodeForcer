@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr
+
 from domain.enums.verdict import Verdict
 
 

@@ -1,10 +1,11 @@
 from fastapi import FastAPI, status
 from uvicorn import run
-from contracts.student_data import StudentData
-from students_service import StudentsService
-from db_students_repository import DBStudentsRepository
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.responses import JSONResponse
+
+from application.students.students_service import StudentsService
+from infrastructure.storage.db_students_repository import DBStudentsRepository
+from contracts.student_data import StudentData
 
 app = FastAPI()
 
