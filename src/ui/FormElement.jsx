@@ -19,7 +19,7 @@ const StyledLabel = styled.label`
     padding-bottom: 2rem;
     border-bottom: 1px solid var(--color-grey-100);
   }
-  input:focus + span {
+  input:focus ~ span {
     transform: translate(1rem, -1.6rem) scale(1.2);
   }
 
