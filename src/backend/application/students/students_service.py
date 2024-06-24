@@ -2,7 +2,7 @@ from validate_email import validate_email
 from fastapi import HTTPException, status
 
 from domain.student import Student
-from students_repository import IStudentsRepository
+from application.students.students_repository import IStudentsRepository
 from contracts.student_data import StudentData
 
 
