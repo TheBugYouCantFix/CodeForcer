@@ -4,17 +4,17 @@ import Row from "./Row.jsx";
 
 const sumbissionType = {
   OK: css`
-    & li:first-child {
+    & div:first-child {
       color: var(--color-brand-600);
     }
   `,
   FAILED: css`
-    & li:first-child {
+    & div:first-child {
       color: var(--color-red-700);
     }
   `,
   REJECTED: css`
-    & li:first-child {
+    & div:first-child {
       color: var(--color-yellow-700);
     }
   `,
@@ -43,13 +43,14 @@ const Item = styled.div`
 `;
 
 const ItemContent = styled.div`
+  max-width: 100%;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  column-gap: 3rem;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 1.5rem;
   row-gap: 2rem;
 `;
 
-const ParticipantInfo = styled.ul`
+const ParticipantInfo = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
@@ -57,9 +58,15 @@ const ParticipantInfo = styled.ul`
   text-align: left;
   align-items: flex-start;
   font-size: 1.4rem;
+  padding: 1rem 2.5rem;
+  padding-right: 1.5rem;
+  box-shadow: var(--shadow-md);
+  border-radius: var(--border-radius-md);
+  white-space: dots;
 
-  & li {
+  & div {
     list-style-type: disc;
+    text-overflow: dots;
   }
 
   ${(props) => sumbissionType[props.type]}
@@ -82,10 +89,10 @@ function SumbissionInfo({ name, preparedBy, problems }) {
           {item.submissions ? (
             <ItemContent>
               {item.submissions.map((item, index) => (
-                <ParticipantInfo type={item.verdict}>
-                  <li>{item.authorId}</li>
-                  <li>{item.programmingLanguage}</li>
-                  <li>{item.points}</li>
+                <ParticipantInfo key={index} type={item.verdict}>
+                  <div>{item.authorId}</div>
+                  <div>{item.programmingLanguage}</div>
+                  <div>{item.points}</div>
                 </ParticipantInfo>
               ))}
             </ItemContent>
