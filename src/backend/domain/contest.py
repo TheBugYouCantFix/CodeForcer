@@ -1,7 +1,6 @@
 from pydantic import BaseModel, EmailStr
 
-from domain.enums.phase import Phase
-from domain.enums.verdict import Verdict
+from domain.enums import Phase, Verdict
 
 
 class Contest(BaseModel):
