@@ -1,4 +1,4 @@
-from infrastructure.persistence.db_context import DBContext
+from infrastructure.storage.db_context import DBContext
 
 
 def ensure_students_db_is_created(db_context: DBContext) -> None:
