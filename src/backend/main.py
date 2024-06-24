@@ -5,6 +5,7 @@ from students_service import StudentsService
 from db_students_repository import DBStudentsRepository
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.responses import JSONResponse
+from infrastructure.code_forces_request_sender import CodeForcesRequestSender
 
 app = FastAPI()
 
@@ -43,6 +44,11 @@ async def update_student(email: str, updated_student_data: StudentData):
 @app.delete("/students/{email}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_student(email: str):
     return service.delete_student(email)
+
+
+@app.get("/results", status_code=status.HTTP_200_OK)
+async def get_results(key: str, secret: str, contest_id: int):
+    return CodeForcesRequestSender(key, secret).scrap_results(contest_id)
 
 
 if __name__ == '__main__':
