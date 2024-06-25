@@ -1,9 +1,26 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
-from enums.phase import Phase
+from domain.enums import Phase, Verdict
 
 
 class Contest(BaseModel):
     id: int
+    name: str
     phase: Phase
-    problem_indices: [str]
+    problems: list["Problem"]
+
+
+class Problem(BaseModel):
+    index: str
+    name: str
+    max_points: int
+    submissions: list["Submission"]
+
+
+class Submission(BaseModel):
+    id: int
+    author_email: EmailStr
+    verdict: Verdict
+    passed_test_count: int
+    points: int
+    programming_language: str
