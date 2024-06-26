@@ -19,7 +19,7 @@ class DBStudentsRepository(IStudentsRepository):
         return self.get_student_by_handle(handle) is not None
 
     def student_exists(self, student: Student) -> bool:
-        return self.email_exists(student.email) and self.handle_exists(student.handle)
+        return self.email_exists(student.email) or self.handle_exists(student.handle)
 
     def add_student(self, student: Student) -> None:
         if self.email_exists(student.email):
