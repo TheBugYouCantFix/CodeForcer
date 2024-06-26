@@ -52,7 +52,7 @@ async def get_contest(contest_id: int, key: str, secret: str):
 @app.post("/upload-csv", status_code=status.HTTP_201_CREATED)
 async def upload_csv(file: UploadFile = File(...)):
     students_service.process_csv_file(file)
-    return {"message": "CSV file processed successfully"}
+
 
 if __name__ == '__main__':
     run(app, host='127.0.0.1', port=8000)
