@@ -3,9 +3,7 @@ from hashlib import sha512
 from time import time
 from requests import get
 import json
-from domain.standings_fields import *
-from domain.contest import Contest
-from domain.problem import Problem
+from results_scrapping_fields.standings_fields import *
 
 
 class CodeForcesRequestSender:
@@ -38,14 +36,37 @@ class CodeForcesRequestSender:
     def scrap_results(self, contest_id: int):
         class Result(BaseModel):
             contest: Contest
-            problems: [Problem]
-            rows: [RankListRow]
+            problems: list[Problem]
+            rows: list[RankListRow]
 
-        result_data = self.send_request(method_name="contest.standings", contest_id=contest_id)
+            class Config:
+                arbitrary_types_allowed = True
 
-        contest = Contest(**result_data['contest'])
-        problems = [Problem(**problem) for problem in result_data['problems']]
-        rows = [RankListRow(**row) for row in result_data['rows']]
+        result_data = self.send_request(method_name="contest.standings", contestId=contest_id)
+
+        contest_data = result_data['contest']
+        contest_data['type'] = ContestType[contest_data['type']]
+        contest_data['phase'] = Phase[contest_data['phase']]
+
+        contest = Contest(**contest_data)
+        problems_data = result_data['problems']
+        for problem in problems_data:
+            problem['type'] = ProblemType[problem['type']]
+
+        problems = [Problem(**problem) for problem in problems_data]
+
+        # Process rows
+        rows_data = result_data['rows']
+        for row in rows_data:
+            row['party']['participantType'] = ParticipantType[row['party']['participantType']]
+
+            row['problemResults'] = [int(pr['points']) for pr in row['problemResults']]
+            if 'lastSubmissionTimeSeconds' not in row:
+                row['lastSubmissionTimeSeconds'] = 0
+
+            row['party']['members'] = [Member(**member) for member in row['party']['members']]
+
+        rows = [RankListRow(**row) for row in rows_data]
 
         result = Result(contest=contest, problems=problems, rows=rows)
 
@@ -55,4 +76,3 @@ class CodeForcesRequestSender:
         ]
 
         return json.dumps(extracted_results)
-
