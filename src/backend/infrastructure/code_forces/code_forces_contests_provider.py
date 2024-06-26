@@ -1,5 +1,3 @@
-import json
-
 from application.contests.contests_provider import IContestsProvider
 from infrastructure.code_forces.code_forces_request_sender import CodeForcesRequestSender
 from results_scrapping_fields.standings_fields import *
@@ -53,4 +51,4 @@ def scrap_results(request_sender: CodeForcesRequestSender, contest_id: int):
         for row in result.rows
     ]
 
-    return json.dumps(extracted_results)
+    return extracted_results
