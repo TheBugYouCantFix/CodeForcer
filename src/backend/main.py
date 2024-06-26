@@ -1,9 +1,11 @@
-from fastapi import FastAPI, status
+from fastapi import FastAPI, UploadFile, File, status
 from uvicorn import run
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.responses import JSONResponse
 
 from domain.student import Student
+from application.students.students_service import StudentsService
+from infrastructure.storage.db_students_repository import DBStudentsRepository
 from contracts.student_data import StudentData
 import container
 
@@ -48,6 +50,11 @@ async def get_results(contest_id: int, key: str, secret: str):
 async def get_contest(contest_id: int, key: str, secret: str):
     return container.contests_service.get_contest(contest_id, key, secret)
 
+
+@app.post("/upload-csv", status_code=status.HTTP_201_CREATED)
+async def upload_csv(file: UploadFile = File(...)):
+    service.process_csv_file(file)
+    return {"message": "CSV file processed successfully"}
 
 if __name__ == '__main__':
     run(app, host='127.0.0.1', port=8000)

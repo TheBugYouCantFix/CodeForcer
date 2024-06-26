@@ -1,9 +1,10 @@
 from validate_email import validate_email
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, UploadFile
 
 from domain.student import Student
 from application.students.students_repository import IStudentsRepository
 from contracts.student_data import StudentData
+from infrastructure.parser import parse_csv
 
 
 def student_data_to_student(student_data: StudentData) -> Student:
@@ -42,3 +43,12 @@ class StudentsService:
 
     def delete_student(self, email: str) -> None:
         self.students_repository.delete_student(email)
+
+    def process_csv_file(self, file: UploadFile):
+        file_location = f"temp_{file.filename}"
+        with open(file_location, "wb+") as file_object:
+            file_object.write(file.file.read())
+
+        students_data = parse_csv(file_location)
+        for student_data in students_data:
+            self.create_student(student_data)
