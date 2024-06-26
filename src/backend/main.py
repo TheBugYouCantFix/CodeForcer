@@ -28,7 +28,7 @@ async def get_student_by_email_or_handle(email_or_handle: str) -> Student:
     return container.students_service.get_student_by_email_or_handle(email_or_handle)
 
 
-@app.put("/students/{email}", status_code=status.HTTP_200_OK)
+@app.put("/students/{email}", status_code=status.HTTP_204_NO_CONTENT)
 async def update_student(email: str, updated_student_data: StudentData) -> None:
     container.students_service.update_student(email, updated_student_data)
 
