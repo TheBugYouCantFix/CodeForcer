@@ -47,8 +47,8 @@ async def delete_student(email: str):
     return service.delete_student(email)
 
 
-@app.get("/results", status_code=status.HTTP_200_OK)
-async def get_results(key: str, secret: str, contest_id: int):
+@app.get("/contests/{contest_id}", status_code=status.HTTP_200_OK)
+async def get_results(contest_id: int, key: str, secret: str):
     return CodeForcesRequestSender(key, secret).scrap_results(contest_id)
 
 
