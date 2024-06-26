@@ -37,11 +37,11 @@ class StudentsService:
 
         return response
 
-    def update_student(self, email: str, updated_student_data: StudentData):
+    def update_student(self, email: str, updated_student_data: StudentData) -> None:
         student = student_data_to_student(updated_student_data)
         self.students_repository.update_student(email, student)
 
-    def delete_student(self, email: str):
+    def delete_student(self, email: str) -> None:
         self.students_repository.delete_student(email)
 
     def process_csv_file(self, file: UploadFile):
