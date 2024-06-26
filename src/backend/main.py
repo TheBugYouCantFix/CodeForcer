@@ -1,4 +1,4 @@
-from fastapi import FastAPI, status
+from fastapi import FastAPI, UploadFile, File, status
 from uvicorn import run
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.responses import JSONResponse
@@ -7,6 +7,7 @@ from infrastructure.code_forces_request_sender import CodeForcesRequestSender
 from application.students.students_service import StudentsService
 from infrastructure.storage.db_students_repository import DBStudentsRepository
 from contracts.student_data import StudentData
+from infrastructure.parser import parse_csv
 
 app = FastAPI()
 
@@ -51,6 +52,18 @@ async def delete_student(email: str):
 async def get_results(key: str, secret: str, contest_id: int):
     return CodeForcesRequestSender(key, secret).scrap_results(contest_id)
 
+
+@app.post("/upload-csv", status_code=status.HTTP_201_CREATED)
+async def upload_csv(file: UploadFile = File(...)):
+    file_location = f"temp_{file.filename}"
+    with open(file_location, "wb+") as file_object:
+        file_object.write(file.file.read())
+
+    students_data = parse_csv(file_location)
+    for student_data in students_data:
+        service.create_student(student_data)
+
+    return {"message": "CSV file processed successfully"}
 
 if __name__ == '__main__':
     run(app, host='127.0.0.1', port=8000)
