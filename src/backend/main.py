@@ -18,11 +18,6 @@ async def http_exception_handler(request, exc):
     )
 
 
-@app.get("/")
-async def root():
-    return "initial project"
-
-
 @app.post("/students", status_code=status.HTTP_201_CREATED)
 async def create_student(student_data: StudentData):
     return students_service.create_student(student_data)
