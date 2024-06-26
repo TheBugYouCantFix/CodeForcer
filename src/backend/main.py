@@ -4,14 +4,10 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.responses import JSONResponse
 from infrastructure.code_forces_request_sender import CodeForcesRequestSender
 
-from application.students.students_service import StudentsService
-from infrastructure.storage.db_students_repository import DBStudentsRepository
 from contracts.student_data import StudentData
+import container
 
 app = FastAPI()
-
-repository = DBStudentsRepository('students.db')
-service = StudentsService(repository)
 
 
 @app.exception_handler(StarletteHTTPException)
