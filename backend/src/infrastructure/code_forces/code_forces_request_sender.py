@@ -56,6 +56,7 @@ class CodeForcesRequestSender:
 
     def contest_status(self, contest_id: int):
         response = self.__send_request(method_name="contest.status", contestId=contest_id)
+        # response is a list of submissions
 
     def __send_request(self, method_name: str, **params: int | str | bool):
         rand = randint(100_000, 1_000_000 - 1)

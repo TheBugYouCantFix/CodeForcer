@@ -14,4 +14,5 @@ class CodeForcesContestsProvider(IContestsProvider):
         ]
 
     def get_contest(self, contest_id: int, key: str, secret: str) -> Contest:
-        pass # This has to be implemented
+        request_sender = CodeForcesRequestSender(key, secret)
+        submissions = request_sender.contest_status(contest_id)
