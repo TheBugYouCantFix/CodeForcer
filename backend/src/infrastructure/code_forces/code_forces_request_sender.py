@@ -23,7 +23,41 @@ class CodeForcesRequestSender:
         self.key = key
         self.secret = secret
 
-    def send_request(self, method_name: str, **params: int | str | bool):
+    def contest_standings(self, contest_id: int) -> Result:
+        response = self.__send_request(method_name="contest.standings", contestId=contest_id)
+
+        contest_data = response['contest']
+        contest_data['type'] = ContestType[contest_data['type']]
+        contest_data['phase'] = Phase[contest_data['phase']]
+
+        contest = Contest(**contest_data)
+        problems_data = response['problems']
+        for problem in problems_data:
+            problem['type'] = ProblemType[problem['type']]
+
+        problems = [Problem(**problem) for problem in problems_data]
+
+        # Process rows
+        rows_data = response['rows']
+        for row in rows_data:
+            row['party']['participantType'] = ParticipantType[row['party']['participantType']]
+
+            row['problemResults'] = [int(pr['points']) for pr in row['problemResults']]
+            if 'lastSubmissionTimeSeconds' not in row:
+                row['lastSubmissionTimeSeconds'] = 0
+
+            row['party']['members'] = [Member(**member) for member in row['party']['members']]
+
+        rows = [RankListRow(**row) for row in rows_data]
+
+        result = Result(contest=contest, problems=problems, rows=rows)
+
+        return result
+
+    def contest_status(self, contest_id: int):
+        response = self.__send_request(method_name="contest.status", contestId=contest_id)
+
+    def __send_request(self, method_name: str, **params: int | str | bool):
         rand = randint(100_000, 1_000_000 - 1)
         hasher = sha512()
 
@@ -41,35 +75,4 @@ class CodeForcesRequestSender:
             return None
 
         return resp.json()["result"]
-
-    def contest_standings(self, contest_id: int) -> Result:
-        result_data = self.send_request(method_name="contest.standings", contestId=contest_id)
-
-        contest_data = result_data['contest']
-        contest_data['type'] = ContestType[contest_data['type']]
-        contest_data['phase'] = Phase[contest_data['phase']]
-
-        contest = Contest(**contest_data)
-        problems_data = result_data['problems']
-        for problem in problems_data:
-            problem['type'] = ProblemType[problem['type']]
-
-        problems = [Problem(**problem) for problem in problems_data]
-
-        # Process rows
-        rows_data = result_data['rows']
-        for row in rows_data:
-            row['party']['participantType'] = ParticipantType[row['party']['participantType']]
-
-            row['problemResults'] = [int(pr['points']) for pr in row['problemResults']]
-            if 'lastSubmissionTimeSeconds' not in row:
-                row['lastSubmissionTimeSeconds'] = 0
-
-            row['party']['members'] = [Member(**member) for member in row['party']['members']]
-
-        rows = [RankListRow(**row) for row in rows_data]
-
-        result = Result(contest=contest, problems=problems, rows=rows)
-
-        return result
 
