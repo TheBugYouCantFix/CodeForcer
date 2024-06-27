@@ -3,6 +3,17 @@ from hashlib import sha512
 from time import time
 from requests import get
 
+from results_scrapping_fields.standings_fields import *
+
+
+class Result(BaseModel):
+    contest: Contest
+    problems: list[Problem]
+    rows: list[RankListRow]
+
+    class Config:
+        arbitrary_types_allowed = True
+
 
 class CodeForcesRequestSender:
     key: str
@@ -30,3 +41,35 @@ class CodeForcesRequestSender:
             return None
 
         return resp.json()["result"]
+
+    def contest_standings(self, contest_id: int) -> Result:
+        result_data = self.send_request(method_name="contest.standings", contestId=contest_id)
+
+        contest_data = result_data['contest']
+        contest_data['type'] = ContestType[contest_data['type']]
+        contest_data['phase'] = Phase[contest_data['phase']]
+
+        contest = Contest(**contest_data)
+        problems_data = result_data['problems']
+        for problem in problems_data:
+            problem['type'] = ProblemType[problem['type']]
+
+        problems = [Problem(**problem) for problem in problems_data]
+
+        # Process rows
+        rows_data = result_data['rows']
+        for row in rows_data:
+            row['party']['participantType'] = ParticipantType[row['party']['participantType']]
+
+            row['problemResults'] = [int(pr['points']) for pr in row['problemResults']]
+            if 'lastSubmissionTimeSeconds' not in row:
+                row['lastSubmissionTimeSeconds'] = 0
+
+            row['party']['members'] = [Member(**member) for member in row['party']['members']]
+
+        rows = [RankListRow(**row) for row in rows_data]
+
+        result = Result(contest=contest, problems=problems, rows=rows)
+
+        return result
+
