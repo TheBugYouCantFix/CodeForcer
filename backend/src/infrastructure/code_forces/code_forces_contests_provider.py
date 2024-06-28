@@ -13,6 +13,6 @@ class CodeForcesContestsProvider(IContestsProvider):
             for row in rows
         ]
 
-    def get_contest(self, contest_id: int, key: str, secret: str) -> Contest:
+    def get_contest(self, contest_id: int, key: str, secret: str) -> CfContest:
         request_sender = CodeForcesRequestSender(key, secret)
         submissions = request_sender.contest_status(contest_id)

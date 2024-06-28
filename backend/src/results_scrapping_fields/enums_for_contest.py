@@ -1,13 +1,13 @@
 from enum import Enum
 
 
-class ContestType(Enum):
+class CfContestType(Enum):
     CF = 0
     IOI = 1
     ICPC = 2
 
 
-class Phase(Enum):
+class CfPhase(Enum):
     BEFORE = 0
     CODING = 1
     PENDING_SYSTEM_TEST = 2
@@ -15,12 +15,12 @@ class Phase(Enum):
     FINISHED = 4
 
 
-class ProblemType(Enum):
+class CfProblemType(Enum):
     PROGRAMMING = 0
     QUESTION = 1
 
 
-class ParticipantType(Enum):
+class CfParticipantType(Enum):
     CONTESTANT = 0
     PRACTICE = 1
     VIRTUAL = 2

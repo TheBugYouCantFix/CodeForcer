@@ -15,24 +15,24 @@ class CodeForcesRequestSender:
         self.key = key
         self.secret = secret
 
-    def contest_standings(self, contest_id: int) -> tuple[Contest, list[Problem], list[RankListRow]]:
+    def contest_standings(self, contest_id: int) -> tuple[CfContest, list[CfProblem], list[CfRankListRow]]:
         response = self.__send_request(method_name="contest.standings", contestId=contest_id)
 
         contest_data = response['contest']
-        contest_data['type'] = ContestType[contest_data['type']]
-        contest_data['phase'] = Phase[contest_data['phase']]
+        contest_data['type'] = CfContestType[contest_data['type']]
+        contest_data['phase'] = CfPhase[contest_data['phase']]
 
-        contest = Contest(**contest_data)
+        contest = CfContest(**contest_data)
 
         problems_data = response['problems']
         for problem in problems_data:
-            problem['type'] = ProblemType[problem['type']]
+            problem['type'] = CfProblemType[problem['type']]
 
-        problems = [Problem(**problem) for problem in problems_data]
+        problems = [CfProblem(**problem) for problem in problems_data]
 
         rows_data = response['rows']
         for row_data in rows_data:
-            row_data['party']['participantType'] = ParticipantType[row_data['party']['participantType']]
+            row_data['party']['participantType'] = CfParticipantType[row_data['party']['participantType']]
 
             row_data['problemResults'] = [
                 int(problem_results_data['points'])
@@ -41,14 +41,14 @@ class CodeForcesRequestSender:
             ]
 
             row_data['party']['members'] = [
-                Member(**member)
+                CfMember(**member)
                 for member
                 in row_data['party']['members']
             ]
 
-            row_data['party'] = Party(**row_data['party'])
+            row_data['party'] = CfParty(**row_data['party'])
 
-        rows = [RankListRow(**row) for row in rows_data]
+        rows = [CfRankListRow(**row) for row in rows_data]
 
         return contest, problems, rows
 

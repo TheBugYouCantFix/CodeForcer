@@ -4,11 +4,11 @@ from results_scrapping_fields.enums_for_contest import *
 
 
 @dataclass
-class Contest:
+class CfContest:
     id: int
     name: str
-    type: ContestType
-    phase: Phase
+    type: CfContestType
+    phase: CfPhase
     frozen: bool
     durationSeconds: int
     startTimeSeconds: int
@@ -25,9 +25,9 @@ class Contest:
 
 
 @dataclass
-class Problem:
+class CfProblem:
     index: str
-    type: ProblemType
+    type: CfProblemType
     name: str
     tags: list[str]
     contestId: int | None = None
@@ -37,16 +37,22 @@ class Problem:
 
 
 @dataclass
-class Member:
-    handle: str
-    name: str | None = None
+class CfRankListRow:
+    party: 'CfParty'
+    rank: int
+    points: float
+    penalty: int
+    successfulHackCount: int
+    unsuccessfulHackCount: int
+    problemResults: list[int]
+    lastSubmissionTimeSeconds: int | None = None
 
 
 @dataclass
-class Party:
-    members: [Member]
+class CfParty:
+    members: ['CfMember']
     ghost: bool
-    participantType: ParticipantType
+    participantType: CfParticipantType
     teamId: int | None = None
     teamName: str | None = None
     room: int | None = None
@@ -55,12 +61,7 @@ class Party:
 
 
 @dataclass
-class RankListRow:
-    party: Party
-    rank: int
-    points: float
-    penalty: int
-    successfulHackCount: int
-    unsuccessfulHackCount: int
-    problemResults: list[int]
-    lastSubmissionTimeSeconds: int | None = None
+class CfMember:
+    handle: str
+    name: str | None = None
+
