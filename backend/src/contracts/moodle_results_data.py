@@ -21,9 +21,19 @@ class ContestData:
 class ProblemData:
     name: str
     index: str
-    points: int
     max_points: int
     max_grade: int
+    submissions: List['SubmissionData']
+
+
+@dataclass
+class SubmissionData:
+    id: int
+    author_email: str
+    verdict: str
+    passed_test_count: int
+    points: int
+    programming_language: str
 
 
 @dataclass
