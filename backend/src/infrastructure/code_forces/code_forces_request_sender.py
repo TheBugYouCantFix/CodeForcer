@@ -1,18 +1,10 @@
+from dataclasses import dataclass
 from random import randint
 from hashlib import sha512
 from time import time
 from requests import get
 
 from results_scrapping_fields.standings_fields import *
-
-
-class Result(BaseModel):
-    contest: Contest
-    problems: list[Problem]
-    rows: list[RankListRow]
-
-    class Config:
-        arbitrary_types_allowed = True
 
 
 class CodeForcesRequestSender:
@@ -23,7 +15,7 @@ class CodeForcesRequestSender:
         self.key = key
         self.secret = secret
 
-    def contest_standings(self, contest_id: int) -> Result:
+    def contest_standings(self, contest_id: int) -> tuple[Contest, list[Problem], list[RankListRow]]:
         response = self.__send_request(method_name="contest.standings", contestId=contest_id)
 
         contest_data = response['contest']
@@ -31,28 +23,34 @@ class CodeForcesRequestSender:
         contest_data['phase'] = Phase[contest_data['phase']]
 
         contest = Contest(**contest_data)
+
         problems_data = response['problems']
         for problem in problems_data:
             problem['type'] = ProblemType[problem['type']]
 
         problems = [Problem(**problem) for problem in problems_data]
 
-        # Process rows
         rows_data = response['rows']
-        for row in rows_data:
-            row['party']['participantType'] = ParticipantType[row['party']['participantType']]
+        for row_data in rows_data:
+            row_data['party']['participantType'] = ParticipantType[row_data['party']['participantType']]
 
-            row['problemResults'] = [int(pr['points']) for pr in row['problemResults']]
-            if 'lastSubmissionTimeSeconds' not in row:
-                row['lastSubmissionTimeSeconds'] = 0
+            row_data['problemResults'] = [
+                int(problem_results_data['points'])
+                for problem_results_data
+                in row_data['problemResults']
+            ]
 
-            row['party']['members'] = [Member(**member) for member in row['party']['members']]
+            row_data['party']['members'] = [
+                Member(**member)
+                for member
+                in row_data['party']['members']
+            ]
+
+            row_data['party'] = Party(**row_data['party'])
 
         rows = [RankListRow(**row) for row in rows_data]
 
-        result = Result(contest=contest, problems=problems, rows=rows)
-
-        return result
+        return contest, problems, rows
 
     def contest_status(self, contest_id: int):
         response = self.__send_request(method_name="contest.status", contestId=contest_id)

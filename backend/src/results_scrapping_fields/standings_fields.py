@@ -1,14 +1,17 @@
-from pydantic import BaseModel
+from dataclasses import dataclass
+
 from results_scrapping_fields.enums_for_contest import *
 
 
-class Contest(BaseModel):
+@dataclass
+class Contest:
     id: int
     name: str
     type: ContestType
     phase: Phase
     frozen: bool
     durationSeconds: int
+    startTimeSeconds: int
     relativeTimeSeconds: int
     preparedBy: str | None = None
     websiteUrl: str | None = None
@@ -20,41 +23,39 @@ class Contest(BaseModel):
     city: str | None = None
     season: str | None = None
 
-    class Config:
-        arbitrary_types_allowed = True
 
-
-class Problem(BaseModel):
+@dataclass
+class Problem:
+    index: str
+    type: ProblemType
+    name: str
+    tags: list[str]
     contestId: int | None = None
     problemsetName: str | None = None
-    index: str
-    name: str
-    type: ProblemType
     points: float | None = None
     rating: int | None = None
-    tags: list[str]
 
 
-class Member(BaseModel):
+@dataclass
+class Member:
     handle: str
     name: str | None = None
 
 
-class Party(BaseModel):
-    contestId: int | None = None
+@dataclass
+class Party:
     members: [Member]
+    ghost: bool
     participantType: ParticipantType
     teamId: int | None = None
     teamName: str | None = None
-    ghost: bool
     room: int | None = None
+    contestId: int | None = None
     startTimeSeconds: int | None = None
 
-    class Config:
-        arbitrary_types_allowed = True
 
-
-class RankListRow(BaseModel):
+@dataclass
+class RankListRow:
     party: Party
     rank: int
     points: float
@@ -62,7 +63,4 @@ class RankListRow(BaseModel):
     successfulHackCount: int
     unsuccessfulHackCount: int
     problemResults: list[int]
-    lastSubmissionTimeSeconds: int
-
-    class Config:
-        arbitrary_types_allowed = True
+    lastSubmissionTimeSeconds: int | None = None
