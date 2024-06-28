@@ -1,10 +1,9 @@
-from dataclasses import dataclass
 from random import randint
 from hashlib import sha512
 from time import time
 from requests import get
 
-from results_scrapping_fields.standings_fields import *
+from infrastructure.code_forces.models import *
 
 
 class CodeForcesRequestSender:

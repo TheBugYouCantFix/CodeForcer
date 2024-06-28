@@ -1,6 +1,6 @@
 from application.contests.contests_provider import IContestsProvider
 from infrastructure.code_forces.code_forces_request_sender import CodeForcesRequestSender
-from results_scrapping_fields.standings_fields import *
+from infrastructure.code_forces.models import *
 
 
 class CodeForcesContestsProvider(IContestsProvider):

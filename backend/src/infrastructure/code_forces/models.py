@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from results_scrapping_fields.enums_for_contest import *
+from infrastructure.code_forces.enums import *
 
 
 @dataclass
