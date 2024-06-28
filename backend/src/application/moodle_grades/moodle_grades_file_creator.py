@@ -1,5 +1,4 @@
-from fastapi.responses import FileResponse
-
+import io
 import csv
 from datetime import datetime
 from typing import Dict
@@ -10,24 +9,25 @@ from contracts.moodle_results_data import MoodleResultsData, ProblemData
 class MoodleGradesFileCreator:
     student_grade_map: Dict[str, float] = {}
 
-    def create_file(self, results_data: MoodleResultsData) -> FileResponse:
+    def create_file(self, results_data: MoodleResultsData) -> tuple[io.StringIO, str]:
         filename = f"moodle_grades_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.csv"
 
-        with open(filename, 'w') as file:
+        with open(filename, 'w'):
+            file = io.StringIO()
             writer = csv.writer(file)
             writer.writerow(['Email', 'Grade', 'Feedback'])
 
             for problem in results_data.contest.problems:
                 self.update_grades(problem)
 
-        for email, grade in self.student_grade_map.items():
-            if email in results_data.plagiarizers:
-                self.student_grade_map[email] = 0
-                writer.writerow([email, grade, 'Plagiarism detected'])
-            else:
-                writer.writerow([email, grade, ''])
+            for email, grade in self.student_grade_map.items():
+                if email in results_data.plagiarizers:
+                    self.student_grade_map[email] = 0
+                    writer.writerow([email, 0, 'Plagiarism detected'])
+                else:
+                    writer.writerow([email, grade, ''])
 
-        return FileResponse(filename, filename=filename, media_type='csv')
+        return file, filename
 
     def update_grades(self, problem: ProblemData) -> None:
         for submission in problem.submissions:
