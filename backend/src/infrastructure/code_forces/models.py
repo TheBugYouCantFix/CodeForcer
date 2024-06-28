@@ -49,6 +49,23 @@ class CfRankListRow:
 
 
 @dataclass
+class CfSubmission:
+    id: int
+    creationTimeSeconds: int
+    relativeTimeSeconds: int
+    problem: CfProblem
+    author: 'CfParty'
+    programmingLanguage: str
+    verdict: CfVerdict | None
+    testset: CfTestset
+    passedTestCount: int
+    timeConsumedMillis: int
+    memoryConsumedBytes: int
+    points: float
+    contestId: int | None = None
+
+
+@dataclass
 class CfParty:
     members: ['CfMember']
     ghost: bool
