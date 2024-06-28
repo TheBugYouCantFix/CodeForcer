@@ -22,5 +22,5 @@ class Submission(BaseModel):
     author_email: EmailStr
     verdict: Verdict
     passed_test_count: int
-    points: int
+    points: float
     programming_language: str
