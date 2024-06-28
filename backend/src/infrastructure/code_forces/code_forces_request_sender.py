@@ -17,43 +17,18 @@ class CodeForcesRequestSender:
     def contest_standings(self, contest_id: int) -> tuple[CfContest, list[CfProblem], list[CfRankListRow]]:
         response = self.__send_request(method_name="contest.standings", contestId=contest_id)
 
-        contest_data = response['contest']
-        contest_data['type'] = CfContestType[contest_data['type']]
-        contest_data['phase'] = CfPhase[contest_data['phase']]
-
-        contest = CfContest(**contest_data)
-
-        problems_data = response['problems']
-        for problem in problems_data:
-            problem['type'] = CfProblemType[problem['type']]
-
-        problems = [CfProblem(**problem) for problem in problems_data]
-
-        rows_data = response['rows']
-        for row_data in rows_data:
-            row_data['party']['participantType'] = CfParticipantType[row_data['party']['participantType']]
-
-            row_data['problemResults'] = [
-                int(problem_results_data['points'])
-                for problem_results_data
-                in row_data['problemResults']
-            ]
-
-            row_data['party']['members'] = [
-                CfMember(**member)
-                for member
-                in row_data['party']['members']
-            ]
-
-            row_data['party'] = CfParty(**row_data['party'])
-
-        rows = [CfRankListRow(**row) for row in rows_data]
+        contest = get_contest_from_data(response['contest'])
+        problems = [get_problems_from_data(problem_data) for problem_data in response['problems']]
+        rows = [get_rank_list_row_from_data(row) for row in response['rows']]
 
         return contest, problems, rows
 
-    def contest_status(self, contest_id: int):
+    def contest_status(self, contest_id: int) -> list[CfSubmission]:
         response = self.__send_request(method_name="contest.status", contestId=contest_id)
-        # response is a list of submissions
+
+        submissions_data = response
+        for submission_data in submissions_data:
+            problem_data = submission_data['problem']
 
     def __send_request(self, method_name: str, **params: int | str | bool):
         rand = randint(100_000, 1_000_000 - 1)
@@ -74,3 +49,36 @@ class CodeForcesRequestSender:
 
         return resp.json()["result"]
 
+
+def get_contest_from_data(contest_data: dict) -> CfContest:
+    contest_data['type'] = CfContestType[contest_data['type']]
+    contest_data['phase'] = CfPhase[contest_data['phase']]
+
+    return CfContest(**contest_data)
+
+
+def get_problems_from_data(problem_data: dict) -> CfProblem:
+    problem_data['type'] = CfProblemType[problem_data['type']]
+    return CfProblem(**problem_data)
+
+
+def get_rank_list_row_from_data(rank_list_row_data: dict) -> CfRankListRow:
+    rank_list_row_data['party']['participantType'] = CfParticipantType[rank_list_row_data['party']['participantType']]
+
+    rank_list_row_data['problemResults'] = [
+        int(problem_results_data['points'])
+        for problem_results_data
+        in rank_list_row_data['problemResults']
+    ]
+
+    rank_list_row_data['party']['members'] = [
+        CfMember(**member)
+        for member
+        in rank_list_row_data['party']['members']
+    ]
+
+    rank_list_row_data['party'] = CfParty(**rank_list_row_data['party'])
+    return CfRankListRow(**rank_list_row_data)
+
+
+__all = ["CodeForcesRequestSender"]
