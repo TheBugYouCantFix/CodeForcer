@@ -1,7 +1,9 @@
-from pydantic import BaseModel
+from typing import Callable
+
+from pydantic import BaseModel, EmailStr
 
 from domain.enums import Phase, Verdict
-from domain.student import ContestParticipant
+from domain.student import ContestParticipant, Student
 
 
 class Contest(BaseModel):
@@ -10,12 +12,37 @@ class Contest(BaseModel):
     phase: Phase
     problems: list["Problem"]
 
+    def map_handles_to_emails(self, handle_to_email_mapper: Callable[[str], EmailStr | None]) -> None:
+        for problem in self.problems:
+            problem.map_handles_to_emails(handle_to_email_mapper)
+
+    @property
+    def get_participants(self) -> set[ContestParticipant]:
+        participants: set[ContestParticipant] = {
+            participant
+            for participant
+            in (
+                problem.participants
+                for problem in self.problems
+            )
+        }
+        return participants
+
 
 class Problem(BaseModel):
     index: str
     name: str
-    max_points: int
+    max_points: float | None
     submissions: list["Submission"]
+
+    def map_handles_to_emails(self, handle_to_email_mapper: Callable[[str], EmailStr | None]) -> None:
+        for submission in self.submissions:
+            submission.map_author_handle_to_email(handle_to_email_mapper)
+
+    @property
+    def get_participants(self) -> set[ContestParticipant]:
+        participants = {submission.author for submission in self.submissions}
+        return participants
 
 
 class Submission(BaseModel):
@@ -25,3 +52,14 @@ class Submission(BaseModel):
     passed_test_count: int
     points: float | None
     programming_language: str
+
+    def map_author_handle_to_email(self, handle_to_email_mapper: Callable[[str], EmailStr | None]) -> None:
+        if self.author is Student:
+            return
+
+        email = handle_to_email_mapper(self.author.handle)
+        if email is not None:
+            self.author = Student(
+                handle=self.author.handle,
+                email=email
+            )
