@@ -1,5 +1,6 @@
-from typing import Callable
+from __future__ import annotations
 
+from typing import Callable
 from pydantic import BaseModel, EmailStr
 
 from domain.enums import Phase, Verdict
@@ -10,7 +11,7 @@ class Contest(BaseModel):
     id: int
     name: str
     phase: Phase
-    problems: list["Problem"]
+    problems: list[Problem]
 
     def map_handles_to_emails(self, handle_to_email_mapper: Callable[[str], EmailStr | None]) -> None:
         for problem in self.problems:
@@ -18,22 +19,18 @@ class Contest(BaseModel):
 
     @property
     def get_participants(self) -> set[ContestParticipant]:
-        participants: set[ContestParticipant] = {
+        return {
             participant
-            for participant
-            in (
-                problem.participants
-                for problem in self.problems
-            )
+            for problem in self.problems
+            for participant in problem.get_participants
         }
-        return participants
 
 
 class Problem(BaseModel):
     index: str
     name: str
     max_points: float | None
-    submissions: list["Submission"]
+    submissions: list[Submission]
 
     def map_handles_to_emails(self, handle_to_email_mapper: Callable[[str], EmailStr | None]) -> None:
         for submission in self.submissions:
@@ -41,8 +38,7 @@ class Problem(BaseModel):
 
     @property
     def get_participants(self) -> set[ContestParticipant]:
-        participants = {submission.author for submission in self.submissions}
-        return participants
+        return {submission.author for submission in self.submissions}
 
 
 class Submission(BaseModel):
@@ -54,7 +50,7 @@ class Submission(BaseModel):
     programming_language: str
 
     def map_author_handle_to_email(self, handle_to_email_mapper: Callable[[str], EmailStr | None]) -> None:
-        if self.author is Student:
+        if isinstance(self.author, Student):
             return
 
         email = handle_to_email_mapper(self.author.handle)

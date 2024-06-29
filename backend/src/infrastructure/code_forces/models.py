@@ -1,3 +1,4 @@
+from __future__ import annotations
 from dataclasses import dataclass
 
 from infrastructure.code_forces.enums import *
@@ -38,7 +39,7 @@ class CfProblem:
 
 @dataclass
 class CfRankListRow:
-    party: 'CfParty'
+    party: CfParty
     rank: int
     points: float
     penalty: int
@@ -54,7 +55,7 @@ class CfSubmission:
     creationTimeSeconds: int
     relativeTimeSeconds: int
     problem: CfProblem
-    author: 'CfParty'
+    author: CfParty
     programmingLanguage: str
     verdict: CfVerdict | None
     testset: CfTestset
@@ -67,7 +68,7 @@ class CfSubmission:
 
 @dataclass
 class CfParty:
-    members: list['CfMember']
+    members: list[CfMember]
     ghost: bool
     participantType: CfParticipantType
     teamId: int | None = None
