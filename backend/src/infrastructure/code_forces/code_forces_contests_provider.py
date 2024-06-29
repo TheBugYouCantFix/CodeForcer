@@ -1,6 +1,6 @@
+from domain.contest import Contest
 from application.contests.contests_provider import IContestsProvider
 from infrastructure.code_forces.code_forces_request_sender import CodeForcesRequestSender
-from infrastructure.code_forces.models import *
 
 
 class CodeForcesContestsProvider(IContestsProvider):
@@ -13,6 +13,6 @@ class CodeForcesContestsProvider(IContestsProvider):
             for row in rows
         ]
 
-    def get_contest(self, contest_id: int, key: str, secret: str) -> CfContest:
+    def get_contest(self, contest_id: int, key: str, secret: str) -> Contest:
         request_sender = CodeForcesRequestSender(key, secret)
         submissions = request_sender.contest_status(contest_id)

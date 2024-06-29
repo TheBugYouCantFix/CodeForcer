@@ -61,7 +61,7 @@ class CfSubmission:
     passedTestCount: int
     timeConsumedMillis: int
     memoryConsumedBytes: int
-    points: float
+    points: float | None = None
     contestId: int | None = None
 
 

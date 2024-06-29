@@ -23,12 +23,10 @@ class CodeForcesRequestSender:
 
         return contest, problems, rows
 
-    def contest_status(self, contest_id: int) -> list[CfSubmission]:
-        response = self.__send_request(method_name="contest.status", contestId=contest_id)
+    def contest_status(self, contest_id: int) -> list[CfSubmission]:  # count is for debug purposes only
+        response = self.__send_request(method_name="contest.status", contestId=contest_id, count=10)
 
-        submissions_data = response
-        for submission_data in submissions_data:
-            problem_data = submission_data['problem']
+        return [get_submission_from_data(submission_data) for submission_data in response]
 
     def __send_request(self, method_name: str, **params: int | str | bool):
         rand = randint(100_000, 1_000_000 - 1)
@@ -65,20 +63,26 @@ def get_problems_from_data(problem_data: dict) -> CfProblem:
 def get_rank_list_row_from_data(rank_list_row_data: dict) -> CfRankListRow:
     rank_list_row_data['party']['participantType'] = CfParticipantType[rank_list_row_data['party']['participantType']]
 
-    rank_list_row_data['problemResults'] = [
-        int(problem_results_data['points'])
-        for problem_results_data
-        in rank_list_row_data['problemResults']
-    ]
-
-    rank_list_row_data['party']['members'] = [
-        CfMember(**member)
-        for member
-        in rank_list_row_data['party']['members']
-    ]
-
-    rank_list_row_data['party'] = CfParty(**rank_list_row_data['party'])
+    rank_list_row_data['party'] = get_party_from_data(rank_list_row_data['party'])
     return CfRankListRow(**rank_list_row_data)
+
+
+def get_submission_from_data(submission_data: dict) -> CfSubmission:
+    submission_data['problem'] = get_problems_from_data(submission_data['problem'])
+    submission_data['author'] = get_party_from_data(submission_data['author'])
+    submission_data['verdict'] = CfVerdict[submission_data['verdict']]
+    submission_data['testset'] = CfTestset[submission_data['testset']]
+
+    return CfSubmission(**submission_data)
+
+
+def get_party_from_data(party_data: dict) -> CfParty:
+    party_data['members'] = [get_member_from_data(member_data) for member_data in party_data['members']]
+    return CfParty(**party_data)
+
+
+def get_member_from_data(member_data: dict) -> CfMember:
+    return CfMember(**member_data)
 
 
 __all = ["CodeForcesRequestSender"]
