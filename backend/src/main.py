@@ -1,11 +1,13 @@
 from fastapi import FastAPI, UploadFile, File, status
+from fastapi.responses import StreamingResponse
 from uvicorn import run
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.responses import JSONResponse
 
+from contracts.moodle_results_data import MoodleResultsData
 from domain.student import Student
 from contracts.student_data import StudentData
-from container import students_service, contests_service
+from container import students_service, contests_service, moodle_grades_file_creator
 
 app = FastAPI()
 
@@ -52,6 +54,23 @@ async def get_contest(contest_id: int, key: str, secret: str):
 @app.post("/upload-csv", status_code=status.HTTP_201_CREATED)
 async def upload_csv(file: UploadFile = File(...)):
     students_service.process_csv_file(file)
+
+
+@app.post("/moodle_grades", status_code=status.HTTP_200_OK)
+async def get_grades(results_data: MoodleResultsData) -> StreamingResponse:
+    file, filename = moodle_grades_file_creator.create_file(results_data)
+    content_length = len(file.getvalue())
+    file.seek(0)
+
+    return StreamingResponse(
+        file,
+        headers={
+            'Content-Disposition': f'attachment; filename="{filename}"',
+            'Content-Type': 'text/csv; charset=utf-8',
+            'Content-Length': str(content_length),
+        },
+        media_type='text/csv'
+    )
 
 
 if __name__ == '__main__':
