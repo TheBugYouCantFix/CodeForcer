@@ -8,4 +8,4 @@ students_repository = DBStudentsRepository('students.db')
 students_service = StudentsService(students_repository)
 
 contests_provider = CodeForcesContestsProvider()
-contests_service = ContestsService(contests_provider)
+contests_service = ContestsService(contests_provider, students_repository)
