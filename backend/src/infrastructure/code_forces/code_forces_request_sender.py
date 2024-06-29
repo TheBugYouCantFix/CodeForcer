@@ -23,8 +23,8 @@ class CodeForcesRequestSender:
 
         return contest, problems, rows
 
-    def contest_status(self, contest_id: int) -> list[CfSubmission]:  # count is for debug purposes only
-        response = self.__send_request(method_name="contest.status", contestId=contest_id, count=10)
+    def contest_status(self, contest_id: int) -> list[CfSubmission]:  # TODO remove count after we create test contest
+        response = self.__send_request(method_name="contest.status", contestId=contest_id, count=1000)
 
         return [get_submission_from_data(submission_data) for submission_data in response]
 

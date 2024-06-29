@@ -19,8 +19,8 @@ class ContestsService:
     def get_contest(self, contest_id: int, api_key: str, api_secret: str) -> Contest:
         contest = self.contests_provider.get_contest(contest_id, api_key, api_secret)
 
-        contest.map_handles_to_emails(handle_to_email_mapper=self.__get_email_by_handle)
         contest.select_single_submission_for_each_student(selector=temp_most_passed_test_count_selector)
+        contest.map_handles_to_emails(handle_to_email_mapper=self.__get_email_by_handle)
 
         return contest
 
