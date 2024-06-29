@@ -5,6 +5,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.responses import JSONResponse
 
 from contracts.moodle_results_data import MoodleResultsData
+from domain.contest import Contest
 from domain.student import Student
 from contracts.student_data import StudentData
 from container import students_service, contests_service, moodle_grades_file_creator
@@ -46,8 +47,9 @@ async def get_results(contest_id: int, key: str, secret: str):
 
 
 @app.get("/contests/{contest_id}", status_code=status.HTTP_200_OK)
-async def get_contest(contest_id: int, key: str, secret: str):
-    return contests_service.get_contest(contest_id, key, secret)
+async def get_contest(contest_id: int, key: str, secret: str) -> Contest:
+    contest = contests_service.get_contest(contest_id, key, secret)
+    return contest
 
 
 @app.post("/upload-csv", status_code=status.HTTP_201_CREATED)

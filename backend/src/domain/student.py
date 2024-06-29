@@ -3,14 +3,14 @@ from __future__ import annotations
 from pydantic import BaseModel, EmailStr
 
 
-class ContestParticipant(BaseModel):
+class Student(BaseModel):
     handle: str
-
-
-class Student(ContestParticipant):
-    email: EmailStr
+    email: EmailStr | None = None
 
     def lower(self) -> Student:
-        return Student(email=self.email, handle=self.handle.lower())
+        return Student(
+            email=self.email.lower() if self.email is not None else None,
+            handle=self.handle.lower()
+        )
 
 

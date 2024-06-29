@@ -1,9 +1,9 @@
 from collections import defaultdict
 
-from domain.student import ContestParticipant
-from infrastructure.code_forces.code_forces_request_sender import CodeForcesRequestSender
-from application.contests.contests_provider import IContestsProvider
+from domain.student import Student
 from domain.contest import Contest, Submission, Problem
+from application.contests.contests_provider import IContestsProvider
+from infrastructure.code_forces.code_forces_request_sender import CodeForcesRequestSender
 
 
 class CodeForcesContestsProvider(IContestsProvider):
@@ -28,7 +28,7 @@ class CodeForcesContestsProvider(IContestsProvider):
             problem_index = cf_submission.problem.index
             submission = Submission(
                 id=cf_submission.id,
-                author=ContestParticipant(
+                author=Student(
                     handle=cf_submission.author.members[0].handle
                 ),
                 verdict=cf_submission.verdict.value,
