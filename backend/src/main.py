@@ -45,7 +45,6 @@ async def get_results(contest_id: int, key: str, secret: str):
     return contests_service.get_contest_results(contest_id, key, secret)
 
 
-# not implemented yet
 @app.get("/contests/{contest_id}", status_code=status.HTTP_200_OK)
 async def get_contest(contest_id: int, key: str, secret: str):
     return contests_service.get_contest(contest_id, key, secret)
