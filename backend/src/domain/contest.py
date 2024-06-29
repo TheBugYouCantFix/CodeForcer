@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import defaultdict
 from typing import Callable
 from pydantic import BaseModel, EmailStr
 
@@ -17,8 +18,7 @@ class Contest(BaseModel):
         for problem in self.problems:
             problem.map_handles_to_emails(handle_to_email_mapper)
 
-    def select_single_submission_for_each_student(self,
-                                                  selector: Callable[[Submission, Submission], Submission]) -> None:
+    def select_single_submission_for_each_student(self, selector: Callable[[list[Submission]], Submission]) -> None:
         for problem in self.problems:
             problem.select_single_submission_for_each_student(selector)
 
@@ -41,18 +41,19 @@ class Problem(BaseModel):
         for submission in self.submissions:
             submission.map_author_handle_to_email(handle_to_email_mapper)
 
-    def select_single_submission_for_each_student(self,
-                                                  selector: Callable[[Submission, Submission], Submission]) -> None:
-        selected_submissions: dict[str, Submission] = {}
+    def select_single_submission_for_each_student(self, selector: Callable[[list[Submission]], Submission]) -> None:
+        submissions_by_student = defaultdict(list[Submission])
 
         for submission in self.submissions:
             handle = submission.author.handle
-            if handle not in selected_submissions.keys():
-                selected_submissions[handle] = submission
-            else:
-                selected_submissions[handle] = selector(selected_submissions[handle], submission)
+            submissions_by_student[handle].append(submission)
 
-        self.submissions = list(selected_submissions.values())
+        selected_submissions = [
+            selector(submissions)
+            for submissions
+            in submissions_by_student.values()
+        ]
+        self.submissions = selected_submissions
 
     @property
     def get_participants(self) -> set[ContestParticipant]:
