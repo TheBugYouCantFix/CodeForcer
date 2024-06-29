@@ -13,8 +13,8 @@ class CfContest:
     phase: CfPhase
     frozen: bool
     durationSeconds: int
-    startTimeSeconds: int
-    relativeTimeSeconds: int
+    startTimeSeconds: int | None = None
+    relativeTimeSeconds: int | None = None
     preparedBy: str | None = None
     websiteUrl: str | None = None
     description: str | None = None

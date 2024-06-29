@@ -17,7 +17,7 @@ class CodeForcesRequestSender:
         self.secret = secret
 
     def contest_standings(self, contest_id: int) -> tuple[CfContest, list[CfProblem], list[CfRankListRow]]:
-        response = self.__send_request(method_name="contest.standings", contestId=contest_id)
+        response = self.__send_request(method_name="contest.standings", contestId=contest_id, asManager=True)
 
         contest = get_contest_from_data(response['contest'])
         problems = [get_problems_from_data(problem_data) for problem_data in response['problems']]
@@ -25,8 +25,8 @@ class CodeForcesRequestSender:
 
         return contest, problems, rows
 
-    def contest_status(self, contest_id: int) -> list[CfSubmission]:  # TODO remove count after we create test contest
-        response = self.__send_request(method_name="contest.status", contestId=contest_id, count=1000)
+    def contest_status(self, contest_id: int) -> list[CfSubmission]:
+        response = self.__send_request(method_name="contest.status", contestId=contest_id, asManager=True)
 
         return [get_submission_from_data(submission_data) for submission_data in response]
 
