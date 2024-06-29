@@ -39,5 +39,5 @@ class MoodleGradesFileCreator:
             self.student_grade_map[email] = [0, 'Plagiarism detected']
 
     def write_to_file(self, writer: csv.writer) -> None:
-        for email, response in self.student_grade_map.items():
-            writer.writerow([email, response[0], response[1]])
+        for email, (grade, feedback) in self.student_grade_map.items():
+            writer.writerow([email, grade, feedback])
