@@ -11,15 +11,14 @@ class MoodleGradesFileCreator:
         filename = f"moodle_grades_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.csv"
         student_grade_map: defaultdict[str, list[float | str]] = defaultdict(lambda: [0, ''])
 
-        with open(filename, 'w'):
-            file = io.StringIO()
-            writer = csv.writer(file)
-            writer.writerow(['Email', 'Grade', 'Feedback'])
+        file = io.StringIO()
+        writer = csv.writer(file)
+        writer.writerow(['Email', 'Grade', 'Feedback'])
 
-            self.mark_grades(results_data.contest.problems, student_grade_map)
-            self.mark_plagiarism(results_data.plagiarizers, student_grade_map)
+        self.mark_grades(results_data.contest.problems, student_grade_map)
+        self.mark_plagiarism(results_data.plagiarizers, student_grade_map)
 
-            self.write_to_file(writer, student_grade_map)
+        self.write_to_file(writer, student_grade_map)
 
         return file, filename
 
