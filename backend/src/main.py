@@ -22,22 +22,22 @@ async def http_exception_handler(request, exc):
 
 @app.post("/students", status_code=status.HTTP_201_CREATED)
 async def create_student(student_data: StudentData) -> Student:
-    return students_service.create_student(student_data.lower_data())
+    return students_service.create_student(student_data)
 
 
 @app.get("/students/{email_or_handle}", status_code=status.HTTP_200_OK)
 async def get_student_by_email_or_handle(email_or_handle: str) -> Student:
-    return students_service.get_student_by_email_or_handle(email_or_handle.lower())
+    return students_service.get_student_by_email_or_handle(email_or_handle)
 
 
 @app.put("/students/{email}", status_code=status.HTTP_204_NO_CONTENT)
 async def update_student(email: str, updated_student_data: StudentData) -> None:
-    students_service.update_student(email, updated_student_data.lower_data())
+    students_service.update_student(email, updated_student_data)
 
 
 @app.delete("/students/{email}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_student(email: str) -> None:
-    students_service.delete_student(email.lower())
+    students_service.delete_student(email)
 
 
 @app.get("/contests/{contest_id}/results", status_code=status.HTTP_200_OK)
