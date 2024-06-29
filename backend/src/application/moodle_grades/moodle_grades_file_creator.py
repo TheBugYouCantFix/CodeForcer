@@ -1,13 +1,13 @@
 import io
 import csv
 from datetime import datetime
-from typing import Dict
+from collections import defaultdict
 
 from contracts.moodle_results_data import MoodleResultsData, ProblemData
 
 
 class MoodleGradesFileCreator:
-    student_grade_map: Dict[str, list[float | str]] = {}
+    student_grade_map: defaultdict[str, list[float | str]] = defaultdict(lambda: [0, ''])
 
     def create_file(self, results_data: MoodleResultsData) -> tuple[io.StringIO, str]:
         filename = f"moodle_grades_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.csv"
@@ -32,10 +32,7 @@ class MoodleGradesFileCreator:
         for submission in problem.submissions:
             problem_points = submission.points / problem.max_points * problem.max_grade
 
-            if self.student_grade_map.get(submission.author_email) is None:
-                self.student_grade_map[submission.author_email] = [problem_points, '']
-            else:
-                self.student_grade_map[submission.author_email][0] += problem_points
+            self.student_grade_map[submission.author_email][0] += problem_points
 
     def mark_plagiarism(self, plagiarizers: list[str]) -> None:
         for email in plagiarizers:
