@@ -1,6 +1,6 @@
 from pydantic import EmailStr
 
-from domain.contest import Contest
+from domain.contest import Contest, Submission
 from application.students.students_repository import IStudentsRepository
 from application.contests.contests_provider import IContestsProvider
 
@@ -20,6 +20,7 @@ class ContestsService:
         contest = self.contests_provider.get_contest(contest_id, api_key, api_secret)
 
         contest.map_handles_to_emails(handle_to_email_mapper=self.__get_email_by_handle)
+        contest.select_single_submission_for_each_student(selector=temp_most_passed_test_count_selector)
 
         return contest
 
@@ -27,3 +28,6 @@ class ContestsService:
         student = self.students_repository.get_student_by_handle(handle)
         return student.email if student is not None else None
 
+
+def temp_most_passed_test_count_selector(submissions: list[Submission]) -> Submission:
+    return max(submissions, key=lambda s: s.passed_test_count)
