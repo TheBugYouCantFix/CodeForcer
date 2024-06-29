@@ -1,57 +1,55 @@
-from application.contests.contests_provider import IContestsProvider
+from collections import defaultdict
+
+from domain.student import ContestParticipant
 from infrastructure.code_forces.code_forces_request_sender import CodeForcesRequestSender
-from results_scrapping_fields.standings_fields import *
+from application.contests.contests_provider import IContestsProvider
+from domain.contest import Contest, Submission, Problem
 
 
 class CodeForcesContestsProvider(IContestsProvider):
-    def get_contest_results(self, contest_id: int, key: str, secret: str):
-        request_sender = CodeForcesRequestSender(key, secret)
-        return scrap_results(request_sender, contest_id)
+    def get_contest_results(self, contest_id: int, api_key: str, api_secret: str):
+        request_sender = CodeForcesRequestSender(api_key, api_secret)
 
-    def get_contest(self, contest_id: int, key: str, secret: str) -> Contest:
-        pass #This has to be implemented
+        _, _, rows = request_sender.contest_standings(contest_id)
 
+        return [
+            {"handle": row.party.members[0].handle, "result": row.points}
+            for row in rows
+        ]
 
-def scrap_results(request_sender: CodeForcesRequestSender, contest_id: int):
-    class Result(BaseModel):
-        contest: Contest
-        problems: list[Problem]
-        rows: list[RankListRow]
+    def get_contest(self, contest_id: int, api_key: str, api_secret: str) -> Contest:
+        request_sender = CodeForcesRequestSender(api_key, api_secret)
 
-        class Config:
-            arbitrary_types_allowed = True
+        cf_submissions = request_sender.contest_status(contest_id)
+        cf_contest, cf_problems, _ = request_sender.contest_standings(contest_id)
 
-    result_data = request_sender.send_request(method_name="contest.standings", contestId=contest_id)
+        submissions_by_problem_index = defaultdict(list)
+        for cf_submission in cf_submissions:
+            problem_index = cf_submission.problem.index
+            submission = Submission(
+                id=cf_submission.id,
+                author=ContestParticipant(
+                    handle=cf_submission.author.members[0].handle
+                ),
+                verdict=cf_submission.verdict.value,
+                passed_test_count=cf_submission.passedTestCount,
+                points=cf_submission.points,
+                programming_language=cf_submission.programmingLanguage
+            )
+            submissions_by_problem_index[problem_index].append(submission)
 
-    contest_data = result_data['contest']
-    contest_data['type'] = ContestType[contest_data['type']]
-    contest_data['phase'] = Phase[contest_data['phase']]
+        problems = [
+            Problem(
+                index=cf_problem.index,
+                name=cf_problem.name,
+                max_points=cf_problem.points,
+                submissions=submissions_by_problem_index[cf_problem.index]
+            ) for cf_problem in cf_problems
+        ]
 
-    contest = Contest(**contest_data)
-    problems_data = result_data['problems']
-    for problem in problems_data:
-        problem['type'] = ProblemType[problem['type']]
-
-    problems = [Problem(**problem) for problem in problems_data]
-
-    # Process rows
-    rows_data = result_data['rows']
-    for row in rows_data:
-        row['party']['participantType'] = ParticipantType[row['party']['participantType']]
-
-        row['problemResults'] = [int(pr['points']) for pr in row['problemResults']]
-        if 'lastSubmissionTimeSeconds' not in row:
-            row['lastSubmissionTimeSeconds'] = 0
-
-        row['party']['members'] = [Member(**member) for member in row['party']['members']]
-
-    rows = [RankListRow(**row) for row in rows_data]
-
-    result = Result(contest=contest, problems=problems, rows=rows)
-
-    extracted_results = [
-        {"handle": row.party.members[0].handle, "result": row.points}
-        for row in result.rows
-    ]
-
-    return extracted_results
+        return Contest(
+            id=contest_id,
+            name=cf_contest.name,
+            phase=cf_contest.phase.value,
+            problems=problems
+        )
