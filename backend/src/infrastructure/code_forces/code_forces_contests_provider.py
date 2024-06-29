@@ -1,8 +1,9 @@
 from collections import defaultdict
 
+from domain.student import ContestParticipant
 from infrastructure.code_forces.code_forces_request_sender import CodeForcesRequestSender
 from application.contests.contests_provider import IContestsProvider
-from domain.contest import *
+from domain.contest import Contest, Submission, Problem
 
 
 class CodeForcesContestsProvider(IContestsProvider):

@@ -1,7 +1,8 @@
 from __future__ import annotations
 from dataclasses import dataclass
 
-from infrastructure.code_forces.enums import *
+from infrastructure.code_forces.enums import CfContestType, CfPhase, CfProblemType, CfVerdict, CfTestset, \
+    CfParticipantType
 
 
 @dataclass
