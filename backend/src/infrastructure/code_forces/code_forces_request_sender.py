@@ -5,7 +5,7 @@ from requests import get
 
 from infrastructure.code_forces.enums import CfContestType, CfPhase, CfProblemType, CfParticipantType, CfVerdict, \
     CfTestset
-from infrastructure.code_forces.models import CfContest, CfProblem, CfRankListRow, CfSubmission, CfParty, CfMember
+from infrastructure.code_forces.models import CfContest, CfProblem, CfRankListRow, CfSubmission, CfParty, CfMember, CfUser
 
 
 class CodeForcesRequestSender:
@@ -29,6 +29,13 @@ class CodeForcesRequestSender:
         response = self.__send_request(method_name="contest.status", contestId=contest_id, asManager=True)
 
         return [get_submission_from_data(submission_data) for submission_data in response]
+
+
+    def validate_handle(self, handle: str) -> bool:
+        response = self.__send_request(method_name="user.info", handles=handle, checkHistoricHandles=False)
+
+        return response != None
+
 
     def __send_request(self, method_name: str, **params: int | str | bool):
         rand = randint(100_000, 1_000_000 - 1)
