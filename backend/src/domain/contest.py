@@ -1,6 +1,7 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 from domain.enums import Phase, Verdict
+from domain.student import ContestParticipant
 
 
 class Contest(BaseModel):
@@ -19,8 +20,8 @@ class Problem(BaseModel):
 
 class Submission(BaseModel):
     id: int
-    author_email: EmailStr
+    author: ContestParticipant
     verdict: Verdict
     passed_test_count: int
-    points: float
+    points: float | None
     programming_language: str

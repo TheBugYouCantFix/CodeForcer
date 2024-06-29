@@ -67,7 +67,7 @@ class CfSubmission:
 
 @dataclass
 class CfParty:
-    members: ['CfMember']
+    members: list['CfMember']
     ghost: bool
     participantType: CfParticipantType
     teamId: int | None = None
