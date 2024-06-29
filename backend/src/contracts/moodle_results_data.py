@@ -1,20 +1,22 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import List
 
 
 @dataclass
 class MoodleResultsData:
-    contest: 'ContestData'
+    contest: ContestData
     plagiarizers: List[str]
     legally_excused: List[str]
-    late_submission_rules: 'LateSubmissionRulesData'
+    late_submission_rules: LateSubmissionRulesData
 
 
 @dataclass
 class ContestData:
     id: int
     name: str
-    problems: List['ProblemData']
+    problems: List[ProblemData]
 
 
 @dataclass
@@ -23,7 +25,7 @@ class ProblemData:
     index: str
     max_points: int
     max_grade: int
-    submissions: List['SubmissionData']
+    submissions: List[SubmissionData]
 
 
 @dataclass
