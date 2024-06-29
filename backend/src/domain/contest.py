@@ -17,6 +17,11 @@ class Contest(BaseModel):
         for problem in self.problems:
             problem.map_handles_to_emails(handle_to_email_mapper)
 
+    def select_single_submission_for_each_student(self,
+                                                  selector: Callable[[Submission, Submission], Submission]) -> None:
+        for problem in self.problems:
+            problem.select_single_submission_for_each_student(selector)
+
     @property
     def get_participants(self) -> set[ContestParticipant]:
         return {
@@ -35,6 +40,19 @@ class Problem(BaseModel):
     def map_handles_to_emails(self, handle_to_email_mapper: Callable[[str], EmailStr | None]) -> None:
         for submission in self.submissions:
             submission.map_author_handle_to_email(handle_to_email_mapper)
+
+    def select_single_submission_for_each_student(self,
+                                                  selector: Callable[[Submission, Submission], Submission]) -> None:
+        selected_submissions: dict[str, Submission] = {}
+
+        for submission in self.submissions:
+            handle = submission.author.handle
+            if handle not in selected_submissions.keys():
+                selected_submissions[handle] = submission
+            else:
+                selected_submissions[handle] = selector(selected_submissions[handle], submission)
+
+        self.submissions = list(selected_submissions.values())
 
     @property
     def get_participants(self) -> set[ContestParticipant]:
