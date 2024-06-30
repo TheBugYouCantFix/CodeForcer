@@ -53,3 +53,6 @@ class CodeForcesContestsProvider(IContestsProvider):
             phase=cf_contest.phase.value,
             problems=problems
         )
+
+    def validate_handle(self, handle: str) -> bool:
+        return CodeForcesRequestSender(key='', secret='').validate_handle(handle) is not None

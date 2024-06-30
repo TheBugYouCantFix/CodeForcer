@@ -6,6 +6,8 @@ from application.students.students_repository import IStudentsRepository
 from contracts.student_data import StudentData
 from infrastructure.parser import parse_csv
 
+from infrastructure.code_forces.code_forces_contests_provider import CodeForcesContestsProvider
+
 
 def student_data_to_student(student_data: StudentData) -> Student:
     email = student_data.email
@@ -20,8 +22,12 @@ class StudentsService:
     def __init__(self, students_repository: IStudentsRepository):
         self.students_repository = students_repository
 
-    def create_student(self, student_data: StudentData) -> Student:
+    def create_student(self, student_data: StudentData) -> Student | None:
         student = student_data_to_student(student_data)
+
+        if not CodeForcesContestsProvider().validate_handle(student.handle):
+            return None
+
         self.students_repository.add_student(student)
 
         return student

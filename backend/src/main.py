@@ -22,7 +22,7 @@ async def http_exception_handler(request, exc):
 
 
 @app.post("/students", status_code=status.HTTP_201_CREATED)
-async def create_student(student_data: StudentData) -> Student:
+async def create_student(student_data: StudentData) -> Student | None:
     return students_service.create_student(student_data)
 
 
