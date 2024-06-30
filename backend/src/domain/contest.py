@@ -34,7 +34,7 @@ class Contest(BaseModel):
 class Problem(BaseModel):
     index: str
     name: str
-    max_points: float | None
+    points: float | None
     submissions: list[Submission]
 
     def map_handles_to_emails(self, handle_to_email_mapper: Callable[[str], EmailStr | None]) -> None:
