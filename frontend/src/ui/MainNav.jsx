@@ -65,12 +65,12 @@ function MainNav() {
             <span>Download Submissions</span>
           </StyledNavLink>
         </li>
-        <li>
+        {/*<li>
           <StyledNavLink to="/submit">
             <SiMoodle />
             <span>Submit Grades</span>
           </StyledNavLink>
-        </li>
+        </li>*/}
         <li>
           <StyledNavLink to="/handles">
             <FaDatabase />
