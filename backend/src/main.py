@@ -1,5 +1,6 @@
 from fastapi import FastAPI, UploadFile, File, status
 from fastapi.responses import StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
 from uvicorn import run
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.responses import JSONResponse
@@ -11,6 +12,21 @@ from contracts.student_data import StudentData
 from container import students_service, contests_service, moodle_grades_file_creator
 
 app = FastAPI()
+
+origins = [
+    "https://mashfeii.ru",
+    "http://codeforcer.mashfeii.com",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.exception_handler(StarletteHTTPException)
