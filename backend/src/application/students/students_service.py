@@ -3,6 +3,7 @@ from fastapi import HTTPException, status, UploadFile
 
 from domain.student import Student
 from application.students.students_repository import IStudentsRepository
+from application.contests.contests_provider import IContestsProvider
 from contracts.student_data import StudentData
 from infrastructure.parser import parse_csv
 
@@ -16,12 +17,18 @@ def student_data_to_student(student_data: StudentData) -> Student:
 
 class StudentsService:
     students_repository: IStudentsRepository
+    contests_provider: IContestsProvider
 
-    def __init__(self, students_repository: IStudentsRepository):
+    def __init__(self, students_repository: IStudentsRepository, contests_provider: IContestsProvider):
         self.students_repository = students_repository
+        self.contests_provider = contests_provider
 
-    def create_student(self, student_data: StudentData) -> Student:
+    def create_student(self, student_data: StudentData) -> Student | None:
         student = student_data_to_student(student_data)
+
+        if not self.contests_provider.validate_handle(student.handle):
+            return None
+
         self.students_repository.add_student(student)
 
         return student

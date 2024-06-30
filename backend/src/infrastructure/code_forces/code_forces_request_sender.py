@@ -1,6 +1,8 @@
 from random import randint
 from hashlib import sha512
 from time import time
+from typing import Final
+
 from requests import get
 
 from infrastructure.code_forces.enums import CfContestType, CfPhase, CfProblemType, CfParticipantType, CfVerdict, \
@@ -9,6 +11,8 @@ from infrastructure.code_forces.models import CfContest, CfProblem, CfRankListRo
 
 
 class CodeForcesRequestSender:
+    API_URL: Final[str] = 'https://codeforces.com/api/'
+
     key: str
     secret: str
 
@@ -30,6 +34,9 @@ class CodeForcesRequestSender:
 
         return [get_submission_from_data(submission_data) for submission_data in response]
 
+    def validate_handle(self, handle: str):
+        return self.__send_anonymous_request(method_name="user.info", handles=handle, checkHistoricHandles=False)
+
     def __send_request(self, method_name: str, **params: int | str | bool):
         rand = randint(100_000, 1_000_000 - 1)
         hasher = sha512()
@@ -42,7 +49,15 @@ class CodeForcesRequestSender:
         hasher.update(f"{rand}/{method_name}?{params_str}#{self.secret}".encode())
         api_sig = str(rand) + hasher.hexdigest()
 
-        resp = get(f"https://codeforces.com/api/{method_name}", params | {"apiSig": api_sig})
+        resp = get(self.API_URL + method_name, params | {"apiSig": api_sig})
+
+        if resp.status_code != 200:
+            return None
+
+        return resp.json()["result"]
+
+    def __send_anonymous_request(self, method_name: str, **params: int | str | bool):
+        resp = get(self.API_URL + method_name, params=params)
 
         if resp.status_code != 200:
             return None
