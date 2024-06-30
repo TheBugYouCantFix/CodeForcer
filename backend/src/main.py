@@ -15,8 +15,9 @@ app = FastAPI()
 
 origins = [
     "https://mashfeii.ru",
-    "localhost:5173"
-    "127.0.0.1:5173"
+    "http://codeforcer.mashfeii.com",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173"
 ]
 
 app.add_middleware(
