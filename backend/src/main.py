@@ -42,6 +42,11 @@ async def create_student(student_data: StudentData) -> Student | None:
     return students_service.create_student(student_data)
 
 
+@app.post("/students/bulk", status_code=status.HTTP_201_CREATED)
+async def create_students_from_file(file: UploadFile = File(...)) -> [Student]:
+    students_service.process_csv_file(file)
+
+
 @app.get("/students/{email_or_handle}", status_code=status.HTTP_200_OK)
 async def get_student_by_email_or_handle(email_or_handle: str) -> Student:
     return students_service.get_student_by_email_or_handle(email_or_handle)
@@ -66,11 +71,6 @@ async def get_results(contest_id: int, key: str, secret: str):
 async def get_contest(contest_id: int, key: str, secret: str) -> Contest:
     contest = contests_service.get_contest(contest_id, key, secret)
     return contest
-
-
-@app.post("/upload-csv", status_code=status.HTTP_201_CREATED)
-async def upload_csv(file: UploadFile = File(...)):
-    students_service.process_csv_file(file)
 
 
 @app.post("/moodle_grades", status_code=status.HTTP_200_OK)
