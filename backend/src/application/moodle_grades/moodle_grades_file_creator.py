@@ -3,7 +3,8 @@ import csv
 from datetime import datetime
 from collections import defaultdict
 
-from contracts.moodle_results_data import MoodleResultsData, ProblemData
+from contracts.moodle_results_data import MoodleResultsData, ProblemData, SubmissionData
+from domain.enums import Verdict
 
 
 class MoodleGradesFileCreator:
@@ -29,9 +30,20 @@ class MoodleGradesFileCreator:
     @staticmethod
     def update_grades(problem: ProblemData, student_grade_map: defaultdict[str, list[float | str]]) -> None:
         for submission in problem.submissions:
-            problem_points = submission.points / problem.max_points * problem.max_grade
+
+            if submission.points and problem.max_points:
+                problem_points = submission.points / problem.max_points * problem.max_grade
+            else:
+                problem_points = MoodleGradesFileCreator.get_grade_by_verdict(submission, problem)
 
             student_grade_map[submission.author_email][0] += problem_points
+
+    @staticmethod
+    def get_grade_by_verdict(submission: SubmissionData, problem: ProblemData) -> float:
+        if submission.verdict == Verdict.OK.value:
+            return problem.max_grade
+
+        return 0.0
 
     @staticmethod
     def mark_plagiarism(plagiarizers: list[str], student_grade_map: defaultdict[str, list[float | str]]) -> None:

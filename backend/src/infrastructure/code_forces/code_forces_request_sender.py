@@ -41,7 +41,7 @@ class CodeForcesRequestSender:
         rand = randint(100_000, 1_000_000 - 1)
         hasher = sha512()
 
-        params["time"] = int(time())
+        params["time"] = int(time()) + 7200
         params["apiKey"] = self.key
 
         params_str = '&'.join(sorted(f"{p[0]}={p[1]}" for p in params.items()))

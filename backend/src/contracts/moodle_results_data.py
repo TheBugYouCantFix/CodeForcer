@@ -23,7 +23,7 @@ class ContestData:
 class ProblemData:
     name: str
     index: str
-    max_points: int
+    max_points: int | None
     max_grade: int
     submissions: List[SubmissionData]
 
@@ -34,7 +34,7 @@ class SubmissionData:
     author_email: str
     verdict: str
     passed_test_count: int
-    points: int
+    points: int | None
     programming_language: str
 
 
