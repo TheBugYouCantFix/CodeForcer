@@ -3,7 +3,7 @@ from enum import Enum
 
 class Verdict(Enum):
     FAILED = 'FAILED'
-    OK = 'OR'
+    OK = 'OK'
     PARTIAL = 'PARTIAL'
     COMPILATION_ERROR = 'COMPILATION_ERROR'
     RUNTIME_ERROR = 'RUNTIME_ERROR'
