@@ -2,9 +2,9 @@ from enum import Enum
 
 
 class CfContestType(Enum):
-    CF = 0
-    IOI = 1
-    ICPC = 2
+    CF = 'CF'
+    IOI = 'IOI'
+    ICPC = 'ICPC'
 
 
 class CfPhase(Enum):
@@ -16,16 +16,16 @@ class CfPhase(Enum):
 
 
 class CfProblemType(Enum):
-    PROGRAMMING = 0
-    QUESTION = 1
+    PROGRAMMING = 'PROGRAMMING'
+    QUESTION = 'QUESTION'
 
 
 class CfParticipantType(Enum):
-    CONTESTANT = 0
-    PRACTICE = 1
-    VIRTUAL = 2
-    MANAGER = 3
-    OUT_OF_COMPETITION = 4
+    CONTESTANT = 'CONTESTANT'
+    PRACTICE = 'PRACTICE'
+    VIRTUAL = 'VIRTUAL'
+    MANAGER = 'MANAGER'
+    OUT_OF_COMPETITION = 'OUT_OF_COMPETITION'
 
 
 class CfVerdict(Enum):
@@ -49,17 +49,17 @@ class CfVerdict(Enum):
 
 
 class CfTestset(Enum):
-    SAMPLES = 0
-    PRETESTS = 1
-    TESTS = 2
-    CHALLENGES = 3
-    TESTS1 = 4
-    TESTS2 = 5
-    TESTS3 = 6
-    TESTS4 = 7
-    TESTS5 = 8
-    TESTS6 = 9
-    TESTS7 = 10
-    TESTS8 = 11
-    TESTS9 = 12
-    TESTS10 = 13
+    SAMPLES = 'SAMPLES'
+    PRETESTS = 'PRETESTS'
+    TESTS = 'TESTS'
+    CHALLENGES = 'CHALLENGES'
+    TESTS1 = 'TESTS1'
+    TESTS2 = 'TESTS2'
+    TESTS3 = 'TESTS3'
+    TESTS4 = 'TESTS4'
+    TESTS5 = 'TESTS5'
+    TESTS6 = 'TESTS6'
+    TESTS7 = 'TESTS7'
+    TESTS8 = 'TESTS8'
+    TESTS9 = 'TESTS9'
+    TESTS10 = 'TESTS10'
