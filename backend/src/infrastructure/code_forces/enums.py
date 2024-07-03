@@ -47,6 +47,7 @@ class CfVerdict(Enum):
     TESTING = 'TESTING'
     REJECTED = 'REJECTED'
 
+
 class CfTestset(Enum):
     SAMPLES = 0
     PRETESTS = 1

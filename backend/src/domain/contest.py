@@ -14,9 +14,6 @@ class Contest(BaseModel):
     phase: Phase
     problems: list[Problem]
 
-    # class Config:
-    #     use_enum_values = False
-
     def map_handles_to_emails(self, handle_to_email_mapper: Callable[[str], EmailStr | None]) -> None:
         for problem in self.problems:
             problem.map_handles_to_emails(handle_to_email_mapper)
