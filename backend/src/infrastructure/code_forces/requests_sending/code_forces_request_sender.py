@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from random import randint
 from hashlib import sha512
 from time import time
@@ -10,13 +11,29 @@ from infrastructure.code_forces.enums import CfContestType, CfPhase, CfProblemTy
 from infrastructure.code_forces.models import CfContest, CfProblem, CfRankListRow, CfSubmission, CfParty, CfMember
 
 
-class CodeForcesRequestSender:
+class ICodeForcesRequestSender(ABC):
+    @abstractmethod
+    def contest_standings(self, contest_id: int) -> tuple[CfContest, list[CfProblem], list[CfRankListRow]]:
+        pass
+
+    @abstractmethod
+    def contest_status(self, contest_id: int) -> list[CfSubmission]:
+        pass
+
+
+class IAnonymousCodeForcesRequestSender(ABC):
+    @abstractmethod
+    def validate_handle(self, handle: str):
+        pass
+
+
+class CodeForcesRequestsSender(ICodeForcesRequestSender, IAnonymousCodeForcesRequestSender):
     API_URL: Final[str] = 'https://codeforces.com/api/'
 
-    key: str
-    secret: str
+    key: str | None
+    secret: str | None
 
-    def __init__(self, key: str, secret: str):
+    def __init__(self, key: str = None, secret: str = None):
         self.key = key
         self.secret = secret
 
@@ -38,7 +55,7 @@ class CodeForcesRequestSender:
         return self.__send_anonymous_request(method_name="user.info", handles=handle, checkHistoricHandles=False)
 
     def __send_request(self, method_name: str, **params: int | str | bool):
-        rand = randint(100_000, 1_000_000 - 1)
+        rand = randint(100_000, 999_999)
         hasher = sha512()
 
         params["time"] = int(time())
@@ -102,4 +119,4 @@ def get_member_from_data(member_data: dict) -> CfMember:
     return CfMember(**member_data)
 
 
-__all = ["CodeForcesRequestSender"]
+__all__ = ["CodeForcesRequestsSender"]
