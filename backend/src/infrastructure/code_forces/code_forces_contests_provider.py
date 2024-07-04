@@ -12,8 +12,7 @@ class CodeForcesContestsProvider(IContestsProvider):
     requests_sender_factory: Callable[[str, str], ICodeForcesRequestsSender]
     anonymous_requests_sender_factory: Callable[[], IAnonymousCodeForcesRequestsSender]
 
-    def __init__(self,
-                 requests_sender_factory: Callable[[str, str], ICodeForcesRequestsSender],
+    def __init__(self, requests_sender_factory: Callable[[str, str], ICodeForcesRequestsSender],
                  anonymous_requests_sender_factory: Callable[[], IAnonymousCodeForcesRequestsSender]):
         self.requests_sender_factory = requests_sender_factory
         self.anonymous_requests_sender_factory = anonymous_requests_sender_factory
