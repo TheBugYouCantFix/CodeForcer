@@ -11,7 +11,7 @@ from infrastructure.code_forces.enums import CfContestType, CfPhase, CfProblemTy
 from infrastructure.code_forces.models import CfContest, CfProblem, CfRankListRow, CfSubmission, CfParty, CfMember
 
 
-class ICodeForcesRequestSender(ABC):
+class ICodeForcesRequestsSender(ABC):
     @abstractmethod
     def contest_standings(self, contest_id: int) -> tuple[CfContest, list[CfProblem], list[CfRankListRow]]:
         pass
@@ -21,13 +21,13 @@ class ICodeForcesRequestSender(ABC):
         pass
 
 
-class IAnonymousCodeForcesRequestSender(ABC):
+class IAnonymousCodeForcesRequestsSender(ABC):
     @abstractmethod
     def validate_handle(self, handle: str):
         pass
 
 
-class CodeForcesRequestsSender(ICodeForcesRequestSender, IAnonymousCodeForcesRequestSender):
+class CodeForcesRequestsSender(ICodeForcesRequestsSender, IAnonymousCodeForcesRequestsSender):
     API_URL: Final[str] = 'https://codeforces.com/api/'
 
     key: str | None
@@ -119,4 +119,4 @@ def get_member_from_data(member_data: dict) -> CfMember:
     return CfMember(**member_data)
 
 
-__all__ = ["CodeForcesRequestsSender"]
+__all__ = ["ICodeForcesRequestsSender", "IAnonymousCodeForcesRequestsSender", "CodeForcesRequestsSender"]
