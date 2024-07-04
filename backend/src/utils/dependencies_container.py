@@ -4,38 +4,29 @@ T = TypeVar("T")
 
 
 class DependenciesContainer:
-    """
-    Key-value storage with generic type support for accessing shared dependencies
-    """
+    dependencies: dict[type, Callable[[], T] | T] = {}
 
-    __slots__ = ()
-
-    providers: dict[type, Callable[[], T] | T] = {}
-
-    def __setitem__(self, key: type[T] | Hashable, provider: Callable[[], T] | T):
-        self.providers[key] = provider
+    def __setitem__(self, key: type[T] | Hashable, dependency: Callable[[], T] | T):
+        self.dependencies[key] = dependency
 
     def __getitem__(self, key: type[T] | Hashable):
-        if key not in self.providers:
-            if isinstance(key, type):
-                # try by classname
-                key = key.__name__
+        if key in self.dependencies:
+            dependency = self.dependencies[key]
+            return dependency() if callable(dependency) else dependency
 
-                if key not in self.providers:
-                    raise KeyError(f"Provider for {key} is not registered")
+        if isinstance(key, type):
+            key = key.__name__
 
-            elif isinstance(key, str):
-                # try by classname
-                for cls_key in self.providers.keys():
-                    if cls_key.__name__ == key:
-                        key = cls_key
-                        break
-                else:
-                    raise KeyError(f"Provider for {key} is not registered")
+            if key not in self.dependencies:
+                raise KeyError(f"Dependency for {key} is not set")
 
-        provider = self.providers[key]
+        elif isinstance(key, str):
+            for cls_key in self.dependencies.keys():
+                if cls_key.__name__ == key:
+                    key = cls_key
+                    break
+            else:
+                raise KeyError(f"Dependency for {key} is not set")
 
-        if callable(provider):
-            return provider()
-        else:
-            return provider
+        dependency = self.dependencies[key]
+        return dependency() if callable(dependency) else dependency
