@@ -9,7 +9,7 @@ class DependenciesContainer:
     def __setitem__(self, key: type[T] | Hashable, dependency: Callable[[], T] | T):
         self.dependencies[key] = dependency
 
-    def __getitem__(self, key: type[T] | Hashable):
+    def __getitem__(self, key: type[T] | Hashable) -> T:
         if key in self.dependencies:
             dependency = self.dependencies[key]
             return dependency() if callable(dependency) else dependency

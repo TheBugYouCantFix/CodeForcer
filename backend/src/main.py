@@ -5,11 +5,13 @@ from uvicorn import run
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.responses import JSONResponse
 
+from application.moodle_grades.moodle_grades_file_creator import MoodleGradesFileCreator
+from application.students.students_service import StudentsService
 from contracts.moodle_results_data import MoodleResultsData
 from domain.contest import Contest
 from domain.student import Student
 from contracts.student_data import StudentData
-from container import students_service, contests_service, moodle_grades_file_creator
+from container import container
 
 app = FastAPI()
 
@@ -39,42 +41,42 @@ async def http_exception_handler(request, exc):
 
 @app.post("/students", status_code=status.HTTP_201_CREATED)
 async def create_student(student_data: StudentData) -> Student | None:
-    return students_service.create_student(student_data)
+    return container[StudentsService].create_student(student_data)
 
 
 @app.post("/students/file", status_code=status.HTTP_201_CREATED)
 async def create_students_from_file(file: UploadFile = File(...)) -> list[Student]:
-    return students_service.create_students_from_file(file)
+    return container[StudentsService].create_students_from_file(file)
 
 
 @app.get("/students/{email_or_handle}", status_code=status.HTTP_200_OK)
 async def get_student_by_email_or_handle(email_or_handle: str) -> Student:
-    return students_service.get_student_by_email_or_handle(email_or_handle)
+    return container[StudentsService].get_student_by_email_or_handle(email_or_handle)
 
 
 @app.put("/students/{email}", status_code=status.HTTP_204_NO_CONTENT)
 async def update_student(email: str, updated_student_data: StudentData) -> None:
-    students_service.update_student(email, updated_student_data)
+    container[StudentsService].update_student(email, updated_student_data)
 
 
 @app.delete("/students/{email}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_student(email: str) -> None:
-    students_service.delete_student(email)
+    container[StudentsService].delete_student(email)
 
 
 @app.get("/contests/{contest_id}/results", status_code=status.HTTP_200_OK)
 async def get_results(contest_id: int, key: str, secret: str):
-    return contests_service.get_contest_results(contest_id, key, secret)
+    return container[StudentsService].get_contest_results(contest_id, key, secret)
 
 
 @app.get("/contests/{contest_id}", status_code=status.HTTP_200_OK)
 async def get_contest(contest_id: int, key: str, secret: str) -> Contest:
-    return contests_service.get_contest(contest_id, key, secret)
+    return container[StudentsService].get_contest(contest_id, key, secret)
 
 
 @app.post("/moodle_grades", status_code=status.HTTP_200_OK)
 async def get_grades(results_data: MoodleResultsData) -> StreamingResponse:
-    file, filename = moodle_grades_file_creator.create_file(results_data)
+    file, filename = container[MoodleGradesFileCreator].create_file(results_data)
     content_length = len(file.getvalue())
     file.seek(0)
 
