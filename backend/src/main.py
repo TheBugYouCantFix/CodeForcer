@@ -5,6 +5,7 @@ from uvicorn import run
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.responses import JSONResponse
 
+from application.contests.contests_service import ContestsService
 from application.moodle_grades.moodle_grades_file_creator import MoodleGradesFileCreator
 from application.students.students_service import StudentsService
 from contracts.moodle_results_data import MoodleResultsData
@@ -66,12 +67,12 @@ async def delete_student(email: str) -> None:
 
 @app.get("/contests/{contest_id}/results", status_code=status.HTTP_200_OK)
 async def get_results(contest_id: int, key: str, secret: str):
-    return container[StudentsService].get_contest_results(contest_id, key, secret)
+    return container[ContestsService].get_contest_results(contest_id, key, secret)
 
 
 @app.get("/contests/{contest_id}", status_code=status.HTTP_200_OK)
 async def get_contest(contest_id: int, key: str, secret: str) -> Contest:
-    return container[StudentsService].get_contest(contest_id, key, secret)
+    return container[ContestsService].get_contest(contest_id, key, secret)
 
 
 @app.post("/moodle_grades", status_code=status.HTTP_200_OK)
