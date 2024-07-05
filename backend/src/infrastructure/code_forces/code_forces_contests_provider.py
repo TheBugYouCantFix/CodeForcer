@@ -1,5 +1,4 @@
 from collections import defaultdict
-from typing import Callable
 
 from domain.student import Student
 from domain.contest import Contest, Submission, Problem
@@ -9,21 +8,19 @@ from infrastructure.code_forces.requests_sending.code_forces_request_sender impo
 
 
 class CodeForcesContestsProvider(IContestsProvider):
-    requests_sender_factory: Callable[[str, str], ICodeForcesRequestsSender]
-    anonymous_requests_sender_factory: Callable[[], IAnonymousCodeForcesRequestsSender]
+    requests_sender: ICodeForcesRequestsSender
+    anonymous_requests_sender: IAnonymousCodeForcesRequestsSender
 
     def __init__(
             self,
-            requests_sender_factory: Callable[[str, str], ICodeForcesRequestsSender],
-            anonymous_requests_sender_factory: Callable[[], IAnonymousCodeForcesRequestsSender]
+            requests_sender: ICodeForcesRequestsSender,
+            anonymous_requests_sender: IAnonymousCodeForcesRequestsSender
     ):
-        self.requests_sender_factory = requests_sender_factory
-        self.anonymous_requests_sender_factory = anonymous_requests_sender_factory
+        self.requests_sender = requests_sender
+        self.anonymous_requests_sender = anonymous_requests_sender
 
     def get_contest_results(self, contest_id: int, api_key: str, api_secret: str):
-        requests_sender = self.requests_sender_factory(api_key, api_secret)
-
-        _, _, rows = requests_sender.contest_standings(contest_id)
+        _, _, rows = self.requests_sender.contest_standings(contest_id)
 
         return [
             {"handle": row.party.members[0].handle, "result": row.points}
@@ -31,10 +28,8 @@ class CodeForcesContestsProvider(IContestsProvider):
         ]
 
     def get_contest(self, contest_id: int, api_key: str, api_secret: str) -> Contest:
-        requests_sender = self.requests_sender_factory(api_key, api_secret)
-
-        cf_submissions = requests_sender.contest_status(contest_id)
-        cf_contest, cf_problems, _ = requests_sender.contest_standings(contest_id)
+        cf_submissions = self.requests_sender.contest_status(contest_id)
+        cf_contest, cf_problems, _ = self.requests_sender.contest_standings(contest_id)
 
         submissions_by_problem_index = defaultdict(list)
         for cf_submission in cf_submissions:
@@ -68,5 +63,4 @@ class CodeForcesContestsProvider(IContestsProvider):
         )
 
     def validate_handle(self, handle: str) -> bool:
-        anonymous_requests_sender = self.anonymous_requests_sender_factory()
-        return anonymous_requests_sender.validate_handle(handle) is not None
+        return self.anonymous_requests_sender.validate_handle(handle) is not None
