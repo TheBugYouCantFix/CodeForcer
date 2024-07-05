@@ -4,13 +4,11 @@ from pydantic import EmailStr
 from domain.student import Student
 from application.students.students_repository import IStudentsRepository
 from infrastructure.storage.db_context import DBContext
-from infrastructure.storage.students_db_creation import ensure_students_db_is_created
 
 
 class DBStudentsRepository(IStudentsRepository):
     def __init__(self, db_name: str) -> None:
         self.db_context = DBContext(db_name)
-        ensure_students_db_is_created(self.db_context)
 
     def email_exists(self, email: EmailStr) -> bool:
         return self.get_student_by_email(email.lower()) is not None
