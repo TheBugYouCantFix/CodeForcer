@@ -1,7 +1,7 @@
 from __future__ import annotations
 from dataclasses import dataclass
 
-from infrastructure.code_forces.enums import CfContestType, CfPhase, CfProblemType, CfVerdict, CfTestset, \
+from infrastructure.code_forces.enums import CfContestType, CfProblemType, CfVerdict, CfTestset, \
     CfParticipantType
 
 
@@ -10,7 +10,6 @@ class CfContest:
     id: int
     name: str
     type: CfContestType
-    phase: CfPhase
     frozen: bool
     durationSeconds: int
     startTimeSeconds: int | None = None

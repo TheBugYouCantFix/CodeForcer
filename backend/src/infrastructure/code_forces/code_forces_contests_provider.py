@@ -63,7 +63,6 @@ class CodeForcesContestsProvider(IContestsProvider):
         return Contest(
             id=contest_id,
             name=cf_contest.name,
-            phase=cf_contest.phase.value,
             problems=problems
         )
 
