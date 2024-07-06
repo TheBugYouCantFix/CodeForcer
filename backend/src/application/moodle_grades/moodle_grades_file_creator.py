@@ -15,11 +15,10 @@ class MoodleGradesFileCreator:
         file = io.StringIO()
         writer = csv.writer(file)
 
-        writer.writerow([results_data.assignment_name])
-        writer.writerow(['Email', 'Grade', 'Feedback'])
+        contest_name = results_data.contest.name
+        writer.writerow(['Email', f'{contest_name} Grade', f'{contest_name} Feedback'])
 
         self.mark_grades(results_data.contest.problems, student_grade_map)
-
         self.write_to_file(writer, student_grade_map)
 
         return file
