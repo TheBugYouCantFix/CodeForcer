@@ -7,6 +7,14 @@ class CfContestType(Enum):
     ICPC = 'ICPC'
 
 
+class CfPhase(Enum):
+    BEFORE = 'BEFORE'
+    CODING = 'CODING'
+    PENDING_SYSTEM_TEST = 'PENDING_SYSTEM_TEST'
+    SYSTEM_TEST = 'SYSTEM_TEST'
+    FINISHED = 'FINISHED'
+
+
 class CfProblemType(Enum):
     PROGRAMMING = 'PROGRAMMING'
     QUESTION = 'QUESTION'

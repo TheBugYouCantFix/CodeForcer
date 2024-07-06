@@ -6,7 +6,7 @@ from typing import Final
 
 from requests import get
 
-from infrastructure.code_forces.enums import CfContestType, CfProblemType, CfParticipantType, CfVerdict, \
+from infrastructure.code_forces.enums import CfContestType, CfPhase, CfProblemType, CfParticipantType, CfVerdict, \
     CfTestset
 from infrastructure.code_forces.models import CfContest, CfProblem, CfRankListRow, CfSubmission, CfParty, CfMember
 
@@ -84,6 +84,7 @@ class CodeForcesRequestsSender(ICodeForcesRequestsSender, IAnonymousCodeForcesRe
 
 def get_contest_from_data(contest_data: dict) -> CfContest:
     contest_data['type'] = CfContestType[contest_data['type']]
+    contest_data['phase'] = CfPhase[contest_data['phase']]
 
     return CfContest(**contest_data)
 
