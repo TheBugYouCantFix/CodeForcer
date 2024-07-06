@@ -39,6 +39,9 @@ const FileInputText = styled.span`
   padding: 0.8rem 1.2rem;
 `;
 const FileInputButton = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 0.8rem 2.6rem;
   color: var(--color-brand-50);
   border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;

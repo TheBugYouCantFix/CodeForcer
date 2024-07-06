@@ -259,7 +259,7 @@ function SumbissionsInfo({ info }) {
           <UndefinedDescription style={{ fontWeight: "400" }}>
             There are no solutions that could be obtained, please{" "}
             <b>wait for the end of the contest</b> or{" "}
-            <Link>download the handles</Link> of the participants
+            <Link to="/handles">download the handles</Link> of the participants
           </UndefinedDescription>
         ) : (
           <Button disabled={isGetting} type="submit">
