@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Heading from "./Heading.jsx";
 import Input from "./Input.jsx";
@@ -8,6 +8,8 @@ import { useForm } from "react-hook-form";
 import Button from "./Button.jsx";
 import SpinnerMini from "./SpinnnerMini.jsx";
 import { useMoveBack } from "../hooks/useMoveBack.js";
+import { handlePostRequest } from "../api/contests.js";
+import { useLocalStorageState } from "../hooks/useLocalStorage.js";
 
 const StyledCover = styled.div`
   position: relative;
@@ -88,15 +90,17 @@ const ItemRow = styled.div`
   align-items: center;
   justify-content: center;
   gap: 2.5rem;
-
-  &:last-child {
-    margin-top: 2rem;
-  }
+  margin-top: 2rem;
 
   span {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 1rem;
+  }
+  span strong {
+    align-self: flex-start;
+    font-size: 2rem;
+    padding-bottom: 0.3rem;
   }
 `;
 
@@ -117,21 +121,61 @@ const Error = styled.span`
   color: var(--color-red-700);
 `;
 
+const UndefinedUsersList = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  row-gap: 0.6rem;
+  column-gap: 1.2rem;
+  margin-top: 2rem;
+
+  & span {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  & span::before {
+    content: "";
+    flex: 0 0 0.3rem;
+    width: 0.3rem;
+    height: 0.3rem;
+    border-radius: 100%;
+    background-color: var(--color-grey-700);
+  }
+`;
+
 function SumbissionsInfo({ info }) {
   const moveBack = useMoveBack();
+  const [contestPoints, setContestPoints] = useLocalStorageState(
+    [],
+    `contest-${info.id}`,
+  );
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm();
+
+  useEffect(() => {
+    const subscription = watch((value) => {
+      setContestPoints(
+        Object.values(value).map((item) => parseFloat(item) || undefined),
+      );
+    });
+    return () => subscription.unsubscribe();
+  }, [setContestPoints, watch]);
+
   const [isGetting, setIsGetting] = useState(false);
 
   const onSubmit = function (data) {
     setIsGetting(true);
 
-    handlePostRequest(data)
-      .then((res) => res.blob())
+    handlePostRequest(info, data)
+      .then((res) => {
+        return res.blob();
+      })
       .then((blob) => {
         var file = window.URL.createObjectURL(blob);
         window.location.assign(file);
@@ -155,7 +199,7 @@ function SumbissionsInfo({ info }) {
       </Description>
       <List onSubmit={handleSubmit(onSubmit)}>
         {info.problems.map((item, index) => (
-          <SubmissionItem key={index} item={item}>
+          <SubmissionItem key={index} item={item} index={index}>
             <>
               <strong>
                 {item.index} (&quot;{item.name}&quot;)
@@ -164,6 +208,7 @@ function SumbissionsInfo({ info }) {
                 placeholder="Maximum points per task"
                 data-index={index}
                 disabled={isGetting}
+                defaultValue={contestPoints[index]}
                 {...register(`${index}`, {
                   required: "This field is required",
                   pattern: {
@@ -178,7 +223,7 @@ function SumbissionsInfo({ info }) {
             </>
           </SubmissionItem>
         ))}
-        <Button disabled={isGetting}>
+        <Button disabled={isGetting} type="submit">
           {isGetting ? <SpinnerMini /> : "Create a rating file"}
         </Button>
       </List>
@@ -191,7 +236,7 @@ function SubmissionItem({ index, item, children }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <Item key={index}>
+    <Item>
       {children}
       <ItemRow>
         <span>
@@ -202,14 +247,26 @@ function SubmissionItem({ index, item, children }) {
         {undefinedUsers.length > 0 ? (
           <span>
             Undefined participants: <strong>{undefinedUsers?.length}</strong>
-            <Button size="small">{!isOpen ? "SHOW" : "HIDE"}</Button>
+            <Button
+              size="small"
+              type="button"
+              onClick={() => setIsOpen((open) => !open)}
+            >
+              {!isOpen ? "SHOW" : "HIDE"}
+            </Button>
           </span>
         ) : (
           <span>All users are defined</span>
         )}
       </ItemRow>
+      {isOpen && (
+        <UndefinedUsersList id={`list-${index}`}>
+          {undefinedUsers.map((user) => (
+            <span key={user?.author?.handle}>{user?.author?.handle}</span>
+          ))}
+        </UndefinedUsersList>
+      )}
     </Item>
   );
 }
-
 export default SumbissionsInfo;
