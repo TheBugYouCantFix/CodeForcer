@@ -49,11 +49,6 @@ async def create_student(student_data: StudentData) -> Student | None:
     return container[StudentsService].create_student(student_data)
 
 
-@app.post("/students/file", status_code=status.HTTP_201_CREATED)
-async def create_students_from_file(file: UploadFile = File(...)) -> list[Student]:
-    return container[StudentsService].create_students_from_file(file)
-
-
 @app.get("/students/{email_or_handle}", status_code=status.HTTP_200_OK)
 async def get_student_by_email_or_handle(email_or_handle: str) -> Student:
     return container[StudentsService].get_student_by_email_or_handle(email_or_handle)
@@ -69,6 +64,11 @@ async def update_or_create_student(email: str, updated_student_data: StudentData
     else:
         response.status_code = status.HTTP_201_CREATED
         return result
+
+
+@app.put("/students/file", status_code=status.HTTP_201_CREATED)
+async def create_students_from_file(file: UploadFile = File(...)) -> list[Student]:
+    return container[StudentsService].create_students_from_file(file)
 
 
 @app.delete("/students/{email}", status_code=status.HTTP_204_NO_CONTENT)
