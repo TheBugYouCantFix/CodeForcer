@@ -34,7 +34,7 @@ class ProblemData:
 class SubmissionData:
     id: int
     author_email: str
-    verdict: str
+    is_successful: bool
     passed_test_count: int
     points: int | None
     programming_language: str
