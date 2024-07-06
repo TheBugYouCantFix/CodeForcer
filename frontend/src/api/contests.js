@@ -1,8 +1,6 @@
-// const uri = process.env.REACT_APP_API_URL;
-
+const uri = import.meta.env.VITE_API_URL;
 export async function getContest(contestID, APIKey, secretKey) {
-  // const url = `https://13bd4039-c465-4f54-b961-30824dc7cc9b.mock.pstmn.io/contests/52`;
-  const url = `http://10.90.137.106:8000/contests/${contestID}?key=${APIKey}&secret=${secretKey}`;
+  const url = `${uri}/contests/${contestID}?key=${APIKey}&secret=${secretKey}`;
 
   const response = await fetch(url);
 
@@ -13,9 +11,8 @@ export async function getContest(contestID, APIKey, secretKey) {
   const data = response.json();
   return data;
 }
-
 export async function handlePostRequest(info, data) {
-  const url = "http://10.90.137.106:8000/moodle_grades";
+  const url = `${uri}/moodle_grades`;
   const body = {
     contest: {
       ...info,
@@ -26,8 +23,7 @@ export async function handlePostRequest(info, data) {
           submissions: item.submissions.map((item) => {
             return {
               ...item,
-              author_email: item?.author?.email || "",
-              points: item?.points || 0,
+              author_email: item.author.email,
             };
           }),
         };
