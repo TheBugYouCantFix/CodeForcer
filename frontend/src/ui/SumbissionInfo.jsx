@@ -10,6 +10,7 @@ import SpinnerMini from "./SpinnnerMini.jsx";
 import { useMoveBack } from "../hooks/useMoveBack.js";
 import { handlePostRequest } from "../api/contests.js";
 import { useLocalStorageState } from "../hooks/useLocalStorage.js";
+import { Link } from "react-router-dom";
 
 const StyledCover = styled.div`
   position: relative;
@@ -144,7 +145,38 @@ const UndefinedUsersList = styled.div`
   }
 `;
 
+const UndefinedDescription = styled.p`
+  padding: 2rem 2.5rem;
+  border: 2px solid var(--color-red-400);
+  border-radius: var(--border-radius-md);
+
+  font-weight: 400;
+  b {
+    font-weight: 500;
+  }
+  a {
+    font-weight: 500;
+    text-decoration: underline;
+  }
+`;
+
 function SumbissionsInfo({ info }) {
+  const definedUsers = {
+    ...info,
+    problems: info.problems.map((item) => {
+      return {
+        ...item,
+        submissions: item.submissions.filter(
+          (item) => item.author.email != null,
+        ),
+      };
+    }),
+  };
+  const unpossibleReqest = definedUsers.problems.every(
+    (item) => item.submissions.length === 0,
+  );
+  console.log(unpossibleReqest);
+
   const moveBack = useMoveBack();
   const [contestPoints, setContestPoints] = useLocalStorageState(
     [],
@@ -172,7 +204,7 @@ function SumbissionsInfo({ info }) {
   const onSubmit = function (data) {
     setIsGetting(true);
 
-    handlePostRequest(info, data)
+    handlePostRequest(definedUsers, data)
       .then((res) => {
         return res.blob();
       })
@@ -223,9 +255,17 @@ function SumbissionsInfo({ info }) {
             </>
           </SubmissionItem>
         ))}
-        <Button disabled={isGetting} type="submit">
-          {isGetting ? <SpinnerMini /> : "Create a rating file"}
-        </Button>
+        {unpossibleReqest ? (
+          <UndefinedDescription style={{ fontWeight: "400" }}>
+            There are no solutions that could be obtained, please{" "}
+            <b>wait for the end of the contest</b> or{" "}
+            <Link>download the handles</Link> of the participants
+          </UndefinedDescription>
+        ) : (
+          <Button disabled={isGetting} type="submit">
+            {isGetting ? <SpinnerMini /> : "Create a rating file"}
+          </Button>
+        )}
       </List>
     </StyledCover>
   );
