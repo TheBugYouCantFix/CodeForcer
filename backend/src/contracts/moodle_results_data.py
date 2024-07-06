@@ -16,9 +16,9 @@ class MoodleResultsData:
 class ContestData:
     id: int
     name: str
-    problems: List[ProblemData]
     start_time: datetime
     duration: timedelta
+    problems: List[ProblemData]
 
 
 @dataclass
