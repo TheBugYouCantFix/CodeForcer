@@ -2,25 +2,24 @@ import Heading from "../ui/Heading.jsx";
 import { TbSettingsFilled } from "react-icons/tb";
 import { Description } from "../ui/Description.jsx";
 import SumbissionsInfo from "../ui/SumbissionInfo.jsx";
-import { useLoaderData, useNavigation } from "react-router-dom";
+import { redirect, useLoaderData } from "react-router-dom";
 import { getContest } from "../api/contests.js";
 
-export async function loader({ request, params }) {
-  try {
-    const contest = await getContest(
-      params.contestId,
-      JSON.parse(localStorage.getItem("api")),
-      JSON.parse(localStorage.getItem("key")),
-    );
-    return { contest };
-  } catch (err) {
-    throw err;
+export async function loader({ params }) {
+  if (!localStorage.getItem("api") || !localStorage.getItem("secret")) {
+    return redirect("/submissions");
   }
+
+  const contest = await getContest(
+    params.contestId,
+    JSON.parse(localStorage.getItem("api")),
+    JSON.parse(localStorage.getItem("secret")),
+  );
+  return { contest };
 }
 
 function Settings() {
   const { contest } = useLoaderData();
-  const navigation = useNavigation();
 
   return (
     <>
