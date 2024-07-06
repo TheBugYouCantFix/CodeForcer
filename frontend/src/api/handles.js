@@ -10,10 +10,10 @@ export async function uploadHandlesFile(file) {
   return response;
 }
 export async function uploadSingleHandle(info) {
-  const url = `${uri}/students`;
+  const url = `${uri}/students/${info.email}`;
 
   const response = await fetch(url, {
-    method: "POST",
+    method: "PUT",
     headers: {
       "Content-Type": "application/json;charset=utf-8",
     },
@@ -21,6 +21,7 @@ export async function uploadSingleHandle(info) {
   });
 
   if (!response.ok) {
+    console.error(response);
     throw new Error("Something went wrong");
   }
 
