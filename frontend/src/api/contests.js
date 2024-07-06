@@ -37,6 +37,8 @@ export async function handlePostRequest(info, data) {
     late_submission_rules: {},
   };
 
+  console.log("Post request body:", body);
+
   const response = await fetch(url, {
     method: "POST",
     headers: {
