@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import Callable
 from pydantic import BaseModel, EmailStr
+from datetime import datetime, timedelta
 
 from domain.enums import Verdict
 from domain.student import Student
@@ -12,6 +13,8 @@ class Contest(BaseModel):
     id: int
     name: str
     problems: list[Problem]
+    start_time: datetime
+    duration: timedelta
 
     def map_handles_to_emails(self, handle_to_email_mapper: Callable[[str], EmailStr | None]) -> None:
         for problem in self.problems:
