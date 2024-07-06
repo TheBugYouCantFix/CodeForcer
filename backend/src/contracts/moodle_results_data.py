@@ -15,7 +15,7 @@ class MoodleResultsData:
 class ContestData:
     id: int
     name: str
-    start_time: datetime
+    start_time_utc: datetime
     duration: timedelta
     problems: list[ProblemData]
 

@@ -11,7 +11,7 @@ from domain.student import Student
 class Contest(BaseModel):
     id: int
     name: str
-    start_time: datetime
+    start_time_utc: datetime
     duration: timedelta
     problems: list[Problem]
 

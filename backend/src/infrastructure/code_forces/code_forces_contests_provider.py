@@ -1,6 +1,7 @@
 from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Callable
+from pytz import timezone
 
 from domain.student import Student
 from domain.contest import Contest, Submission, Problem
@@ -65,7 +66,7 @@ class CodeForcesContestsProvider(IContestsProvider):
         return Contest(
             id=contest_id,
             name=cf_contest.name,
-            start_time=datetime.utcfromtimestamp(cf_contest.startTimeSeconds),
+            start_time_utc=datetime.fromtimestamp(cf_contest.startTimeSeconds, tz=timezone("utc")),
             duration=timedelta(cf_contest.durationSeconds),
             problems=problems
         )
