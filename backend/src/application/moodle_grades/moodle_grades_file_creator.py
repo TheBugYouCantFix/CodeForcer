@@ -2,6 +2,8 @@ import io
 import csv
 from collections import defaultdict
 
+from fastapi import HTTPException
+
 from contracts.moodle_results_data import MoodleResultsData, ProblemData, SubmissionData
 from domain.enums import Verdict
 
@@ -29,6 +31,9 @@ class MoodleGradesFileCreator:
     @staticmethod
     def update_grades(problem: ProblemData, student_grade_map: defaultdict[str, list[float | str]]) -> None:
         for submission in problem.submissions:
+
+            if submission.author_email is None:
+                raise HTTPException(status_code=422, detail="Submission author email cannot be null")
 
             if submission.points and problem.max_points:
                 problem_points = submission.points / problem.max_points * problem.max_grade
