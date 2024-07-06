@@ -26,7 +26,7 @@ const FileInputLabel = styled.label`
   }
 
   ${(props) =>
-    props.edited &&
+    props.edited === "true" &&
     css`
       & span {
         opacity: 1;
@@ -49,15 +49,14 @@ const FileInputButton = styled.span`
   }
 `;
 
-const FileInput = forwardRef(function FileInput(props, ref) {
-  const { text, edited, ...otherProps } = props;
+function FileInput({ edited, text, register, accept }) {
   return (
     <FileInputLabel edited={edited}>
       <FileInputText>{text}</FileInputText>
-      <FileInputElement ref={ref} {...otherProps} />
+      <FileInputElement accept={accept} {...register} />
       <FileInputButton>Browse</FileInputButton>
     </FileInputLabel>
   );
-});
+}
 
 export default FileInput;
