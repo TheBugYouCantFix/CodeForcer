@@ -1,6 +1,5 @@
 import io
 import csv
-from datetime import datetime
 from collections import defaultdict
 
 from contracts.moodle_results_data import MoodleResultsData, ProblemData, SubmissionData
@@ -9,7 +8,6 @@ from domain.enums import Verdict
 
 class MoodleGradesFileCreator:
     def create_file(self, results_data: MoodleResultsData) -> tuple[io.StringIO, str]:
-        filename = f"moodle_grades_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.csv"
         student_grade_map: defaultdict[str, list[float | str]] = defaultdict(lambda: [0, ''])
 
         file = io.StringIO()
@@ -21,7 +19,7 @@ class MoodleGradesFileCreator:
 
         self.write_to_file(writer, student_grade_map)
 
-        return file, filename
+        return file
 
     def mark_grades(self, problems: list[ProblemData], student_grade_map: defaultdict[str, list[float | str]]) -> None:
         for problem in problems:
