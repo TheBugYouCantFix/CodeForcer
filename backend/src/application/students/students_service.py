@@ -50,9 +50,19 @@ class StudentsService:
 
         return response
 
-    def update_student(self, email: str, updated_student_data: StudentData) -> None:
-        student = student_data_to_student(updated_student_data)
-        self.students_repository.update_student(email, student)
+    def update_or_create_student(self, email: str, student_data: StudentData) -> Student | None:
+        if email != student_data.email:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email from URL should match email from reqeust body"
+            )
+
+        if self.students_repository.email_exists(email):
+            student = student_data_to_student(student_data)
+            self.students_repository.update_student(email, student)
+            return None
+
+        return self.create_student(student_data)
 
     def delete_student(self, email: str) -> None:
         self.students_repository.delete_student(email)
