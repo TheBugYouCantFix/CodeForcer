@@ -7,7 +7,7 @@ from domain.enums import Verdict
 
 
 class MoodleGradesFileCreator:
-    def create_file(self, results_data: MoodleResultsData) -> tuple[io.StringIO, str]:
+    def create_file(self, results_data: MoodleResultsData) -> io.StringIO:
         student_grade_map: defaultdict[str, list[float | str]] = defaultdict(lambda: [0, ''])
 
         file = io.StringIO()
@@ -15,7 +15,6 @@ class MoodleGradesFileCreator:
         writer.writerow(['Email', 'Grade', 'Feedback'])
 
         self.mark_grades(results_data.contest.problems, student_grade_map)
-        self.mark_plagiarism(results_data.plagiarizers, student_grade_map)
 
         self.write_to_file(writer, student_grade_map)
 
@@ -42,11 +41,6 @@ class MoodleGradesFileCreator:
             return problem.max_grade
 
         return 0.0
-
-    @staticmethod
-    def mark_plagiarism(plagiarizers: list[str], student_grade_map: defaultdict[str, list[float | str]]) -> None:
-        for email in plagiarizers:
-            student_grade_map[email] = [0, 'Plagiarism detected']
 
     @staticmethod
     def write_to_file(writer: csv.writer, student_grade_map: defaultdict[str, list[float | str]]) -> None:
