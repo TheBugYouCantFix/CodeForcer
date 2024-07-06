@@ -12,9 +12,9 @@ from domain.student import Student
 class Contest(BaseModel):
     id: int
     name: str
-    problems: list[Problem]
     start_time: datetime
     duration: timedelta
+    problems: list[Problem]
 
     def map_handles_to_emails(self, handle_to_email_mapper: Callable[[str], EmailStr | None]) -> None:
         for problem in self.problems:
