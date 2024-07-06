@@ -6,11 +6,13 @@ import FormElement from "../../ui/FormElement.jsx";
 import Button from "../../ui/Button.jsx";
 import { useNavigate, useNavigation } from "react-router-dom";
 import SpinnerMini from "../../ui/SpinnnerMini.jsx";
+import { useEffect } from "react";
 
 function GetContestForm() {
-  const [id, setId] = useLocalStorageState("", "id");
-  const [api, setApi] = useLocalStorageState("", "api");
-  const [secret, setSecret] = useLocalStorageState("", "secret");
+  const [id, setId] = useLocalStorageState(null, "id");
+  const [api, setApi] = useLocalStorageState(null, "api");
+  const [secret, setSecret] = useLocalStorageState(null, "secret");
+
   const navigate = useNavigate();
   const navigation = useNavigation();
 
@@ -18,6 +20,7 @@ function GetContestForm() {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm({
     defaultValues: {
       contestID: id,
@@ -26,19 +29,31 @@ function GetContestForm() {
     },
   });
 
+  useEffect(() => {
+    const subscription = watch((value) => {
+      setId(value.contestID);
+      setApi(value.APIKey);
+      setSecret(value.secretKey);
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, setId, setApi, setSecret]);
+
   const onSubmit = function (data) {
     // Getting values from form
     let { contestID, APIKey, secretKey } = data;
     // Convert URL to id
     if (contestID.startsWith("http")) {
-      contestID = contestID.slice(contestID.lastIndexOf("/") + 1);
+      contestID = contestID.match(/.*contest\/([0-9]*)/)[1];
     }
+
     // Setting values in local storage
     setId(contestID);
     setApi(APIKey);
     setSecret(secretKey);
 
-    navigate(`${contestID}`);
+    if (api && secret) {
+      navigate(`${contestID}`);
+    }
   };
 
   return (
