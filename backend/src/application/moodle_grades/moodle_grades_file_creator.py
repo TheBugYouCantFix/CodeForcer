@@ -12,6 +12,8 @@ class MoodleGradesFileCreator:
 
         file = io.StringIO()
         writer = csv.writer(file)
+
+        writer.writerow([results_data.assignment_name])
         writer.writerow(['Email', 'Grade', 'Feedback'])
 
         self.mark_grades(results_data.contest.problems, student_grade_map)

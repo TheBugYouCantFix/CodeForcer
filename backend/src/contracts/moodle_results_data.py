@@ -7,6 +7,7 @@ from typing import List
 @dataclass
 class MoodleResultsData:
     contest: ContestData
+    assignment_name: str
     legally_excused: List[str]
     late_submission_rules: LateSubmissionRulesData
 
