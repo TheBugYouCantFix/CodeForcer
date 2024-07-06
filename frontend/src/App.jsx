@@ -1,28 +1,57 @@
 import { Toaster } from "react-hot-toast";
 import GlobalStyles from "./styles/GlobalStyles.js";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter,
+  createBrowserRouter,
+  Route,
+  RouterProvider,
+  Routes,
+} from "react-router-dom";
 import AppLayout from "./ui/AppLayout.jsx";
 import Home from "./pages/Home.jsx";
 import Handles from "./pages/Handles.jsx";
 import PageNotFound from "./pages/PageNotFound.jsx";
 import Submissions from "./pages/Submissions.jsx";
 import { DarkModeProvider } from "./context/DarkModeContext.jsx";
+import Settings from "./pages/Setting.jsx";
+import { ErrorBoundary } from "react-error-boundary";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <AppLayout />,
+    errorElement: <PageNotFound />,
+    children: [
+      {
+        errorElement: <ErrorBoundary />,
+        children: [
+          {
+            index: true,
+            element: <Home />,
+          },
+          {
+            path: "handles",
+            element: <Handles />,
+          },
+          {
+            path: "submissions",
+            element: <Submissions />,
+          },
+          {
+            path: "submissions/:contestId",
+            element: <Settings />,
+          },
+        ],
+      },
+    ],
+  },
+]);
 
 function App() {
   return (
     <DarkModeProvider>
       <GlobalStyles />
-      <BrowserRouter>
-        <Routes>
-          <Route element={<AppLayout />}>
-            <Route index element={<Navigate replace to="home" />} />
-            <Route path="home" element={<Home />} />
-            <Route path="handles" element={<Handles />} />
-            <Route path="submissions" element={<Submissions />} />
-            <Route path="*" element={<PageNotFound />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+      <RouterProvider router={router} />
       <Toaster
         position="top-center"
         reverseOrder={true}
