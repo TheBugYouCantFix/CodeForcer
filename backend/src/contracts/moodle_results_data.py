@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import List
+from datetime import datetime, timedelta
 
 
 @dataclass
@@ -16,6 +17,8 @@ class ContestData:
     id: int
     name: str
     problems: List[ProblemData]
+    start_time: datetime
+    duration: timedelta
 
 
 @dataclass
