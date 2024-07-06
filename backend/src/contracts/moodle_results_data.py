@@ -1,14 +1,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List
 from datetime import datetime, timedelta
 
 
 @dataclass
 class MoodleResultsData:
     contest: ContestData
-    legally_excused: List[str]
+    legally_excused: list[str]
     late_submission_rules: LateSubmissionRulesData
 
 
@@ -18,7 +17,7 @@ class ContestData:
     name: str
     start_time: datetime
     duration: timedelta
-    problems: List[ProblemData]
+    problems: list[ProblemData]
 
 
 @dataclass
@@ -27,7 +26,7 @@ class ProblemData:
     index: str
     max_points: int | None
     max_grade: int
-    submissions: List[SubmissionData]
+    submissions: list[SubmissionData]
 
 
 @dataclass
