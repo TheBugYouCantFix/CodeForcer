@@ -22,7 +22,9 @@ origins = [
     "https://mashfeii.ru",
     "http://codeforcer.mashfeii.com",
     "http://localhost:5173",
-    "http://127.0.0.1:5173"
+    "http://127.0.0.1:5173",
+    "http://10.90.137.106:5173",
+    "http://10.90.137.106:80"
 ]
 
 app.add_middleware(
