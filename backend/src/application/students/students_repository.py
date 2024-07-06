@@ -24,3 +24,15 @@ class IStudentsRepository(ABC):
     @abstractmethod
     def delete_student(self, email: EmailStr) -> None:
         pass
+
+    @abstractmethod
+    def email_exists(self, email: EmailStr) -> bool:
+        pass
+
+    @abstractmethod
+    def handle_exists(self, handle: str) -> bool:
+        pass
+
+    @abstractmethod
+    def student_exists(self, student: Student) -> bool:
+        pass
