@@ -83,18 +83,24 @@ class CodeForcesRequestsSender(ICodeForcesRequestsSender, IAnonymousCodeForcesRe
             responseJson = response.json()
 
             if responseJson["status"] is None:
-                raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                                    detail="CodeForces API does not respond")
+                raise HTTPException(
+                    status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                    detail="CodeForces API does not respond"
+                )
 
             if responseJson["status"] == "FAILED":
-                raise HTTPException(status_code=response.status_code,
-                                    detail=f"CodeForces API: {responseJson["comment"]}")
+                raise HTTPException(
+                    status_code=response.status_code,
+                    detail=f"CodeForces API: {responseJson["comment"]}"
+                )
 
             return responseJson["result"]
 
         finally:
-            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                                detail="CodeForces API does not respond")
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="CodeForces API does not respond"
+            )
 
 
 def get_contest_from_data(contest_data: dict) -> CfContest:
