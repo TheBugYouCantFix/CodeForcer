@@ -18,11 +18,12 @@ class StudentsService:
         self.students_repository = students_repository
         self.contests_provider = contests_provider
 
-    def create_student(self, student_data: StudentData) -> Student | None:
+    def create_student(self, student_data: StudentData) -> Student:
         student = student_data_to_student(student_data)
 
         if not self.contests_provider.validate_handle(student.handle):
-            return None
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail='Handle does not belong to CodeForces user')
 
         self.students_repository.add_student(student)
 
