@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from fastapi import FastAPI, UploadFile, File, status, Response
+from fastapi import FastAPI, UploadFile, File, status
 from fastapi.responses import StreamingResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from uvicorn import run
@@ -13,7 +13,6 @@ from contracts.moodle_results_data import MoodleResultsData
 from contracts.student_data import StudentData
 from domain.contest import Contest
 from domain.student import Student
-from container import containerData
 from container import container
 
 app = FastAPI()

@@ -12,4 +12,3 @@ class Student(BaseModel):
             email=self.email.lower() if self.email is not None else None,
             handle=self.handle.lower()
         )
-
