@@ -4,7 +4,8 @@ from hashlib import sha512
 from time import time
 from typing import Final
 
-from requests import get
+from requests import get, Response
+from starlette.exceptions import HTTPException
 
 from infrastructure.code_forces.enums import CfContestType, CfPhase, CfProblemType, CfParticipantType, CfVerdict, \
     CfTestset
@@ -66,20 +67,30 @@ class CodeForcesRequestsSender(ICodeForcesRequestsSender, IAnonymousCodeForcesRe
         hasher.update(f"{rand}/{method_name}?{params_str}#{self.secret}".encode())
         api_sig = str(rand) + hasher.hexdigest()
 
-        resp = get(self.API_URL + method_name, params | {"apiSig": api_sig})
+        response = get(self.API_URL + method_name, params | {"apiSig": api_sig})
 
-        if resp.status_code != 200:
-            return None
-
-        return resp.json()["result"]
+        return self.__process_response(response)
 
     def __send_anonymous_request(self, method_name: str, **params: int | str | bool):
-        resp = get(self.API_URL + method_name, params=params)
+        response = get(self.API_URL + method_name, params=params)
 
-        if resp.status_code != 200:
-            return None
+        return self.__process_response(response)
 
-        return resp.json()["result"]
+    @staticmethod
+    def __process_response(response: Response):
+        try:
+            responseJson = response.json()
+
+            if responseJson["status"] is None:
+                raise HTTPException(status_code=503, detail="CodeForces API does not respond")
+
+            if responseJson["status"] == "FAILED":
+                raise HTTPException(status_code=response.status_code,
+                                    detail=f"CodeForces API: {responseJson["comment"]}")
+
+            return responseJson["result"]
+        finally:
+            raise HTTPException(status_code=503, detail="CodeForces API does not respond")
 
 
 def get_contest_from_data(contest_data: dict) -> CfContest:
