@@ -1,9 +1,9 @@
 from __future__ import annotations
+from datetime import datetime, timedelta
 
 from collections import defaultdict
 from typing import Callable
 from pydantic import BaseModel, EmailStr
-from datetime import datetime, timedelta
 
 from domain.student import Student
 

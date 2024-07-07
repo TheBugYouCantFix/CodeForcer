@@ -11,11 +11,11 @@ from utils.dependencies_container import DependenciesContainer
 container = DependenciesContainer()
 
 container[IContestsProvider] = lambda: CodeForcesContestsProvider(
-    requests_sender_factory=lambda key, secret: CodeForcesRequestsSender(key, secret),
-    anonymous_requests_sender_factory=lambda: CodeForcesRequestsSender()
+    requests_sender_factory=CodeForcesRequestsSender,
+    anonymous_requests_sender_factory=CodeForcesRequestsSender
 )
 container[IStudentsRepository] = lambda: DBStudentsRepository('students.db')
 
 container[StudentsService] = lambda: StudentsService(container[IStudentsRepository], container[IContestsProvider])
 container[ContestsService] = lambda: ContestsService(container[IContestsProvider], container[IStudentsRepository])
-container[MoodleGradesFileCreator] = lambda: MoodleGradesFileCreator()
+container[MoodleGradesFileCreator] = MoodleGradesFileCreator

@@ -1,19 +1,18 @@
+from datetime import datetime
+
 from fastapi import FastAPI, UploadFile, File, status, Response
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from uvicorn import run
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from fastapi.responses import JSONResponse
-
-from datetime import datetime
 
 from application.contests.contests_service import ContestsService
 from application.moodle_grades.moodle_grades_file_creator import MoodleGradesFileCreator
 from application.students.students_service import StudentsService
 from contracts.moodle_results_data import MoodleResultsData
+from contracts.student_data import StudentData
 from domain.contest import Contest
 from domain.student import Student
-from contracts.student_data import StudentData
 from container import container
 
 app = FastAPI()
@@ -41,7 +40,7 @@ app.add_middleware(
 
 
 @app.exception_handler(StarletteHTTPException)
-async def http_exception_handler(request, exc):
+async def http_exception_handler(_, exc):
     return JSONResponse(
         status_code=exc.status_code,
         content={"message": str(exc)},

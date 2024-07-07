@@ -37,7 +37,7 @@ class StudentsService:
 
         if path.exists(file_location):
             remove(file_location)
-            
+
         return filter(
             lambda student: student is not None, [
                 self.update_or_create_student(student_data.email, student_data)
