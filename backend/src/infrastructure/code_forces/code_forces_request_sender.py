@@ -5,6 +5,7 @@ from time import time
 from typing import Final
 
 from requests import get, Response
+from starlette import status
 from starlette.exceptions import HTTPException
 
 from infrastructure.code_forces.enums import CfContestType, CfPhase, CfProblemType, CfParticipantType, CfVerdict, \
@@ -82,7 +83,7 @@ class CodeForcesRequestsSender(ICodeForcesRequestsSender, IAnonymousCodeForcesRe
             responseJson = response.json()
 
             if responseJson["status"] is None:
-                raise HTTPException(status_code=503,
+                raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                                     detail="CodeForces API does not respond")
 
             if responseJson["status"] == "FAILED":
@@ -92,7 +93,7 @@ class CodeForcesRequestsSender(ICodeForcesRequestsSender, IAnonymousCodeForcesRe
             return responseJson["result"]
 
         finally:
-            raise HTTPException(status_code=503,
+            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                                 detail="CodeForces API does not respond")
 
 
