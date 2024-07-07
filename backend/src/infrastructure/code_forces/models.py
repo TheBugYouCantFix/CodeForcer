@@ -83,4 +83,3 @@ class CfParty:
 class CfMember:
     handle: str
     name: str | None = None
-
