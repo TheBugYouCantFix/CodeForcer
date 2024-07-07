@@ -22,8 +22,10 @@ class StudentsService:
         student = student_data_to_student(student_data)
 
         if not self.contests_provider.validate_handle(student.handle):
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail='Handle does not belong to CodeForces user')
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='Handle does not belong to CodeForces user'
+            )
 
         self.students_repository.add_student(student)
 
@@ -53,11 +55,20 @@ class StudentsService:
     def get_student_by_email_or_handle(self, email_or_handle: str) -> Student:
         if validate_email(email_or_handle):
             response = self.students_repository.get_student_by_email(email_or_handle)
+
+            if response is None:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail='Student with given email is not found'
+                )
         else:
             response = self.students_repository.get_student_by_handle(email_or_handle)
 
-        if response is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+            if response is None:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail='Student with handle email is not found'
+                )
 
         return response
 
