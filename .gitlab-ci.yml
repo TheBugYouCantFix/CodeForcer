@@ -1,0 +1,27 @@
+stages:
+  - lint
+  - test
+
+pylint:
+  stage: lint
+  image: python:3.10
+  before_script:
+    - pip install -r backend/src/requirements.txt
+    - pip install pylint
+  script:
+    - pylint backend/src
+  only:
+    - merge_requests
+    - main
+
+pytest:
+  stage: test
+  image: python:3.12
+  before_script:
+    - pip install -r backend/src/requirements.txt
+    - pip install pytest
+  script:
+    - pytest backend/src/tests/domain_test.py
+  only:
+    - merge_requests
+    - main
