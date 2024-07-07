@@ -1,4 +1,3 @@
-from domain.enums import Verdict
 from domain.student import Student
 from domain.contest import Contest, Problem, Submission
 from application.contests.contests_service import temp_most_passed_test_count_selector, temp_latest_submission_selector
@@ -19,7 +18,7 @@ def test_contest_map_handles_to_emails():
     submission1 = Submission(
         id=1,
         author=student1,
-        verdict=Verdict.OK,
+        is_successful=True,
         passed_test_count=10,
         points=100.0,
         programming_language="Python"
@@ -27,7 +26,7 @@ def test_contest_map_handles_to_emails():
     submission2 = Submission(
         id=2,
         author=student2,
-        verdict=Verdict.WRONG_ANSWER,
+        is_successful=False,
         passed_test_count=8,
         points=80.0,
         programming_language="Java"
@@ -35,7 +34,7 @@ def test_contest_map_handles_to_emails():
     submission3 = Submission(
         id=3,
         author=student3,
-        verdict=Verdict.OK,
+        is_successful=True,
         passed_test_count=5,
         points=50.0,
         programming_language="C++"
@@ -47,7 +46,7 @@ def test_contest_map_handles_to_emails():
     contest = Contest(
         id=1,
         name="Contest 1",
-        start_time=datetime.now(),
+        start_time_utc=datetime.now(),
         duration=timedelta(hours=2),
         problems=[problem1, problem2]
     )
@@ -70,7 +69,7 @@ def test_contest_select_single_submission_for_each_participant_most_points():
         Submission(
             id=1,
             author=student1,
-            verdict=Verdict.OK,
+            is_successful=True,
             passed_test_count=10,
             points=100.0,
             programming_language="Python"
@@ -78,7 +77,7 @@ def test_contest_select_single_submission_for_each_participant_most_points():
         Submission(
             id=2,
             author=student1,
-            verdict=Verdict.WRONG_ANSWER,
+            is_successful=False,
             passed_test_count=0,
             points=0.0,
             programming_language="Python"
@@ -86,7 +85,7 @@ def test_contest_select_single_submission_for_each_participant_most_points():
         Submission(
             id=3,
             author=student1,
-            verdict=Verdict.PARTIAL,
+            is_successful=False,
             passed_test_count=5,
             points=50.0,
             programming_language="Python"
@@ -94,7 +93,7 @@ def test_contest_select_single_submission_for_each_participant_most_points():
         Submission(
             id=4,
             author=student2,
-            verdict=Verdict.WRONG_ANSWER,
+            is_successful=False,
             passed_test_count=0,
             points=0.0,
             programming_language="Python"
@@ -102,7 +101,7 @@ def test_contest_select_single_submission_for_each_participant_most_points():
         Submission(
             id=5,
             author=student2,
-            verdict=Verdict.PARTIAL,
+            is_successful=False,
             passed_test_count=7,
             points=70.0,
             programming_language="Python"
@@ -117,7 +116,7 @@ def test_contest_select_single_submission_for_each_participant_most_points():
     contest = Contest(
         id=1,
         name="Contest 1",
-        start_time=datetime.now(),
+        start_time_utc=datetime.now(),
         duration=timedelta(hours=2),
         problems=[problem]
     )
@@ -139,7 +138,7 @@ def test_contest_select_single_submission_for_each_participant_latest_submission
         Submission(
             id=1,
             author=student1,
-            verdict=Verdict.OK,
+            is_successful=True,
             passed_test_count=10,
             points=100.0,
             programming_language="Python"
@@ -147,7 +146,7 @@ def test_contest_select_single_submission_for_each_participant_latest_submission
         Submission(
             id=2,
             author=student1,
-            verdict=Verdict.WRONG_ANSWER,
+            is_successful=False,
             passed_test_count=0,
             points=0.0,
             programming_language="Python"
@@ -155,7 +154,7 @@ def test_contest_select_single_submission_for_each_participant_latest_submission
         Submission(
             id=3,
             author=student1,
-            verdict=Verdict.PARTIAL,
+            is_successful=False,
             passed_test_count=5,
             points=50.0,
             programming_language="Python"
@@ -163,7 +162,7 @@ def test_contest_select_single_submission_for_each_participant_latest_submission
         Submission(
             id=4,
             author=student2,
-            verdict=Verdict.WRONG_ANSWER,
+            is_successful=False,
             passed_test_count=0,
             points=0.0,
             programming_language="Python"
@@ -171,7 +170,7 @@ def test_contest_select_single_submission_for_each_participant_latest_submission
         Submission(
             id=5,
             author=student2,
-            verdict=Verdict.PARTIAL,
+            is_successful=False,
             passed_test_count=7,
             points=70.0,
             programming_language="Python"
@@ -186,7 +185,7 @@ def test_contest_select_single_submission_for_each_participant_latest_submission
     contest = Contest(
         id=1,
         name="Contest 1",
-        start_time=datetime.now(),
+        start_time_utc=datetime.now(),
         duration=timedelta(hours=2),
         problems=[problem]
     )
