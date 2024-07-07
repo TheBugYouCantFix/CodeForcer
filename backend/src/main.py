@@ -66,9 +66,9 @@ async def update_or_create_student(email: str, updated_student_data: StudentData
     if result is None:
         response.status_code = status.HTTP_204_NO_CONTENT
         return None
-    else:
-        response.status_code = status.HTTP_201_CREATED
-        return result
+
+    response.status_code = status.HTTP_201_CREATED
+    return result
 
 
 @app.put("/students/file", status_code=status.HTTP_201_CREATED)
