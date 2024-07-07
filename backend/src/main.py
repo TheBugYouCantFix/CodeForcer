@@ -49,6 +49,11 @@ async def create_student(student_data: StudentData) -> Student | None:
     return container[StudentsService].create_student(student_data)
 
 
+@app.get("/students", status_code=status.HTTP_200_OK)
+async def get_all_students() -> list[Student]:
+    return container[StudentsService].get_all_students()
+
+
 @app.get("/students/{email_or_handle}", status_code=status.HTTP_200_OK)
 async def get_student_by_email_or_handle(email_or_handle: str) -> Student:
     return container[StudentsService].get_student_by_email_or_handle(email_or_handle)
