@@ -12,9 +12,6 @@ pylint:
     - pip install pylint
   script:
      - pylint backend/src --disable=C0114,C0116,R0903,C0115,C0103 --max-line-length=120
-  only:
-    - merge_requests
-    - main
 
 pytest:
   stage: test
@@ -26,6 +23,3 @@ pytest:
     - pip install pytest
   script:
     - pytest backend/src/tests/
-  only:
-    - merge_requests
-    - main
