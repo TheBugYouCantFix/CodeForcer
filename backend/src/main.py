@@ -19,12 +19,16 @@ from container import container
 app = FastAPI()
 
 origins = [
+    "https://code-forcer.netlify.app",
+    "http://code-forcer.netlify.app",
+    "http://mashfeii.ru",
     "https://mashfeii.ru",
-    "http://codeforcer.mashfeii.com",
+    "http://codeforcer.mashfeii.ru"
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://10.90.137.106:5173",
-    "http://10.90.137.106:80"
+    "http://10.90.137.106:80",
+    "http://localhost:80",
 ]
 
 app.add_middleware(
