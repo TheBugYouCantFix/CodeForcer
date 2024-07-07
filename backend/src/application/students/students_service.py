@@ -67,7 +67,7 @@ class StudentsService:
             if response is None:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
-                    detail='Student with handle email is not found'
+                    detail='Student with given handle is not found'
                 )
 
         return response
@@ -81,6 +81,13 @@ class StudentsService:
 
         if self.students_repository.email_exists(email):
             student = student_data_to_student(student_data)
+
+            if not self.contests_provider.validate_handle(student.handle):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail='Handle does not belong to CodeForces user'
+                )
+
             self.students_repository.update_student(email, student)
             return None
 
