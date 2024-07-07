@@ -1,6 +1,8 @@
 from validate_email import validate_email
 from fastapi import HTTPException, status, UploadFile
 
+from os import path, remove
+
 from application.students.students_data_parsing import parse_students_data
 from domain.student import Student
 from application.students.students_repository import IStudentsRepository
@@ -33,6 +35,9 @@ class StudentsService:
 
         students_data = parse_students_data(file_location)
 
+        if path.exists(file_location):
+            remove(file_location)
+            
         return filter(
             lambda student: student is not None, [
                 self.update_or_create_student(student_data.email, student_data)
