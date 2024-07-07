@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from unittest import mock
 
 
-def test_map_handles_to_emails():
+def test_contest_map_handles_to_emails():
     # Arrange
     handle_to_email_mapper = mock.Mock()
     handle_to_email_mapper.side_effect = lambda handle: f"{handle}@example.com"
@@ -61,7 +61,7 @@ def test_map_handles_to_emails():
     assert student3.email == "student3@example.com"
 
 
-def test_select_single_submission_for_each_participant_most_points():
+def test_contest_select_single_submission_for_each_participant_most_points():
     # Arrange
     student1 = Student(handle="student1", email="example1@email.com")
     student2 = Student(handle="student2", email="example2@email.com")
@@ -130,7 +130,7 @@ def test_select_single_submission_for_each_participant_most_points():
     assert problem.submissions[1] == submissions[4]
 
 
-def test_select_single_submission_for_each_participant_latest_submission():
+def test_contest_select_single_submission_for_each_participant_latest_submission():
     # Arrange
     student1 = Student(handle="student1", email="example1@email.com")
     student2 = Student(handle="student2", email="example2@email.com")
