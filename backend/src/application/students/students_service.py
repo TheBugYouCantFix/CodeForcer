@@ -26,18 +26,21 @@ class StudentsService:
 
         return student
 
-    def create_students_from_file(self, file: UploadFile) -> list[Student]:
+    def update_or_create_students_from_file(self, file: UploadFile) -> list[Student]:
         file_location = f"temp_{file.filename}"
         with open(file_location, "wb+") as file_object:
             file_object.write(file.file.read())
 
         students_data = parse_students_data(file_location)
 
-        return [
-            self.create_student(student_data)
-            for student_data
-            in students_data
-        ]
+        return filter(
+            lambda student: student is not None, [
+                self.update_or_create_student(student_data.email, student_data)
+                for student_data
+                in students_data
+            ]
+        )
+
     def get_all_students(self) -> list[Student]:
         return self.students_repository.get_all_students()
 

@@ -72,8 +72,8 @@ async def update_or_create_student(email: str, updated_student_data: StudentData
 
 
 @app.put("/students/file", status_code=status.HTTP_201_CREATED)
-async def create_students_from_file(file: UploadFile = File(...)) -> list[Student]:
-    return container[StudentsService].create_students_from_file(file)
+async def update_or_create_students_from_file(file: UploadFile = File(...)) -> list[Student]:
+    return container[StudentsService].update_or_create_students_from_file(file)
 
 
 @app.delete("/students/{email}", status_code=status.HTTP_204_NO_CONTENT)
