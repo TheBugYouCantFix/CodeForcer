@@ -4,7 +4,7 @@ stages:
 
 pylint:
   stage: lint
-  image: python:3.10
+  image: python:3.12
   before_script:
     - pip install -r backend/src/requirements.txt
     - pip install pylint
