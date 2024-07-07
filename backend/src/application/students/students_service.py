@@ -79,19 +79,18 @@ class StudentsService:
                 detail="Email from URL should match email from reqeust body"
             )
 
-        if self.students_repository.email_exists(email):
-            student = student_data_to_student(student_data)
+        if not self.students_repository.email_exists(email):
+            return self.create_student(student_data)
 
-            if not self.contests_provider.validate_handle(student.handle):
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail='Handle does not belong to CodeForces user'
-                )
+        student = student_data_to_student(student_data)
 
-            self.students_repository.update_student(email, student)
-            return None
+        if not self.contests_provider.validate_handle(student.handle):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='Handle does not belong to CodeForces user'
+            )
 
-        return self.create_student(student_data)
+        self.students_repository.update_student(email, student)
 
     def delete_student(self, email: str) -> None:
         self.students_repository.delete_student(email)
