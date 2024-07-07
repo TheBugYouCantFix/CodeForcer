@@ -38,6 +38,8 @@ class StudentsService:
             for student_data
             in students_data
         ]
+    def get_all_students(self) -> list[Student]:
+        return self.students_repository.get_all_students()
 
     def get_student_by_email_or_handle(self, email_or_handle: str) -> Student:
         if validate_email(email_or_handle):
