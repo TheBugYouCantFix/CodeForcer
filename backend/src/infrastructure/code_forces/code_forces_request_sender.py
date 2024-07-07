@@ -4,7 +4,7 @@ from hashlib import sha512
 from time import time
 from typing import Final
 
-from requests import get, Response
+from requests import get, Response, JSONDecodeError
 from starlette import status
 from starlette.exceptions import HTTPException
 
@@ -40,7 +40,7 @@ class CodeForcesRequestsSender(ICodeForcesRequestsSender, IAnonymousCodeForcesRe
         self.secret = secret
 
     def contest_standings(self, contest_id: int) -> tuple[CfContest, list[CfProblem], list[CfRankListRow]]:
-        response = self.__send_request(method_name="contest.standings", contestId=contest_id, asManager=True)
+        response = self._send_request(method_name="contest.standings", contestId=contest_id, asManager=True)
 
         contest = get_contest_from_data(response['contest'])
         problems = [get_problems_from_data(problem_data) for problem_data in response['problems']]
@@ -49,14 +49,14 @@ class CodeForcesRequestsSender(ICodeForcesRequestsSender, IAnonymousCodeForcesRe
         return contest, problems, rows
 
     def contest_status(self, contest_id: int) -> list[CfSubmission]:
-        response = self.__send_request(method_name="contest.status", contestId=contest_id, asManager=True)
+        response = self._send_request(method_name="contest.status", contestId=contest_id, asManager=True)
 
         return [get_submission_from_data(submission_data) for submission_data in response]
 
     def validate_handle(self, handle: str):
-        return self.__send_anonymous_request(method_name="user.info", handles=handle, checkHistoricHandles=False)
+        return self._send_anonymous_request(method_name="user.info", handles=handle, checkHistoricHandles=False)
 
-    def __send_request(self, method_name: str, **params: int | str | bool):
+    def _send_request(self, method_name: str, **params: int | str | bool):
         rand = randint(100_000, 999_999)
         hasher = sha512()
 
@@ -70,37 +70,36 @@ class CodeForcesRequestsSender(ICodeForcesRequestsSender, IAnonymousCodeForcesRe
 
         response = get(self.API_URL + method_name, params | {"apiSig": api_sig})
 
-        return self.__process_response(response)
+        return self._process_response(response)
 
-    def __send_anonymous_request(self, method_name: str, **params: int | str | bool):
+    def _send_anonymous_request(self, method_name: str, **params: int | str | bool):
         response = get(self.API_URL + method_name, params=params)
 
-        return self.__process_response(response)
+        return self._process_response(response)
 
     @staticmethod
-    def __process_response(response: Response):
+    def _process_response(response: Response):
         try:
             responseJson = response.json()
-
-            if responseJson["status"] is None:
-                raise HTTPException(
-                    status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                    detail="CodeForces API does not respond"
-                )
-
-            if responseJson["status"] == "FAILED":
-                raise HTTPException(
-                    status_code=response.status_code,
-                    detail=f"CodeForces API: {responseJson["comment"]}"
-                )
-
-            return responseJson["result"]
-
-        finally:
+        except JSONDecodeError:
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail="CodeForces API does not respond"
             )
+
+        if responseJson["status"] is None:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="CodeForces API does not respond"
+            )
+
+        if responseJson["status"] == "FAILED":
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=f"CodeForces API: {responseJson["comment"]}"
+            )
+
+        return responseJson["result"]
 
 
 def get_contest_from_data(contest_data: dict) -> CfContest:
