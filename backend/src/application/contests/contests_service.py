@@ -31,3 +31,6 @@ class ContestsService:
 
 def temp_most_passed_test_count_selector(submissions: list[Submission]) -> Submission:
     return max(submissions, key=lambda s: s.passed_test_count)
+
+def temp_latest_submission_selector(submissions: list[Submission]) -> Submission:
+    return submissions[-1]
