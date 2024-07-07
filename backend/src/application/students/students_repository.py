@@ -14,6 +14,10 @@ class IStudentsRepository(ABC):
         pass
 
     @abstractmethod
+    def get_all_students(self) -> list[Student]:
+        pass
+
+    @abstractmethod
     def get_student_by_handle(self, handle: str) -> Student:
         pass
 
