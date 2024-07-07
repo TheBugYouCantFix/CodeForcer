@@ -37,7 +37,7 @@ app.add_middleware(
 
 
 @app.exception_handler(StarletteHTTPException)
-async def http_exception_handler(request, exc):
+async def http_exception_handler(_, exc):
     return JSONResponse(
         status_code=exc.status_code,
         content={"message": str(exc)},
