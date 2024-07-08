@@ -39,4 +39,4 @@ class SubmissionData(BaseModel):
 
 class LateSubmissionPolicyData(BaseModel):
     penalty: float
-    time_expired: int
+    extra_time: int
