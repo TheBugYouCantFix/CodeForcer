@@ -18,7 +18,9 @@ Our project is the most pizdatiy
 
 #### 1. Clone this repository
 
-```git clone https://gitlab.pg.innopolis.university/code-forcer-ise-5/code_forcer.git```
+```
+git clone https://gitlab.pg.innopolis.university/code-forcer-ise-5/code_forcer.git
+```
 
 #### 2. Install the requirements
 ```
@@ -28,10 +30,14 @@ pip install ./backend/requirements.txt
 #### 2. Run the backend API
 
 Windows
-```python ./backend/main.py```
+```
+python ./backend/main.py
+```
 
-####
-GNU/Linux ```python3 ./backend/main.py```
+GNU/Linux 
+```
+python3 ./backend/main.py
+```
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
