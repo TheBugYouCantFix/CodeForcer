@@ -12,6 +12,9 @@ pylint:
     - pip install pylint
   script:
      - pylint backend/src --disable=C0114,C0116,R0903,C0115,C0103 --max-line-length=120
+  except:
+    changes:
+      - README.md
 
 pytest:
   stage: test
@@ -23,8 +26,6 @@ pytest:
     - pip install pytest
   script:
     - pytest backend/src/tests/
-
-# Exclude changes to README.md from triggering the pipeline
-# The pipeline will not run if only changes to README.md are made
-except:
-  - /^README\.md$/
+  except:
+    changes:
+      - README.md
