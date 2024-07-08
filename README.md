@@ -39,6 +39,20 @@
         </li>
       </ul>
     </li>
+    <li>
+      <a href="#features">Features</a>
+      <ul>
+        <li>
+          <a href="#backend">Backend</a>
+        </li>
+        <li>
+          <a href="#frontend">Frontend</a>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <a href="#troubleshooting">Troubleshooting</a>
+    </li>
   </ol>
 </details>
 
