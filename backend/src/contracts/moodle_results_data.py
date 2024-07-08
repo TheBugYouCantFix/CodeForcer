@@ -37,4 +37,5 @@ class SubmissionData(BaseModel):
 
 
 class LateSubmissionRulesData(BaseModel):
-    pass
+    penalty: float
+    time_after_deadline: int
