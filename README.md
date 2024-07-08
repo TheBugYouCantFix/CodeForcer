@@ -11,6 +11,37 @@
   </p>
 </div>
 
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li>
+          <a href="#built-with">Built With</a>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li>
+          <a href="#installation">Installation</a>
+          <ul>
+            <li>
+              <a href="#run-the-backend-api">Run the backend API</a>
+            </li>
+            <li>
+              <a href="#run-the-web-frontend">Run the web frontent</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ol>
+</details>
+
 ## About The Project
 ![Homescreen](https://i.ibb.co/VvYZ2Mq/2024-07-08-162946.png)
 Our project is the most pizdatiy
@@ -23,22 +54,22 @@ Our project is the most pizdatiy
 
 
 ## Features
-## Getting started
+## Getting Started
 
 ### Installation
 
-#### 1. Clone this repository
+#### Clone this repository
 
 ```
 git clone https://gitlab.pg.innopolis.university/code-forcer-ise-5/code_forcer.git
 ```
 
-#### 2. Install the requirements
+#### Install the requirements
 ```
 pip install ./backend/requirements.txt
 ```
 
-#### 2. Run the backend API
+### Run the backend API
 
 Windows
 ```
@@ -49,6 +80,8 @@ GNU/Linux
 ```
 python3 ./backend/main.py
 ```
+
+### Run the web frontend
 
 ## Troubleshooting
 
