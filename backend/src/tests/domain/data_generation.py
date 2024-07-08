@@ -1,4 +1,5 @@
 from datetime import timedelta
+from random import choice
 
 from faker import Faker
 from faker.providers import BaseProvider
@@ -12,13 +13,21 @@ fake = Faker()
 class ContestProvider(BaseProvider):
     @staticmethod
     def contest() -> Contest:
-        return Contest(
+        result = Contest(
             id=fake.unique.random_int(min=1, max=1000000),
             name=fake.name(),
             start_time_utc=fake.date_time(),
             duration=timedelta(hours=fake.random_int(min=1, max=10)),
             problems=[fake.problem() for _ in range(fake.random_int(min=1, max=5))],
         )
+
+        students_list = [fake.student() for _ in range(fake.random_int(min=1, max=10))]
+
+        for problem in result.problems:
+            for submission in problem.submissions:
+                submission.author = choice(students_list)
+
+        return result
 
 
 class ProblemProvider(BaseProvider):
