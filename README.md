@@ -6,9 +6,9 @@ Effective and simple tool for uploading grades from Codeforces contests to Moodl
 Our project is the most pizdatiy
 
 ### Stack
-Frontend: [![React][React.js]][React-url]
-Backend: [![FastAPI][Fastapi]][Fastapi-url]
-Containerization: [![Docker][docker]][docker-url]
+- Frontend: [![React][React.js]][React-url]
+- Backend: [![FastAPI][Fastapi]][Fastapi-url]
+- Containerization: [![Docker][docker]][docker-url]
 
 
 ## Features
@@ -31,7 +31,7 @@ Windows
 ```python ./backend/main.py```
 
 ####
-```python3 
+GNU/Linux ```python3 ./backend/main.py```
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
