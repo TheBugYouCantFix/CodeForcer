@@ -1,10 +1,13 @@
 import io
 import csv
 from collections import defaultdict
+from datetime import datetime, timedelta
+from pytz import timezone
 
 from fastapi import HTTPException
 
-from contracts.moodle_results_data import MoodleResultsData, ProblemData, SubmissionData
+from contracts.moodle_results_data import (MoodleResultsData, ProblemData, SubmissionData,
+                                           LateSubmissionPolicyData, ContestData)
 
 
 class MoodleGradesFileCreator:
@@ -38,11 +41,40 @@ class MoodleGradesFileCreator:
             else:
                 problem_points = MoodleGradesFileCreator.get_grade_by_verdict(submission, problem)
 
+            problem_points = MoodleGradesFileCreator.apply_late_submission_policy(
+                problem.late_submission_policy,
+                problem.contest,
+                submission,
+                problem_points
+            )
+
             student_grade_map[submission.author_email][0] += problem_points
 
     @staticmethod
     def get_grade_by_verdict(submission: SubmissionData, problem: ProblemData) -> float:
         return problem.max_grade if submission.is_successful else 0
+
+    @staticmethod
+    def apply_late_submission_policy(
+            late_submission_policy: LateSubmissionPolicyData,
+            contest: ContestData,
+            submission: SubmissionData,
+            points: float
+    ) -> float:
+
+        extra_time = timedelta(seconds=late_submission_policy.extra_time)
+        deadline_time = contest.start_time_utc + contest.duration
+        deadline_time_extended = deadline_time + extra_time
+        submission_time = submission.submission_time_utc
+
+        if submission_time > deadline_time_extended:
+            return 0.0
+
+        if submission_time > deadline_time:
+            points_deduced = points * late_submission_policy.penalty
+            return points - points_deduced
+
+        return points
 
     @staticmethod
     def write_to_file(writer: csv.writer, student_grade_map: defaultdict[str, list[float | str]]) -> None:
