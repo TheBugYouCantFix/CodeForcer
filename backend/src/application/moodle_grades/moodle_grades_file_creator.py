@@ -1,8 +1,7 @@
 import io
 import csv
 from collections import defaultdict
-from datetime import datetime, timedelta
-from pytz import timezone
+from datetime import timedelta
 
 from fastapi import HTTPException
 
@@ -11,6 +10,7 @@ from contracts.moodle_results_data import (MoodleResultsData, ProblemData, Submi
 
 
 class MoodleGradesFileCreator:
+
     def create_file(self, results_data: MoodleResultsData) -> io.StringIO:
         student_grade_map: defaultdict[str, list[float | str]] = defaultdict(lambda: [0, ''])
 
@@ -20,17 +20,26 @@ class MoodleGradesFileCreator:
         contest_name = results_data.contest.name
         writer.writerow(['Email', f'{contest_name} Grade', f'{contest_name} Feedback'])
 
-        self.mark_grades(results_data.contest.problems, student_grade_map)
+        self.mark_grades(results_data.contest.problems, student_grade_map, results_data)
         self.write_to_file(writer, student_grade_map)
 
         return file
 
-    def mark_grades(self, problems: list[ProblemData], student_grade_map: defaultdict[str, list[float | str]]) -> None:
+    def mark_grades(
+            self,
+            problems: list[ProblemData],
+            student_grade_map: defaultdict[str, list[float | str]],
+            results_data: MoodleResultsData
+    ) -> None:
         for problem in problems:
-            self.update_grades(problem, student_grade_map)
+            self.update_grades(problem, student_grade_map, results_data)
 
     @staticmethod
-    def update_grades(problem: ProblemData, student_grade_map: defaultdict[str, list[float | str]]) -> None:
+    def update_grades(
+            problem: ProblemData,
+            student_grade_map: defaultdict[str, list[float | str]],
+            results_data: MoodleResultsData
+    ) -> None:
         for submission in problem.submissions:
 
             if submission.author_email is None:
@@ -42,8 +51,8 @@ class MoodleGradesFileCreator:
                 problem_points = MoodleGradesFileCreator.get_grade_by_verdict(submission, problem)
 
             problem_points = MoodleGradesFileCreator.apply_late_submission_policy(
-                problem.late_submission_policy,
-                problem.contest,
+                results_data.late_submission_policy,
+                results_data.contest,
                 submission,
                 problem_points
             )
