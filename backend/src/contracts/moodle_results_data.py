@@ -34,8 +34,9 @@ class SubmissionData(BaseModel):
     passed_test_count: int
     points: int | None
     programming_language: str
+    submission_time_utc: datetime
 
 
 class LateSubmissionRulesData(BaseModel):
     penalty: float
-    time_after_deadline: int
+    time_expired: int
