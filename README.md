@@ -54,6 +54,19 @@ Our project is the most pizdatiy
 
 
 ## Features
+### Backend 
+- Adding students' handles
+- Downloading CodeForces submissions
+- Editing students' handles
+- Creating .csv file with results of the CodeForces contest that can be uploaded to Moodle
+- Centralized students' handles
+- Application of late submissions policy
+
+### Frontend 
+- Dark&Light theme
+- Smooth animations
+- Sleek and intuitive design
+
 ## Getting Started
 
 ### Installation
