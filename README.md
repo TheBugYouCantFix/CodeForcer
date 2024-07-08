@@ -1,11 +1,21 @@
-# CodeForcer
-Effective and simple tool for uploading grades from Codeforces contests to Moodle
+<br />
+<div align="center">
+  <a href="https://gitlab.pg.innopolis.university/code-forcer-ise-5">
+    <img src="assets/logo.svg" alt="Logo" width="80" height="80">
+  </a>
+
+<h3 align="center">CodeForces</h3>
+
+  <p align="center">
+    Effective and simple tool for uploading grades from CodeForces contests to Moodle
+  </p>
+</div>
 
 ## About The Project
 ![Homescreen](https://i.ibb.co/VvYZ2Mq/2024-07-08-162946.png)
 Our project is the most pizdatiy
 
-### Stack
+### Built With
 - Frontend: [![React][React.js]][React-url]
 - Backend: [![FastAPI][Fastapi]][Fastapi-url]
 - Containerization: [![Docker][docker]][docker-url]
