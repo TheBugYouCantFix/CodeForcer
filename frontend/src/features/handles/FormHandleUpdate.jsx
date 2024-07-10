@@ -18,7 +18,7 @@ export default function FormHandleUpdate() {
   } = useForm();
 
   const [isGetting, setIsGetting] = useState(false);
-  const onSubmit = function(data) {
+  const onSubmit = function (data) {
     setIsGetting(true);
     data.handle = data.handle.trim();
     data.email = data.email.trim();
@@ -40,18 +40,25 @@ export default function FormHandleUpdate() {
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
       <Heading as="h2">Update single handle</Heading>
+      <FormElement
+        label="Student's email"
+        error={errors?.email?.message}
+        text={"@innopolis.university"}
+      >
+        <Input
+          disabled={isGetting}
+          placeholder="s.razmakhov"
+          {...register("email", {
+            required: "This field is required",
+            setValueAs: (val) => val + "@innopolis.university",
+          })}
+        />
+      </FormElement>
       <FormElement label="Handle on CodeForces" error={errors?.handle?.message}>
         <Input
           disabled={isGetting}
-          placeholder="pussycat05/mr.propper1945"
+          placeholder="pussycat05"
           {...register("handle", { required: "This field is required" })}
-        />
-      </FormElement>
-      <FormElement label="Student's email" error={errors?.email?.message}>
-        <Input
-          disabled={isGetting}
-          placeholder="d.gevorgyan@innopolis.university/s.razmakhov@innopolis.university"
-          {...register("email", { required: "This field is required" })}
         />
       </FormElement>
       <Button disabled={isGetting} type="submit">

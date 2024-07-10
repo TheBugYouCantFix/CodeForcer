@@ -34,6 +34,18 @@ const StyledLabel = styled.label`
         transform: translate(0, -1.6rem) scale(1.1);
       }
     `}
+
+  ${(props) =>
+    props.text !== undefined &&
+    css`
+      display: grid;
+      column-gap: 1.5rem;
+
+      span:last-child {
+        grid-row: 2;
+        grid-column: span 2;
+      }
+    `}
 `;
 const StyledSpan = styled.span`
   position: absolute;
@@ -58,11 +70,17 @@ const ErrorMessage = styled.span`
   margin-top: 0.6rem;
 `;
 
-function FormElement({ label, children, type = "", error }) {
+const StyledText = styled.div`
+  align-self: center;
+  grid-column: 2;
+`;
+
+function FormElement({ label, children, type = "", error, text }) {
   return (
-    <StyledLabel type={type}>
+    <StyledLabel type={type} text={text}>
       {children}
       <StyledSpan>{label}</StyledSpan>
+      {text && <StyledText>{text}</StyledText>}
       {error && <ErrorMessage>{error}</ErrorMessage>}
     </StyledLabel>
   );
