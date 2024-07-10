@@ -57,7 +57,7 @@
 </details>
 
 ## About The Project
-![Alt Text](https://www.dropbox.com/scl/fi/mr77xm78tazh2ildkovlw/CodeForcer.jpeg?rlkey=phxqgxvivru4k6446dox44bod&st=6ka7j3qx&dl=0)
+![Homepage](https://imgur.com/a/SjTTcB9)
 Our project is the most pizdatiy
 
 ### Built With
