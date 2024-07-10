@@ -51,7 +51,10 @@
       </ul>
     </li>
     <li>
-      <a href="#troubleshooting">Troubleshooting</a>
+      <a href="#roadmap">Roadmap</a>
+    </li>
+    <li>
+      <a href="#license">License</a>
     </li>
   </ol>
 </details>
@@ -60,7 +63,6 @@
 <div align="center">
   <img src="assets/CodeForcer.jpeg" alt="Homepage" width="1024"/>
 </div>
-Our project is the most pizdatiy
 
 ### Built With
 - Frontend: [![React][React.js]][React-url]
