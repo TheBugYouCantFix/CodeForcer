@@ -1,2 +1,2 @@
-#domain_tests init file
-#Should be empty
+# domain_tests init file
+# Should be empty
