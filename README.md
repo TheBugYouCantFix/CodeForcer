@@ -57,7 +57,7 @@
 </details>
 
 ## About The Project
-![Homescreen](https://i.ibb.co/VvYZ2Mq/2024-07-08-162946.png)
+![Homescreen](https://www.dropbox.com/scl/fi/mr77xm78tazh2ildkovlw/CodeForcer.jpeg?rlkey=phxqgxvivru4k6446dox44bod&st=6ka7j3qx&dl=0)
 Our project is the most pizdatiy
 
 ### Built With
