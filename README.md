@@ -57,9 +57,9 @@
 </details>
 
 ## About The Project
-<dev align="center">
+<div align="center">
   <img src="CodeForcer.jpeg" alt="Homepage" width="1024"/>
-</dev>
+</div>
 Our project is the most pizdatiy
 
 ### Built With
