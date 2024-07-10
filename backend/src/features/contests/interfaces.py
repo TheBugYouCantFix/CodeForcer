@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from domain.contest import Contest
+from src.features.contests.models import Contest
 
 
 class IContestsProvider(ABC):

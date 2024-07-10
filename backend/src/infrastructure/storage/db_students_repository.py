@@ -1,9 +1,9 @@
 from fastapi import HTTPException, status
 from pydantic import EmailStr
 
-from domain.student import Student
-from application.students.students_repository import IStudentsRepository
-from infrastructure.storage.db_context import DBContext
+from src.features.students.model import Student
+from src.features.students.interfaces import IStudentsRepository
+from src.infrastructure.storage.db_context import DBContext
 
 
 class DBStudentsRepository(IStudentsRepository):

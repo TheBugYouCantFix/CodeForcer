@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 
 class MoodleResultsData(BaseModel):
@@ -38,6 +38,5 @@ class SubmissionData(BaseModel):
 
 
 class LateSubmissionPolicyData(BaseModel):
-    penalty: float
+    penalty: float = Field(ge=0, le=1)
     extra_time: int
-    # TODO: handle penalty (0.0 < extra_time 1.0)

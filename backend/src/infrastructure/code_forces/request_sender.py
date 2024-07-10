@@ -8,9 +8,10 @@ from requests import get, Response, JSONDecodeError
 from starlette import status
 from starlette.exceptions import HTTPException
 
-from infrastructure.code_forces.enums import CfContestType, CfPhase, CfProblemType, CfParticipantType, CfVerdict, \
-    CfTestset
-from infrastructure.code_forces.models import CfContest, CfProblem, CfRankListRow, CfSubmission, CfParty, CfMember
+from src.infrastructure.code_forces.enums import (CfContestType, CfPhase, CfProblemType,
+                                                  CfParticipantType, CfVerdict, CfTestset)
+from src.infrastructure.code_forces.models import CfContest, CfProblem, CfRankListRow, CfSubmission, CfParty, \
+    CfMember
 
 
 class ICodeForcesRequestsSender(ABC):
