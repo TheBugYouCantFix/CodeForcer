@@ -1,8 +1,8 @@
+from datetime import datetime, timedelta
+
 from domain.student import Student
 from domain.contest import Contest, Problem, Submission
 from application.contests.contests_service import temp_most_passed_test_count_selector, temp_latest_submission_selector
-
-from datetime import datetime, timedelta
 
 from tests.domain_tests.data_generation import fake
 
