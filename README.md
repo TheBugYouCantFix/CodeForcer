@@ -58,7 +58,7 @@
 
 ## About The Project
 <div align="center">
-  <img src="CodeForcer.jpeg" alt="Homepage" width="1024"/>
+  <img src="assets/CodeForcer.jpeg" alt="Homepage" width="1024"/>
 </div>
 Our project is the most pizdatiy
 
@@ -95,24 +95,42 @@ git clone https://gitlab.pg.innopolis.university/code-forcer-ise-5/code_forcer.g
 
 #### Install the requirements
 ```
-pip install ./backend/requirements.txt
+pip install ./backend/src/requirements.txt
 ```
 
 ### Run the backend API
 
 Windows
 ```
-python ./backend/main.py
+python ./backend/src/main.py
 ```
 
 GNU/Linux 
 ```
-python3 ./backend/main.py
+python3 ./backend/src/main.py
 ```
 
 ### Run the web frontend
 
-## Troubleshooting
+You should have Node.js on your machine. To install required version follow this [guide](https://tecadmin.net/install-latest-nodejs-npm-on-linux-mint/).
+After successful installation:
+
+```
+cd frontend
+npm i
+npm run build
+```
+
+
+## Roadmap
+
+See the [roadmap.sh](https://roadmap.sh/r/codeforcer) for a full list of proposed features (and known issues).
+
+
+## License 
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
