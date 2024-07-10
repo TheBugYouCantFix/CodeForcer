@@ -6,12 +6,12 @@ pylint:
   stage: lint
   image: python:3.12
   variables:
-    PYTHONPATH: "${PYTHONPATH}:backend/src" 
+    PYTHONPATH: "${PYTHONPATH}:backend"
   before_script:
-    - pip install -r backend/src/requirements.txt
+    - pip install -r backend/requirements.txt
     - pip install pylint
   script:
-     - pylint backend/src --disable=C0114,C0116,R0903,C0115,C0103 --max-line-length=120
+     - pylint backend --disable=C0114,C0116,R0903,C0115,C0103 --max-line-length=120
   except:
     changes:
       - README.md
@@ -20,12 +20,12 @@ pytest:
   stage: test
   image: python:3.12
   variables:
-     PYTHONPATH: "${PYTHONPATH}:backend/src"
+     PYTHONPATH: "${PYTHONPATH}:backend"
   before_script:
-    - pip install -r backend/src/requirements.txt
+    - pip install -r backend/requirements.txt
     - pip install pytest
   script:
-    - pytest backend/src/tests/
+    - pytest backend/tests/
   except:
     changes:
       - README.md
