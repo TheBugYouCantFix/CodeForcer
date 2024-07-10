@@ -10,13 +10,13 @@ from .interfaces import IStudentsRepository
 
 @router.post("/students", status_code=status.HTTP_201_CREATED)
 async def create_student(student: Student) -> Student | None:
-    return CreateStudentCommand(
+    return CreateStudentCommandHandler(
         container[IStudentsRepository],
         container[IContestsProvider]
     ).handle(student)
 
 
-class CreateStudentCommand:
+class CreateStudentCommandHandler:
     def __init__(self, students_repository: IStudentsRepository, contests_provider: IContestsProvider):
         self.students_repository = students_repository
         self.contests_provider = contests_provider
