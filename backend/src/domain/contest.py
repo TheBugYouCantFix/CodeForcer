@@ -5,7 +5,7 @@ from collections import defaultdict
 from typing import Callable
 from pydantic import BaseModel, EmailStr
 
-from .student import Student
+from src.features.students.model import Student
 
 
 class Contest(BaseModel):

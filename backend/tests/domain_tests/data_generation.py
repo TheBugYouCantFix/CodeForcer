@@ -5,7 +5,7 @@ from faker import Faker
 from faker.providers import BaseProvider
 
 from src.domain.contest import Contest, Problem, Submission
-from src.domain.student import Student
+from src.features.students.model import Student
 
 fake = Faker()
 

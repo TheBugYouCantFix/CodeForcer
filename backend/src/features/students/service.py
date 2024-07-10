@@ -3,9 +3,9 @@ from fastapi import HTTPException, status, UploadFile
 
 from os import path, remove
 
-from src.application.students.students_data_parsing import parse_students_data
-from src.domain.student import Student
-from src.application.students.students_repository import IStudentsRepository
+from src.features.students.data_parsing import parse_students_data
+from src.features.students.model import Student
+from src.features.students.repository import IStudentsRepository
 from src.application.contests.contests_provider import IContestsProvider
 from src.contracts.student_data import StudentData
 

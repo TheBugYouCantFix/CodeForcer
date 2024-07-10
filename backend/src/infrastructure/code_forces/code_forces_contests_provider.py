@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from typing import Callable
 from pytz import timezone
 
-from src.domain.student import Student
+from src.features.students.model import Student
 from src.domain.contest import Contest, Submission, Problem
 from src.application.contests.contests_provider import IContestsProvider
 from src.infrastructure.code_forces.enums import CfVerdict

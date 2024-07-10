@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from src.domain.student import Student
+from src.features.students.model import Student
 from src.domain.contest import Contest, Problem, Submission
 from src.application.contests.contests_service import (temp_most_passed_test_count_selector,
                                                        temp_latest_submission_selector)
