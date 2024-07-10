@@ -4,7 +4,7 @@ from src.features.students.repository import IStudentsRepository
 from src.features.students.service import StudentsService
 from src.features.moodle_grades.file_creator import MoodleGradesFileCreator
 from src.features.contests.code_forces.request_sender import CodeForcesRequestsSender
-from src.infrastructure.storage.db_students_repository import DBStudentsRepository
+from src.features.students.storage.db_repository import DBStudentsRepository
 from src.features.contests.code_forces.contests_provider import CodeForcesContestsProvider
 from src.utils.dependencies_container import DependenciesContainer
 
