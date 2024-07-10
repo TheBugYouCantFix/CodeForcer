@@ -5,7 +5,7 @@ from pytz import timezone
 
 from src.features.students.model import Student
 from src.features.contests.models import Contest, Submission, Problem
-from src.features.contests.provider import IContestsProvider
+from src.features.contests.interfaces import IContestsProvider
 from .enums import CfVerdict
 from .request_sender import (ICodeForcesRequestsSender,
                              IAnonymousCodeForcesRequestsSender)

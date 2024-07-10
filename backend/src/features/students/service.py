@@ -6,7 +6,7 @@ from os import path, remove
 from src.features.students.data_parsing import parse_students_data
 from src.features.students.model import Student
 from src.features.students.repository import IStudentsRepository
-from src.features.contests.provider import IContestsProvider
+from src.features.contests.interfaces import IContestsProvider
 
 
 class StudentsService:

@@ -2,8 +2,8 @@ from datetime import datetime, timedelta
 
 from src.features.students.model import Student
 from src.features.contests.models import Contest, Problem, Submission
-from src.features.contests.service import (temp_most_passed_test_count_selector,
-                                           temp_latest_submission_selector)
+from src.features.contests.get_contest import (most_passed_test_count_selector,
+                                               latest_submission_selector)
 
 from tests.domain_tests.data_generation import fake
 
@@ -82,7 +82,7 @@ def test_contest_select_single_submission_for_each_participant_most_points():
         ),
     ]
 
-    selector = temp_most_passed_test_count_selector
+    selector = most_passed_test_count_selector
 
     problem = Problem(index="A", name="Problem A", max_points=100.0, submissions=submissions)
 
@@ -155,7 +155,7 @@ def test_contest_select_single_submission_for_each_participant_latest_submission
         ),
     ]
 
-    selector = temp_latest_submission_selector
+    selector = latest_submission_selector
 
     problem = Problem(index="A", name="Problem A", max_points=100.0, submissions=submissions)
 
