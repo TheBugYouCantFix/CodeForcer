@@ -2,7 +2,7 @@ services:
   back:
     container_name: back
     build:
-      context: ./backend/src/
+      context: ./backend/
       dockerfile: ./Dockerfile
     restart: always
     ports:
