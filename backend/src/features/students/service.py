@@ -3,9 +3,11 @@ from fastapi import HTTPException, status, UploadFile
 
 from os import path, remove
 
+from src.container import container
+from src.features.students.create_student import CreateStudentCommand
 from src.features.students.data_parsing import parse_students_data
 from src.features.students.model import Student
-from src.features.students.repository import IStudentsRepository
+from src.features.students.interfaces import IStudentsRepository
 from src.features.contests.interfaces import IContestsProvider
 
 
@@ -16,17 +18,6 @@ class StudentsService:
     def __init__(self, students_repository: IStudentsRepository, contests_provider: IContestsProvider):
         self.students_repository = students_repository
         self.contests_provider = contests_provider
-
-    def create_student(self, student: Student) -> Student:
-        if not self.contests_provider.validate_handle(student.handle):
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail='Handle does not belong to CodeForces user'
-            )
-
-        self.students_repository.add_student(student)
-
-        return student
 
     def update_or_create_students_from_file(self, file: UploadFile) -> list[Student]:
         file_location = f"temp_{file.filename}"
@@ -77,7 +68,10 @@ class StudentsService:
             )
 
         if not self.students_repository.email_exists(email):
-            return self.create_student(student)
+            return CreateStudentCommand(
+                container[IStudentsRepository],
+                container[IContestsProvider]
+            ).handle(student)
 
         student = student_data_to_student(student)
 

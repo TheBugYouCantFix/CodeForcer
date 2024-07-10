@@ -1,17 +1,11 @@
-from fastapi import APIRouter, UploadFile, File
+from fastapi import UploadFile, File
 from starlette import status
 from starlette.responses import Response
 
 from src.container import container
+from src.features.students import router
 from src.features.students.model import Student
 from src.features.students.service import StudentsService
-
-router = APIRouter()
-
-
-@router.post("/students", status_code=status.HTTP_201_CREATED)
-async def create_student(student: Student) -> Student | None:
-    return container[StudentsService].create_student(student)
 
 
 @router.get("/students", status_code=status.HTTP_200_OK)
