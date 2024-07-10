@@ -57,7 +57,7 @@
 </details>
 
 ## About The Project
-![Homepage](https://imgur.com/a/SjTTcB9)
+![Homepage](CodeForcer.jpeg)
 Our project is the most pizdatiy
 
 ### Built With
