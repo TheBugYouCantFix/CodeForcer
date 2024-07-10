@@ -7,14 +7,14 @@ from uvicorn import run
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from src.features.students.router import router as students_router
-from src.application.contests.contests_service import ContestsService
+from src.features.contests.router import router as contests_router
 from src.application.moodle_grades.moodle_grades_file_creator import MoodleGradesFileCreator
 from src.contracts.moodle_results_data import MoodleResultsData
-from src.domain.contest import Contest
 from src.container import container
 
 app = FastAPI()
 app.include_router(students_router)
+app.include_router(contests_router)
 
 origins = [
     "https://code-forcer.netlify.app",
@@ -44,16 +44,6 @@ async def http_exception_handler(_, exc):
         status_code=exc.status_code,
         content={"message": str(exc)},
     )
-
-
-@app.get("/contests/{contest_id}/results", status_code=status.HTTP_200_OK)
-async def get_results(contest_id: int, key: str, secret: str):
-    return container[ContestsService].get_contest_results(contest_id, key, secret)
-
-
-@app.get("/contests/{contest_id}", status_code=status.HTTP_200_OK)
-async def get_contest(contest_id: int, key: str, secret: str) -> Contest:
-    return container[ContestsService].get_contest(contest_id, key, secret)
 
 
 @app.post("/moodle_grades", status_code=status.HTTP_200_OK)

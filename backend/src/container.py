@@ -1,5 +1,5 @@
-from src.application.contests.contests_provider import IContestsProvider
-from src.application.contests.contests_service import ContestsService
+from src.features.contests.provider import IContestsProvider
+from src.features.contests.service import ContestsService
 from src.features.students.repository import IStudentsRepository
 from src.features.students.service import StudentsService
 from src.application.moodle_grades.moodle_grades_file_creator import MoodleGradesFileCreator
