@@ -6,14 +6,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from uvicorn import run
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from application.contests.contests_service import ContestsService
-from application.moodle_grades.moodle_grades_file_creator import MoodleGradesFileCreator
-from application.students.students_service import StudentsService
-from contracts.moodle_results_data import MoodleResultsData
-from contracts.student_data import StudentData
-from domain.contest import Contest
-from domain.student import Student
-from container import container
+from src.application.contests.contests_service import ContestsService
+from src.application.moodle_grades.moodle_grades_file_creator import MoodleGradesFileCreator
+from src.application.students.students_service import StudentsService
+from src.contracts.moodle_results_data import MoodleResultsData
+from src.contracts.student_data import StudentData
+from src.domain.contest import Contest
+from src.domain.student import Student
+from src.container import container
 
 app = FastAPI()
 

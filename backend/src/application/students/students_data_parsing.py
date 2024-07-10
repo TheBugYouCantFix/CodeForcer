@@ -1,7 +1,7 @@
 import csv
 import os
 
-from contracts.student_data import StudentData
+from src.contracts.student_data import StudentData
 
 
 def parse_students_data(path: str) -> list[StudentData]:

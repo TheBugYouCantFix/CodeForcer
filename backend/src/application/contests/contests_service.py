@@ -1,8 +1,8 @@
 from pydantic import EmailStr
 
-from domain.contest import Contest, Submission
-from application.students.students_repository import IStudentsRepository
-from application.contests.contests_provider import IContestsProvider
+from src.domain.contest import Contest, Submission
+from src.application.students.students_repository import IStudentsRepository
+from src.application.contests.contests_provider import IContestsProvider
 
 
 class ContestsService:

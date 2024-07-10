@@ -4,8 +4,8 @@ from random import choice
 from faker import Faker
 from faker.providers import BaseProvider
 
-from domain.contest import Contest, Problem, Submission
-from domain.student import Student
+from src.domain.contest import Contest, Problem, Submission
+from src.domain.student import Student
 
 fake = Faker()
 

@@ -3,12 +3,12 @@ from datetime import datetime, timedelta
 from typing import Callable
 from pytz import timezone
 
-from domain.student import Student
-from domain.contest import Contest, Submission, Problem
-from application.contests.contests_provider import IContestsProvider
-from infrastructure.code_forces.enums import CfVerdict
-from infrastructure.code_forces.code_forces_request_sender import (ICodeForcesRequestsSender,
-                                                                   IAnonymousCodeForcesRequestsSender)
+from src.domain.student import Student
+from src.domain.contest import Contest, Submission, Problem
+from src.application.contests.contests_provider import IContestsProvider
+from src.infrastructure.code_forces.enums import CfVerdict
+from src.infrastructure.code_forces.code_forces_request_sender import (ICodeForcesRequestsSender,
+                                                                       IAnonymousCodeForcesRequestsSender)
 
 
 class CodeForcesContestsProvider(IContestsProvider):

@@ -5,8 +5,8 @@ from datetime import timedelta
 
 from fastapi import HTTPException
 
-from contracts.moodle_results_data import (MoodleResultsData, ProblemData, SubmissionData,
-                                           LateSubmissionPolicyData, ContestData)
+from src.contracts.moodle_results_data import (MoodleResultsData, ProblemData, SubmissionData,
+                                               LateSubmissionPolicyData, ContestData)
 
 
 class MoodleGradesFileCreator:
