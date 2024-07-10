@@ -5,8 +5,8 @@ from uvicorn import run
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from src.features.students.router import router as students_router
-from src.features.contests.router import router as contests_router
-from src.features.moodle_grades.router import router as moodle_grades_router
+from src.features.contests import router as contests_router
+from src.features.moodle_grades import router as moodle_grades_router
 
 app = FastAPI()
 app.include_router(students_router)
