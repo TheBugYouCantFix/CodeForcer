@@ -7,7 +7,6 @@ from src.features.students.data_parsing import parse_students_data
 from src.features.students.model import Student
 from src.features.students.repository import IStudentsRepository
 from src.application.contests.contests_provider import IContestsProvider
-from src.contracts.student_data import StudentData
 
 
 class StudentsService:
@@ -18,9 +17,7 @@ class StudentsService:
         self.students_repository = students_repository
         self.contests_provider = contests_provider
 
-    def create_student(self, student_data: StudentData) -> Student:
-        student = student_data_to_student(student_data)
-
+    def create_student(self, student: Student) -> Student:
         if not self.contests_provider.validate_handle(student.handle):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -72,17 +69,17 @@ class StudentsService:
 
         return response
 
-    def update_or_create_student(self, email: str, student_data: StudentData) -> Student | None:
-        if email != student_data.email:
+    def update_or_create_student(self, email: str, student: Student) -> Student | None:
+        if email != student.email:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Email from URL should match email from reqeust body"
             )
 
         if not self.students_repository.email_exists(email):
-            return self.create_student(student_data)
+            return self.create_student(student)
 
-        student = student_data_to_student(student_data)
+        student = student_data_to_student(student)
 
         if not self.contests_provider.validate_handle(student.handle):
             raise HTTPException(
@@ -96,8 +93,8 @@ class StudentsService:
         self.students_repository.delete_student(email)
 
 
-def student_data_to_student(student_data: StudentData) -> Student:
-    email = student_data.email
-    handle = student_data.handle
+def student_data_to_student(student: Student) -> Student:
+    email = student.email
+    handle = student.handle
 
     return Student(email=email, handle=handle)

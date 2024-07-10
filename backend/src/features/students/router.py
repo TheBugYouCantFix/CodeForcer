@@ -3,7 +3,6 @@ from starlette import status
 from starlette.responses import Response
 
 from src.container import container
-from src.contracts.student_data import StudentData
 from src.features.students.model import Student
 from src.features.students.service import StudentsService
 
@@ -11,8 +10,8 @@ router = APIRouter()
 
 
 @router.post("/students", status_code=status.HTTP_201_CREATED)
-async def create_student(student_data: StudentData) -> Student | None:
-    return container[StudentsService].create_student(student_data)
+async def create_student(student: Student) -> Student | None:
+    return container[StudentsService].create_student(student)
 
 
 @router.get("/students", status_code=status.HTTP_200_OK)
@@ -26,8 +25,8 @@ async def get_student_by_email_or_handle(email_or_handle: str) -> Student:
 
 
 @router.put("/students/{email}")
-async def update_or_create_student(email: str, updated_student_data: StudentData, response: Response) -> Student | None:
-    result = container[StudentsService].update_or_create_student(email, updated_student_data)
+async def update_or_create_student(email: str, updated_student: Student, response: Response) -> Student | None:
+    result = container[StudentsService].update_or_create_student(email, updated_student)
 
     if result is None:
         response.status_code = status.HTTP_204_NO_CONTENT
