@@ -57,7 +57,7 @@
 </details>
 
 ## About The Project
-![Homepage](CodeForcer.jpeg)
+<img src="CodeForcer.jpeg" alt="Homepage" width="300"/>
 Our project is the most pizdatiy
 
 ### Built With
