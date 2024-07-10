@@ -4,7 +4,7 @@ from random import choice
 from faker import Faker
 from faker.providers import BaseProvider
 
-from src.domain.contest import Contest, Problem, Submission
+from src.features.contests.models import Contest, Problem, Submission
 from src.features.students.model import Student
 
 fake = Faker()

@@ -1,6 +1,6 @@
 from pydantic import EmailStr
 
-from src.domain.contest import Contest, Submission
+from src.features.contests.models import Contest, Submission
 from src.features.students.repository import IStudentsRepository
 from src.features.contests.provider import IContestsProvider
 

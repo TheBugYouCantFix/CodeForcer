@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from src.features.students.model import Student
-from src.domain.contest import Contest, Problem, Submission
+from src.features.contests.models import Contest, Problem, Submission
 from src.features.contests.service import (temp_most_passed_test_count_selector,
                                            temp_latest_submission_selector)
 

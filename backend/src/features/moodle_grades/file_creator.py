@@ -5,7 +5,7 @@ from datetime import timedelta
 
 from fastapi import HTTPException
 
-from src.contracts.moodle_results_data import (MoodleResultsData, ProblemData, SubmissionData,
+from src.features.moodle_grades.models import (MoodleResultsData, ProblemData, SubmissionData,
                                                LateSubmissionPolicyData, ContestData)
 
 

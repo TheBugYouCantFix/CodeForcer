@@ -1,20 +1,17 @@
-from datetime import datetime
-
-from fastapi import FastAPI, status
-from fastapi.responses import StreamingResponse, JSONResponse
+from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from uvicorn import run
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from src.features.students.router import router as students_router
 from src.features.contests.router import router as contests_router
-from src.application.moodle_grades.moodle_grades_file_creator import MoodleGradesFileCreator
-from src.contracts.moodle_results_data import MoodleResultsData
-from src.container import container
+from src.features.moodle_grades.router import router as moodle_grades_router
 
 app = FastAPI()
 app.include_router(students_router)
 app.include_router(contests_router)
+app.include_router(moodle_grades_router)
 
 origins = [
     "https://code-forcer.netlify.app",
@@ -43,24 +40,6 @@ async def http_exception_handler(_, exc):
     return JSONResponse(
         status_code=exc.status_code,
         content={"message": str(exc)},
-    )
-
-
-@app.post("/moodle_grades", status_code=status.HTTP_200_OK)
-async def get_grades(results_data: MoodleResultsData) -> StreamingResponse:
-    filename = f"moodle_grades_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.csv"
-    file = container[MoodleGradesFileCreator].create_file(results_data)
-    content_length = len(file.getvalue())
-    file.seek(0)
-
-    return StreamingResponse(
-        file,
-        headers={
-            'Content-Disposition': f'attachment; filename="{filename}"',
-            'Content-Type': 'text/csv; charset=utf-8',
-            'Content-Length': str(content_length),
-        },
-        media_type='text/csv'
     )
 
 

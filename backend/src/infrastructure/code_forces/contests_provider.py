@@ -4,11 +4,11 @@ from typing import Callable
 from pytz import timezone
 
 from src.features.students.model import Student
-from src.domain.contest import Contest, Submission, Problem
+from src.features.contests.models import Contest, Submission, Problem
 from src.features.contests.provider import IContestsProvider
-from src.infrastructure.code_forces.enums import CfVerdict
-from src.infrastructure.code_forces.code_forces_request_sender import (ICodeForcesRequestsSender,
-                                                                       IAnonymousCodeForcesRequestsSender)
+from .enums import CfVerdict
+from .request_sender import (ICodeForcesRequestsSender,
+                             IAnonymousCodeForcesRequestsSender)
 
 
 class CodeForcesContestsProvider(IContestsProvider):

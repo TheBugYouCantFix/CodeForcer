@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from starlette import status
 
 from src.container import container
-from src.domain.contest import Contest
+from src.features.contests.models import Contest
 from src.features.contests.service import ContestsService
 
 router = APIRouter()
