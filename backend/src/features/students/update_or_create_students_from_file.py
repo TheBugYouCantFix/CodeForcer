@@ -1,14 +1,15 @@
 from csv import DictReader
 from os import path, remove
 
-from fastapi import status, UploadFile, File, HTTPException
+from fastapi import status, UploadFile, File, HTTPException, APIRouter
 
 from src.container import container
 from src.features.contests.interfaces import IContestsProvider
 from .interfaces import IStudentsRepository
 from .update_or_create_student import UpdateOrCreateStudentCommandHandler
 from .model import Student
-from . import router
+
+router = APIRouter()
 
 
 @router.put("/students/file", status_code=status.HTTP_201_CREATED)

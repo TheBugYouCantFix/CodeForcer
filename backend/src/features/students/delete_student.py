@@ -1,8 +1,9 @@
-from fastapi import status
+from fastapi import status, APIRouter
 
 from src.container import container
 from .interfaces import IStudentsRepository
-from . import router
+
+router = APIRouter()
 
 
 @router.delete("/students/{email}", status_code=status.HTTP_204_NO_CONTENT)

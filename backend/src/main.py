@@ -4,9 +4,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from uvicorn import run
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from src.features.students import router as students_router
-from src.features.contests import router as contests_router
-from src.features.moodle_grades import router as moodle_grades_router
+from src.features.students.route import router as students_router
+from src.features.contests.route import router as contests_router
+from src.features.moodle_grades.route import router as moodle_grades_router
 
 app = FastAPI()
 app.include_router(students_router)

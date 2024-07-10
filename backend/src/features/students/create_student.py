@@ -1,11 +1,12 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, APIRouter
 from starlette import status
 
 from src.container import container
 from src.features.contests.interfaces import IContestsProvider
-from . import router
 from .model import Student
 from .interfaces import IStudentsRepository
+
+router = APIRouter()
 
 
 @router.post("/students", status_code=status.HTTP_201_CREATED)

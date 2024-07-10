@@ -1,9 +1,10 @@
-from starlette import status
+from fastapi import status, APIRouter
 
 from src.container import container
 from .interfaces import IStudentsRepository
 from .model import Student
-from . import router
+
+router = APIRouter()
 
 
 @router.get("/students", status_code=status.HTTP_200_OK)

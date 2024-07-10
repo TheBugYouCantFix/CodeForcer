@@ -3,11 +3,12 @@ from io import StringIO
 from collections import defaultdict
 from datetime import datetime, timedelta
 
-from fastapi import status
+from fastapi import status, APIRouter
 from fastapi.responses import StreamingResponse
 
 from .models import MoodleResultsData, ProblemData, LateSubmissionPolicyData, SubmissionData, ContestData
-from . import router
+
+router = APIRouter()
 
 
 @router.post("/moodle_grades", status_code=status.HTTP_200_OK)

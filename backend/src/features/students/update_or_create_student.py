@@ -1,11 +1,12 @@
-from fastapi import Response, HTTPException, status
+from fastapi import Response, HTTPException, status, APIRouter
 
 from src.container import container
+from src.features.contests.interfaces import IContestsProvider
 from .create_student import CreateStudentCommandHandler
 from .interfaces import IStudentsRepository
 from .model import Student
-from . import router
-from ..contests.interfaces import IContestsProvider
+
+router = APIRouter()
 
 
 @router.put("/students/{email}")

@@ -1,21 +1,21 @@
 from email_validator import validate_email
-from fastapi import HTTPException
-from starlette import status
+from fastapi import HTTPException, status, APIRouter
 
 from src.container import container
 from .interfaces import IStudentsRepository
 from .model import Student
-from . import router
+
+router = APIRouter()
 
 
 @router.get("/students/{email_or_handle}", status_code=status.HTTP_200_OK)
-async def get_student_by_email_or_handle(email_or_handle: str) -> Student:
-    return GetStudentByEmailOrHandleCommandHandler(
+async def get_student(email_or_handle: str) -> Student:
+    return GetStudentQueryHandler(
         container[IStudentsRepository]
     ).handle(email_or_handle)
 
 
-class GetStudentByEmailOrHandleCommandHandler:
+class GetStudentQueryHandler:
     def __init__(self, students_repository: IStudentsRepository):
         self.students_repository = students_repository
 

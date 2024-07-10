@@ -1,3 +1,4 @@
+from fastapi import APIRouter
 from pydantic import EmailStr
 from starlette import status
 
@@ -5,7 +6,8 @@ from src.container import container
 from src.features.students.interfaces import IStudentsRepository
 from .models import Contest, Submission
 from .interfaces import IContestsProvider
-from . import router
+
+router = APIRouter()
 
 
 @router.get("/contests/{contest_id}", status_code=status.HTTP_200_OK)
