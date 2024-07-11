@@ -2,10 +2,9 @@ from datetime import datetime, timedelta
 
 from src.features.students.model import Student
 from src.features.contests.models import Contest, Problem, Submission
-from src.features.contests.get_contest import (most_passed_test_count_selector,
-                                               latest_submission_selector)
+from src.features.contests.get_contest import most_passed_test_count_selector, latest_submission_selector
 
-from tests.domain_tests.data_generation import fake
+from .data_generation import fake
 
 
 def test_contest_map_handles_to_emails():
