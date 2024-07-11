@@ -97,7 +97,7 @@ class CodeForcesRequestsSender(ICodeForcesRequestsSender, IAnonymousCodeForcesRe
         if response_json["status"] == "FAILED":
             raise HTTPException(
                 status_code=response.status_code,
-                detail=f"CodeForces API: {response_json["comment"]}"
+                detail=f"CodeForces API: {response_json['comment']}"
             )
 
         return response_json["result"]
