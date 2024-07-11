@@ -1,4 +1,3 @@
-const uri = import.meta.env.VITE_API_URL;
 export async function uploadHandlesFile(file) {
   const url = `/students/file`;
 
