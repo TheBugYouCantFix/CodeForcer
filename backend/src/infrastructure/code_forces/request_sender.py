@@ -82,11 +82,11 @@ class CodeForcesRequestsSender(ICodeForcesRequestsSender, IAnonymousCodeForcesRe
     def _process_response(response: Response):
         try:
             response_json = response.json()
-        except JSONDecodeError:
+        except JSONDecodeError as exc:
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail="CodeForces API does not respond"
-            )
+            ) from exc
 
         if response_json["status"] is None:
             raise HTTPException(
