@@ -8,8 +8,6 @@ services:
       - "8080:8000"
   web:
     container_name: web
-    env_file:
-      - frontend/.env
     build:
       context: ./frontend/
       dockerfile: ./Dockerfile
