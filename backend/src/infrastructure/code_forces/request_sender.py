@@ -81,26 +81,26 @@ class CodeForcesRequestsSender(ICodeForcesRequestsSender, IAnonymousCodeForcesRe
     @staticmethod
     def _process_response(response: Response):
         try:
-            responseJson = response.json()
+            response_json = response.json()
         except JSONDecodeError:
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail="CodeForces API does not respond"
             )
 
-        if responseJson["status"] is None:
+        if response_json["status"] is None:
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail="CodeForces API does not respond"
             )
 
-        if responseJson["status"] == "FAILED":
+        if response_json["status"] == "FAILED":
             raise HTTPException(
                 status_code=response.status_code,
-                detail=f"CodeForces API: {responseJson["comment"]}"
+                detail=f"CodeForces API: {response_json["comment"]}"
             )
 
-        return responseJson["result"]
+        return response_json["result"]
 
 
 def get_contest_from_data(contest_data: dict) -> CfContest:
