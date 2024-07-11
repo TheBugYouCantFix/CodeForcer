@@ -4,7 +4,7 @@
     <img src="assets/logo.svg" alt="Logo" width="80" height="80">
   </a>
 
-<h3 align="center">CodeForces</h3>
+<h3 align="center">CodeForcer</h3>
 
   <p align="center">
     Effective and simple tool for uploading grades from CodeForces contests to Moodle
