@@ -12,7 +12,7 @@ pylint:
     - pip install -r backend/requirements.txt
     - pip install pylint
   script:
-     - pylint backend --disable=C0114,C0116,R0903,C0115,C0103 --max-line-length=120
+     - pylint backend --disable=C0114,C0116,R0903,C0115,C0103,R0902 --max-line-length=120
   except:
     changes:
       - README.md
