@@ -69,12 +69,12 @@ class CodeForcesRequestsSender(ICodeForcesRequestsSender, IAnonymousCodeForcesRe
         hasher.update(f"{rand}/{method_name}?{params_str}#{self.secret}".encode())
         api_sig = str(rand) + hasher.hexdigest()
 
-        response = get(self.API_URL + method_name, params | {"apiSig": api_sig})
+        response = get(self.API_URL + method_name, params | {"apiSig": api_sig}, timeout=5)
 
         return self._process_response(response)
 
     def _send_anonymous_request(self, method_name: str, **params: int | str | bool):
-        response = get(self.API_URL + method_name, params=params)
+        response = get(self.API_URL + method_name, timeout=5, params=params)
 
         return self._process_response(response)
 
