@@ -21,7 +21,7 @@ class DependenciesContainer:
                 raise KeyError(f"Dependency for {key} is not set")
 
         elif isinstance(key, str):
-            for cls_key in self.dependencies.keys():
+            for cls_key in self.dependencies:
                 if cls_key.__name__ == key:
                     key = cls_key
                     break
