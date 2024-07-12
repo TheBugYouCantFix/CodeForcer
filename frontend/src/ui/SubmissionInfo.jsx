@@ -7,10 +7,9 @@ import { BsFillArrowLeftSquareFill } from "react-icons/bs";
 import { useForm } from "react-hook-form";
 import Button from "./Button.jsx";
 import SpinnerMini from "./SpinnnerMini.jsx";
-import { useMoveBack } from "../hooks/useMoveBack.js";
 import { handlePostRequest } from "../api/contests.js";
 import { useLocalStorageState } from "../hooks/useLocalStorage.js";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const StyledCover = styled.div`
   position: relative;
@@ -187,7 +186,8 @@ function SubmissionsInfo({ info }) {
     (item) => item.submissions.length === 0,
   );
 
-  const moveBack = useMoveBack();
+  const navigate = useNavigate();
+
   const [contestPoints, setContestPoints] = useLocalStorageState(
     [],
     `contest-${info.id}`,
@@ -243,7 +243,7 @@ function SubmissionsInfo({ info }) {
 
   return (
     <StyledCover>
-      <ButtonBack onClick={moveBack}>
+      <ButtonBack onClick={() => navigate("/submissions")}>
         <BsFillArrowLeftSquareFill />
       </ButtonBack>
       <Heading as="h2">Contest &quot;{info.name}&quot;</Heading>

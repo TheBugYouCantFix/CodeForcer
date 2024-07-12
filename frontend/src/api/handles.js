@@ -2,7 +2,7 @@ export async function uploadHandlesFile(file) {
   const url = `/students/file`;
 
   const response = await fetch(url, {
-    method: "POST",
+    method: "PUT",
     body: file,
   });
 
