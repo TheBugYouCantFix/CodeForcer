@@ -8,7 +8,6 @@ import Button from "../../ui/Button";
 import FormElement from "../../ui/FormElement";
 import styled from "styled-components";
 import { uploadHandlesFile } from "../../api/handles";
-import { useNavigation } from "react-router-dom";
 import { useState } from "react";
 import SpinnerMini from "../../ui/SpinnnerMini";
 
@@ -21,7 +20,6 @@ const Error = styled.span`
 `;
 
 export default function FormFileUpdate() {
-  const navigation = useNavigation();
   const {
     register,
     handleSubmit,
