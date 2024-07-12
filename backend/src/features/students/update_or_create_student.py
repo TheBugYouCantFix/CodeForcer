@@ -2,7 +2,6 @@ from fastapi import Response, HTTPException, status, APIRouter
 
 from src.container import container
 from src.features.contests.interfaces import IContestsProvider
-from .create_student import CreateStudentCommandHandler
 from .interfaces import IStudentsRepository
 from .model import Student
 
@@ -36,16 +35,15 @@ class UpdateOrCreateStudentCommandHandler:
                 detail="Email from URL should match email from reqeust body"
             )
 
-        if not self.students_repository.email_exists(email):
-            return CreateStudentCommandHandler(
-                container[IStudentsRepository],
-                container[IContestsProvider]
-            ).handle(student)
-
         if not self.contests_provider.validate_handle(student.handle):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail='Handle does not belong to CodeForces user'
             )
 
-        self.students_repository.update_student(email, student)
+        if self.students_repository.email_exists(email):
+            self.students_repository.update_student(email, student)
+            return None
+
+        self.students_repository.add_student(student)
+        return student
