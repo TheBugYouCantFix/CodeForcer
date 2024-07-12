@@ -6,6 +6,8 @@ services:
       dockerfile: ./Dockerfile
     ports:
       - "8080:8000"
+    volumes:
+      - db:/code
   web:
     container_name: web
     build:
@@ -30,3 +32,8 @@ services:
         - action: sync+restart
           path: ./frontend/nginx/nginx.conf
           target: /etc/nginx/conf.d/default.confolumes
+
+volumes:
+  db:
+    driver: local
+
