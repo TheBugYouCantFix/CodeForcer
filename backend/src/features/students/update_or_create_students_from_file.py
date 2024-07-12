@@ -60,7 +60,7 @@ def _parse_students_data(file_path: str) -> list[Student]:
 
 
 def _parse_students_data_from_csv(file_path: str) -> list[Student]:
-    with open(file_path, mode='r') as file:
+    with open(file_path, mode='r', encoding=None) as file:
         csv_reader = DictReader(file)
 
         return [
