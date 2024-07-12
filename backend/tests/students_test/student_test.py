@@ -105,8 +105,6 @@ def test_get_all_students():
 
 def test_get_student_by_email_or_handle():
     #Arrange
-    get_student_query_handle = GetStudentQueryHandler(container[IStudentsRepository])
-
     students_data = [
         Student(email="test1@email.com", handle="blazz1t"),
         Student(email="test2@email.com", handle="wyjjeless"),
@@ -117,8 +115,8 @@ def test_get_student_by_email_or_handle():
         create_student_command_handler.handle(student)
 
     #Act
-    result_handle = get_student_query_handle.handle("blazz1t")
-    result_email = get_student_query_handle.handle("test2@email.com")
+    result_handle = GetStudentQueryHandler(container[IStudentsRepository]).handle("blazz1t")
+    result_email = GetStudentQueryHandler(container[IStudentsRepository]).handle("test2@email.com")
 
     #Assert
     try:
