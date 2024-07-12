@@ -6,6 +6,12 @@ export async function uploadHandlesFile(file) {
     body: file,
   });
 
+  console.log("File uploading response: ", response);
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
   return response;
 }
 export async function uploadSingleHandle(info) {
@@ -19,9 +25,10 @@ export async function uploadSingleHandle(info) {
     body: JSON.stringify(info),
   });
 
+  console.log("Single handle uploading response: ", response);
+
   if (!response.ok) {
-    console.error(response);
-    throw new Error("Something went wrong");
+    throw new Error(response.statusText);
   }
 
   return response;
