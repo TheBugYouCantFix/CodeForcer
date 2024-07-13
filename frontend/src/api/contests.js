@@ -11,7 +11,13 @@ export async function getContest(contestID, APIKey, secretKey) {
   return data;
 }
 export async function handlePostRequest(info, data) {
+  const penalty = data.penalty ? parseFloat(data.penalty) / 100 : 0;
+  const additionTime =
+    parseFloat(data["additional-days"] ? data["additional-days"] : 0) * 86400 +
+    parseFloat(data["additional-hours"] ? data["additional-hours"] : 0) * 3600 +
+    parseFloat(data["additional-minutes"] ? data["additional-minutes"] : 0) * 60;
   const url = `/moodle_grades`;
+
   const body = {
     contest: {
       ...info,
@@ -30,12 +36,12 @@ export async function handlePostRequest(info, data) {
     },
     legally_excused: [],
     late_submission_policy: {
-      penalty: 1,
-      extra_time: 0,
+      penalty: penalty < 0 ? 0 : penalty > 1 ? 1 : penalty,
+      extra_time: additionTime,
     },
   };
 
-  console.log("Post request body:", body);
+  console.log("Body of request:", body);
 
   const response = await fetch(url, {
     method: "POST",
