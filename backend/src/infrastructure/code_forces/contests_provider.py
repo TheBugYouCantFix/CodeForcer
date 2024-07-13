@@ -68,7 +68,7 @@ class CodeForcesContestsProvider(IContestsProvider):
             id=contest_id,
             name=cf_contest.name,
             start_time_utc=datetime.fromtimestamp(cf_contest.startTimeSeconds, tz=timezone("utc")),
-            duration=timedelta(cf_contest.durationSeconds),
+            duration=timedelta(seconds=cf_contest.durationSeconds),
             problems=problems
         )
 
