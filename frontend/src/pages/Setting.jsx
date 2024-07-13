@@ -1,7 +1,7 @@
 import Heading from "../ui/Heading.jsx";
 import { TbSettingsFilled } from "react-icons/tb";
 import { Description } from "../ui/Description.jsx";
-import SubmissionsInfo from "../ui/SubmissionInfo.jsx";
+import SubmissionsInfo from "../features/codeforces/SubmissionInfo.jsx";
 import { redirect, useLoaderData } from "react-router-dom";
 import { getContest } from "../api/contests.js";
 
