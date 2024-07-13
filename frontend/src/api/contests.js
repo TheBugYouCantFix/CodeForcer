@@ -29,7 +29,10 @@ export async function handlePostRequest(info, data) {
       }),
     },
     legally_excused: [],
-    late_submission_rules: {},
+    late_submission_policy: {
+      penalty: 1,
+      extra_time: 0,
+    },
   };
 
   console.log("Post request body:", body);
