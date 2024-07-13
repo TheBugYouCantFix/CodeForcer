@@ -1,4 +1,5 @@
 from datetime import timedelta
+from random import choice
 
 from faker import Faker
 from faker.providers import BaseProvider
@@ -17,9 +18,16 @@ fake = Faker('en-US')
 class MoodleResultsDataProvider(BaseProvider):
     @staticmethod
     def moodle_results_data() -> MoodleResultsData:
+        contest_data: ContestData = fake.contest_data()
+
         return MoodleResultsData(
-            contest=fake.contest_data(),
-            legally_excused=[fake.email() for _ in range(fake.random_int(min=1, max=10))],
+            contest=contest_data,
+            legally_excused=[
+                submission.author_email
+                for submission
+                in choice(contest_data.problems).submissions
+                if fake.pyfloat(min_value=0, max_value=1) < 0.3
+            ],
             late_submission_policy=fake.late_submission_policy_data()
         )
 
@@ -27,12 +35,26 @@ class MoodleResultsDataProvider(BaseProvider):
 class ContestDataProvider(BaseProvider):
     @staticmethod
     def contest_data() -> ContestData:
+        participants = [
+            fake.unique.email()
+            for _ in range(fake.random_int(min=20, max=100))
+        ]
+
+        problems: list[ProblemData] = [
+            fake.problem_data()
+            for _ in range(fake.random_int(min=1, max=10))
+        ]
+
+        for problem in problems:
+            for submission in problem.submissions:
+                submission.author_email = choice(participants)
+
         return ContestData(
             id=fake.unique.random_int(min=1, max=1000000),
             name=fake.name(),
             start_time_utc=fake.date_time(),
             duration=timedelta(hours=fake.random_int(min=1, max=10)),
-            problems=[fake.problem_data() for _ in range(fake.random_int(min=1, max=10))],
+            problems=problems,
         )
 
 
@@ -44,7 +66,10 @@ class ProblemDataProvider(BaseProvider):
             index=fake.unique.random_letter(),
             max_points=fake.random_int(min=1, max=10),
             max_grade=fake.random_int(min=1, max=10),
-            submissions=[fake.submission_data() for _ in range(fake.random_int(min=1, max=10))],
+            submissions=[
+                fake.submission_data()
+                for _ in range(fake.random_int(min=50, max=200))
+            ],
         )
 
 
