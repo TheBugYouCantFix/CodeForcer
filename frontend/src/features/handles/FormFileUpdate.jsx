@@ -58,8 +58,6 @@ export default function FormFileUpdate() {
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
-      <Heading as="h2">Update with a file</Heading>
-      <Heading as="h3">Choose one of the options</Heading>
       <FormElement label="File from Local Storage" type="file">
         <FileInput
           edited={watchFileInput && "true"}
@@ -71,6 +69,7 @@ export default function FormFileUpdate() {
           disabled={isGetting}
         />
       </FormElement>
+      <Heading as="h2">Choose one of the options</Heading>
       <FormElement label="Link to Google Sheets">
         <Input
           disabled={isGetting}

@@ -48,7 +48,7 @@ export const List = styled.form`
   flex-direction: column;
   gap: 3rem;
 
-  button {
+  > button {
     align-self: center;
     padding-left: 8rem;
     padding-right: 8rem;
@@ -157,5 +157,28 @@ export const UndefinedDescription = styled.p`
   a {
     font-weight: 500;
     text-decoration: underline;
+  }
+`;
+
+export const LateSubmissionsContainer = styled.div`
+  max-width: 60rem;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+
+  h2:not(:last-child) {
+    margin-bottom: 1.5rem;
+  }
+`;
+
+export const TimeConfiguration = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 10rem);
+  column-gap: 2rem;
+  row-gap: 1rem;
+
+  &:not(:last-child) {
+    margin-bottom: 1rem;
   }
 `;

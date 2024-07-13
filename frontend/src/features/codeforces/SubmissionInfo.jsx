@@ -16,10 +16,14 @@ import {
   Error,
   UndefinedUsersList,
   UndefinedDescription,
+  LateSubmissionsContainer,
+  TimeConfiguration,
 } from "./SubmissionsInfo.components.jsx";
 import Button from "../../ui/Button.jsx";
 import Heading from "../../ui/Heading.jsx";
-import SpinnerMini from "../../ui/SpinnerMini.jsx";
+import SpinnerMini from "../../ui/SpinnnerMini.jsx";
+import FormElement from "../../ui/FormElement.jsx";
+import Input from "../../ui/Input.jsx";
 
 function SubmissionsInfo({ info }) {
   const definedUsers = {
@@ -39,8 +43,8 @@ function SubmissionsInfo({ info }) {
 
   const navigate = useNavigate();
 
-  const [contestPoints, setContestPoints] = useLocalStorageState(
-    [],
+  const [contestInfo, setContestInfo] = useLocalStorageState(
+    {},
     `contest-${info.id}`,
   );
 
@@ -53,27 +57,33 @@ function SubmissionsInfo({ info }) {
 
   useEffect(() => {
     const subscription = watch((value) => {
-      setContestPoints(
-        Object.values(value).map((item) => parseFloat(item) || undefined),
-      );
+      for (let key in value) {
+        value[key] = parseFloat(value[key]);
+      }
+      setContestInfo(value);
     });
     return () => subscription.unsubscribe();
-  }, [setContestPoints, watch]);
+  }, [setContestInfo, watch]);
 
   const [isGetting, setIsGetting] = useState(false);
+
+  let filename;
 
   const onSubmit = function (data) {
     setIsGetting(true);
 
     handlePostRequest(definedUsers, data)
       .then((res) => {
+        filename = res.headers
+          .get("content-disposition")
+          .match(/(?<=")(?:\\.|[^"\\])*(?=")/)[0];
         return res.blob();
       })
       .then((blob) => {
         const url = window.URL.createObjectURL(new Blob([blob]));
         const link = document.createElement("a");
         link.href = url;
-        link.setAttribute("download", `FileName.pdf`);
+        link.setAttribute("download", filename || "grades");
 
         // Append to html link element page
         document.body.appendChild(link);
@@ -112,7 +122,7 @@ function SubmissionsInfo({ info }) {
                 placeholder="Maximum points per task"
                 data-index={index}
                 disabled={isGetting}
-                defaultValue={contestPoints[index]}
+                defaultValue={contestInfo[index.toString()] || null}
                 {...register(`${index}`, {
                   required: "This field is required",
                   pattern: {
@@ -127,6 +137,11 @@ function SubmissionsInfo({ info }) {
             </>
           </SubmissionItem>
         ))}
+        <SubmissionsSettings
+          isGetting={isGetting}
+          register={register}
+          contestInfo={contestInfo}
+        />
         {unpossibleReqest ? (
           <UndefinedDescription style={{ fontWeight: "400" }}>
             There are no solutions that could be obtained, please{" "}
@@ -140,6 +155,61 @@ function SubmissionsInfo({ info }) {
         )}
       </List>
     </StyledCover>
+  );
+}
+
+function SubmissionsSettings({ register, isGetting, contestInfo }) {
+  return (
+    <LateSubmissionsContainer>
+      <Heading as="h2">Late Submission Configuration</Heading>
+      <TimeConfiguration>
+        <Heading as="h3" style={{ gridColumn: "span 3" }}>
+          Additional time for late submission
+        </Heading>
+        <FormElement label="Days" borderless={true}>
+          <Input
+            disabled={isGetting}
+            placeholder={0}
+            defaultValue={contestInfo["additional-days"] || null}
+            {...register("additional-days", {
+              min: 0,
+            })}
+            style={{ textAlign: "center" }}
+          />
+        </FormElement>
+        <FormElement label="Hours" borderless={true}>
+          <Input
+            disabled={isGetting}
+            placeholder={0}
+            defaultValue={contestInfo["additional-hours"] || null}
+            {...register("additional-hours", {
+              min: 0,
+            })}
+            style={{ textAlign: "center" }}
+          />
+        </FormElement>
+        <FormElement label="Minutes" borderless={true}>
+          <Input
+            disabled={isGetting}
+            placeholder={0}
+            defaultValue={contestInfo["additional-minutes"] || null}
+            {...register("additional-minutes", {
+              min: 0,
+            })}
+            style={{ textAlign: "center" }}
+          />
+        </FormElement>
+      </TimeConfiguration>
+      <FormElement label="Penalty percentage" borderless={true}>
+        <Input
+          disabled={isGetting}
+          placeholder={20}
+          defaultValue={contestInfo["penalty"] || null}
+          {...register("penalty", { min: 0 })}
+          style={{ textAlign: "center" }}
+        />
+      </FormElement>
+    </LateSubmissionsContainer>
   );
 }
 
@@ -181,4 +251,5 @@ function SubmissionItem({ index, item, children }) {
     </Item>
   );
 }
+
 export default SubmissionsInfo;
