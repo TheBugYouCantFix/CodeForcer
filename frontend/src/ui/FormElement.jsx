@@ -1,6 +1,7 @@
 import styled, { css } from "styled-components";
 
 const StyledLabel = styled.label`
+  display: block;
   position: relative;
   padding-top: 2.7rem;
 
@@ -26,6 +27,15 @@ const StyledLabel = styled.label`
     background-color: var(--color-grey-200);
     border-color: var(--color-grey-300);
   }
+
+  ${(props) =>
+    props.borderless === true &&
+    css`
+      &:not(:last-child) {
+        padding-bottom: 0;
+        border-bottom: none;
+      }
+    `}
 
   ${(props) =>
     props.type === "file" &&
@@ -75,9 +85,16 @@ const StyledText = styled.div`
   grid-column: 2;
 `;
 
-function FormElement({ label, children, type = "", error, text }) {
+function FormElement({
+  label,
+  children,
+  type = "",
+  error,
+  text,
+  borderless = false,
+}) {
   return (
-    <StyledLabel type={type} text={text}>
+    <StyledLabel type={type} text={text} borderless={borderless}>
       {children}
       <StyledSpan>{label}</StyledSpan>
       {text && <StyledText>{text}</StyledText>}

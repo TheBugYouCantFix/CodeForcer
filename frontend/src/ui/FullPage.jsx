@@ -2,6 +2,7 @@ import styled from "styled-components";
 
 const FullPage = styled.div`
   position: absolute;
+  z-index: 2;
   inset: 0;
   background-color: var(--color-grey-50);
   display: flex;
