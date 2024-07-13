@@ -11,4 +11,4 @@ container[IContestsProvider] = lambda: CodeForcesContestsProvider(
     requests_sender_factory=CodeForcesRequestsSender,
     anonymous_requests_sender_factory=CodeForcesRequestsSender
 )
-container[IStudentsRepository] = lambda: DBStudentsRepository('students.db')
+container[IStudentsRepository] = lambda: DBStudentsRepository('db/students.db')
