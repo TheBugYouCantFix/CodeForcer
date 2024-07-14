@@ -40,11 +40,9 @@ export default function FormFileUpdate() {
       });
       return;
     }
-    let responseStatus;
     setIsGetting(true);
     uploadHandlesFile(file[0])
       .then((res) => {
-        responseStatus = res.status;
         return res.json();
       })
       .then((data) => {
