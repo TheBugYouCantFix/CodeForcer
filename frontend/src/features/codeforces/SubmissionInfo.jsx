@@ -162,10 +162,10 @@ function SubmissionsSettings({ register, isGetting, contestInfo }) {
   return (
     <LateSubmissionsContainer>
       <Heading as="h2">Late Submission Configuration</Heading>
+      <Heading as="h3" style={{ gridColumn: "span 3" }}>
+        Additional time for late submission
+      </Heading>
       <TimeConfiguration>
-        <Heading as="h3" style={{ gridColumn: "span 3" }}>
-          Additional time for late submission
-        </Heading>
         <FormElement label="Days" borderless={true}>
           <Input
             disabled={isGetting}

@@ -14,6 +14,15 @@ export const StyledCover = styled.div`
   transition: all 0.3s;
   box-shadow: var(--shadow-md);
   border-radius: var(--border-radius-md);
+
+  @media (max-width: 567.98px) {
+    margin-left: -2rem;
+    margin-right: -2rem;
+    padding: 2.5rem 2rem 0;
+    border-top: 2px solid var(--color-grey-200);
+    border-radius: 0;
+    box-shadow: none;
+  }
 `;
 
 export const ButtonBack = styled.button`
@@ -27,9 +36,18 @@ export const ButtonBack = styled.button`
     width: 5rem;
     height: 5rem;
     transition: fill 0.3s ease;
+
+    @media (max-width: 479.98px) {
+      width: 3rem;
+      height: 3rem;
+    }
   }
   &:hover svg {
     fill: var(--color-brand-600);
+  }
+
+  @media (max-width: 399.98px) {
+    display: none;
   }
 `;
 
@@ -61,7 +79,12 @@ export const Item = styled.div`
   padding: 3rem 4rem;
   column-gap: 0.8rem;
   border-radius: var(--border-radius-md);
-  border: 1px solid var(--color-grey-100);
+  border: 2px solid var(--color-grey-200);
+
+  @media (max-width: 479.98px) {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
 
   font-weight: 400;
 
@@ -103,6 +126,19 @@ export const ItemRow = styled.div`
     font-size: 2rem;
     padding-bottom: 0.3rem;
   }
+
+  @media (max-width: 767.98px) {
+    gap: 1.5rem;
+  }
+  @media (max-width: 567.98px) {
+    flex-direction: column;
+    span {
+      font-size: 1.4rem;
+    }
+    span strong {
+      font-size: 1.6rem;
+    }
+  }
 `;
 
 export const ItemInput = styled(Input)`
@@ -128,6 +164,10 @@ export const UndefinedUsersList = styled.div`
   row-gap: 0.6rem;
   column-gap: 1.2rem;
   margin-top: 2rem;
+
+  @media (max-width: 567.98px) {
+    font-size: 1.4rem;
+  }
 
   & span {
     position: relative;
@@ -168,7 +208,10 @@ export const LateSubmissionsContainer = styled.div`
   margin-bottom: 2rem;
 
   h2:not(:last-child) {
-    margin-bottom: 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+  h3:not(:last-child) {
+    margin-bottom: 1rem;
   }
 `;
 
@@ -180,5 +223,26 @@ export const TimeConfiguration = styled.div`
 
   &:not(:last-child) {
     margin-bottom: 1rem;
+
+    @media (max-width: 567.98px) {
+      margin-bottom: 2rem;
+    }
+  }
+
+  @media (max-width: 567.98px) {
+    grid-template-columns: repeat(3, 5rem);
+    justify-content: center;
+    > label > input {
+      padding: 0.8rem;
+    }
+    > label > input + span {
+      top: 1rem;
+      background-color: transparent;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    > label > input:focus ~ span {
+      transform: scale(1.02);
+    }
   }
 `;

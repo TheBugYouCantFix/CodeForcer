@@ -6,6 +6,10 @@ export const Description = styled.div`
   flex-direction: column;
   gap: 1.5rem;
 
+  @media (max-width: 567.98px) {
+    gap: 0.7rem;
+  }
+
   font-size: 2rem;
 
   & span {

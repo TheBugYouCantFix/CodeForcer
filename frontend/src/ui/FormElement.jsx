@@ -69,6 +69,11 @@ const StyledSpan = styled.span`
   font-size: 1.5rem;
   line-height: 1.1;
   transition: transform 0.3s ease;
+
+  @media (max-width: 567.98px) {
+    top: 2rem;
+    font-size: 1.3rem;
+  }
 `;
 
 const ErrorMessage = styled.span`
