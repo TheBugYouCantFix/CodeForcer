@@ -7,8 +7,17 @@ import Spinner from "./Spinner.jsx";
 const StyledAppLayout = styled.div`
   display: grid;
   grid-template-columns: 28rem 1fr;
-  // grid-template-rows: auto 1fr;
   height: 100dvh;
+  @media (max-width: 991.98px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: 10rem 1fr;
+  }
+  @media (max-width: 767.98px) {
+    grid-template-rows: 6rem 1fr 4.5rem;
+  }
+  @media (max-width: 438.98px) {
+    grid-template-rows: 6rem 1fr 3.7rem;
+  }
 `;
 const Main = styled.main`
   position: relative;
@@ -16,6 +25,11 @@ const Main = styled.main`
   padding: 4rem 4.8rem 6.4rem;
   overflow-y: auto;
   transition: opacity 0.5s ease;
+
+  @media (max-width: 1199.98px) {
+    padding-right: 2rem;
+    padding-left: 2rem;
+  }
 `;
 
 const Container = styled.div`
