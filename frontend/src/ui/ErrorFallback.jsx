@@ -5,13 +5,18 @@ import Heading from "./Heading.jsx";
 import { useRouteError } from "react-router-dom";
 import { useMoveBack } from "../hooks/useMoveBack.js";
 
-const StyledErrorFallback = styled.main`
+const StyledErrorFallback = styled.div`
   height: 100vh;
   background-color: var(--color-grey-50);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 4.8rem;
+  overflow: hidden;
+
+  @media (max-width: 567.98px) {
+    padding: 4.8rem 2rem;
+  }
 `;
 
 const Box = styled.div`
@@ -23,6 +28,10 @@ const Box = styled.div`
   padding: 4.8rem;
   flex: 0 1 96rem;
   text-align: center;
+
+  @media (max-width: 567.98px) {
+    padding: 4.8rem 2rem;
+  }
 
   & h1 {
     margin-bottom: 1.6rem;

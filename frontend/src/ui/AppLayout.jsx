@@ -10,13 +10,13 @@ const StyledAppLayout = styled.div`
   height: 100dvh;
   @media (max-width: 991.98px) {
     grid-template-columns: 1fr;
-    grid-template-rows: 10rem 1fr;
+    grid-template-rows: 10rem auto;
   }
   @media (max-width: 767.98px) {
-    grid-template-rows: 6rem 1fr;
+    grid-template-rows: 6rem auto;
   }
   @media (max-width: 438.98px) {
-    grid-template-rows: 6rem 1fr;
+    grid-template-rows: 6rem auto;
   }
 `;
 const Main = styled.main`
@@ -30,11 +30,11 @@ const Main = styled.main`
     padding-right: 2rem;
     padding-left: 2rem;
   }
+  @media (max-width: 991.98px) {
+    min-height: 100%;
+  }
   @media (max-width: 767.98px) {
     padding-bottom: 6rem;
-  }
-  @media (max-width: 438.98px) {
-    padding-bottom: 5rem;
   }
 `;
 
