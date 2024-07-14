@@ -17,6 +17,17 @@ const Img = styled.img`
   flex: 0 0 6.2rem;
   width: 6.2rem;
   height: 6.2rem;
+
+  @media (max-width: 991.98px) {
+    flex: 0 0 4rem;
+    width: 4rem;
+    height: 4rem;
+  }
+  @media (max-width: 767.98px) {
+    flex: 0 0 3rem;
+    width: 3rem;
+    height: 3rem;
+  }
 `;
 const LogoText = styled.span`
   font-weight: 500;
@@ -24,6 +35,13 @@ const LogoText = styled.span`
   line-height: 1.2;
   letter-spacing: 0.03em;
   transition: letter-spacing 0.3s ease;
+
+  @media (max-width: 991.98px) {
+    font-size: 1.6rem;
+  }
+  @media (max-width: 767.98px) {
+    font-size: 1.4rem;
+  }
 `;
 
 function Logo() {

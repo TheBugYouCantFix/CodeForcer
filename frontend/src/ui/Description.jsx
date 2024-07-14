@@ -33,4 +33,17 @@ export const Description = styled.div`
   & a:hover::before {
     width: 0;
   }
+
+  @media (max-width: 767.98px) {
+    font-size: 1.8rem;
+    strong {
+      font-weight: 400;
+    }
+  }
+  @media (max-width: 567.98px) {
+    font-size: 1.6rem;
+  }
+  @media (max-width: 439.98px) {
+    font-size: 1.4rem;
+  }
 `;
