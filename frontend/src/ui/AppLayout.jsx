@@ -13,10 +13,10 @@ const StyledAppLayout = styled.div`
     grid-template-rows: 10rem 1fr;
   }
   @media (max-width: 767.98px) {
-    grid-template-rows: 6rem 1fr 4.5rem;
+    grid-template-rows: 6rem 1fr;
   }
   @media (max-width: 438.98px) {
-    grid-template-rows: 6rem 1fr 3.7rem;
+    grid-template-rows: 6rem 1fr;
   }
 `;
 const Main = styled.main`
@@ -29,6 +29,12 @@ const Main = styled.main`
   @media (max-width: 1199.98px) {
     padding-right: 2rem;
     padding-left: 2rem;
+  }
+  @media (max-width: 767.98px) {
+    padding-bottom: 6rem;
+  }
+  @media (max-width: 438.98px) {
+    padding-bottom: 5rem;
   }
 `;
 

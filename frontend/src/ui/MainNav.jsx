@@ -77,7 +77,7 @@ const StyledNavLink = styled(NavLink)`
       gap: 0.8rem;
       line-height: 1.3;
       font-size: 1.4rem;
-      padding: 0.8rem 1.5rem;
+      padding: 1rem 1.5rem;
     }
     & svg {
       flex: 0 0 2rem;
@@ -89,8 +89,8 @@ const StyledNavLink = styled(NavLink)`
     &:link,
     &:visited {
       gap: 0.4rem;
-      line-height: 1;
-      padding: 0.6rem 1rem;
+      padding: 1rem 1.2rem;
+      font-size: 1.2rem;
     }
     & svg {
       flex: 0 0 1.6rem;
