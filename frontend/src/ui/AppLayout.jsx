@@ -7,10 +7,11 @@ import Spinner from "./Spinner.jsx";
 const StyledAppLayout = styled.div`
   display: grid;
   grid-template-columns: 28rem 1fr;
-  min-height: 100svh;
+  height: 100dvh;
   @media (max-width: 991.98px) {
     grid-template-columns: 1fr;
     grid-template-rows: 10rem auto;
+    overflow: hidden;
   }
   @media (max-width: 767.98px) {
     grid-template-rows: 6rem auto;
@@ -29,9 +30,6 @@ const Main = styled.main`
   @media (max-width: 1199.98px) {
     padding-right: 2rem;
     padding-left: 2rem;
-  }
-  @media (max-width: 991.98px) {
-    min-height: 100%;
   }
   @media (max-width: 767.98px) {
     padding-bottom: 6rem;
