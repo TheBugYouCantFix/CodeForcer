@@ -7,7 +7,7 @@ import Spinner from "./Spinner.jsx";
 const StyledAppLayout = styled.div`
   display: grid;
   grid-template-columns: 28rem 1fr;
-  height: 100dvh;
+  min-height: 100svh;
   @media (max-width: 991.98px) {
     grid-template-columns: 1fr;
     grid-template-rows: 10rem auto;
