@@ -8,6 +8,12 @@ const FullPage = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+
+  @media (max-width: 991.98px) {
+    width: 100lvw;
+    height: 100lvh;
+    inset: auto;
+  }
 `;
 
 export default FullPage;

@@ -240,9 +240,12 @@ export const TimeConfiguration = styled.div`
       background-color: transparent;
       left: 50%;
       transform: translateX(-50%);
+      color: var(--color-grey-500);
+      transition: color 0.3s ease;
     }
     > label > input:focus ~ span {
-      transform: scale(1.02);
+      transform: translateX(-50%);
+      color: var(--color-grey-700);
     }
   }
 `;

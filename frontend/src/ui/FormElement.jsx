@@ -88,6 +88,9 @@ const ErrorMessage = styled.span`
 const StyledText = styled.div`
   align-self: center;
   grid-column: 2;
+  @media (max-width: 479.98px) {
+    font-size: 1.3rem;
+  }
 `;
 
 function FormElement({

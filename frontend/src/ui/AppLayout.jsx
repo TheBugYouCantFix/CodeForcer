@@ -51,12 +51,12 @@ function AppLayout() {
     <StyledAppLayout>
       <Sidebar />
       <Main>
-        {navigation.state === "loading" && (
-          <FullPage>
-            <Spinner />
-          </FullPage>
-        )}
         <Container>
+          {navigation.state === "loading" && (
+            <FullPage>
+              <Spinner />
+            </FullPage>
+          )}
           <Outlet />
         </Container>
       </Main>

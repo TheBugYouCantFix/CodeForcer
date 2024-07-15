@@ -9,7 +9,7 @@ const StyledNav = styled.nav`
   @media (max-width: 767.98px) {
     position: fixed;
     padding: 0.4rem 2rem;
-    z-index: 2;
+    z-index: 4;
     bottom: 0;
     left: 0;
     right: 0;
