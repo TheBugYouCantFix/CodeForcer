@@ -45,7 +45,7 @@ def existing_email(students_repo_mock):
     email = fake.email()
     handle = fake.word()
 
-    if not students_repo_mock.db[email]:
+    if not students_repo_mock.db.get(email):
         students_repo_mock.db[email] = Student(email=email, handle=handle)
 
     return email
@@ -70,7 +70,7 @@ def existing_handle(students_repo_mock, contests_provider_mock):
 
     contests_provider_mock.valid_handles = [handle]
 
-    if not students_repo_mock.db[email]:
+    if not students_repo_mock.db.get(email):
         students_repo_mock.db[email] = Student(email=email, handle=handle)
 
     return handle
