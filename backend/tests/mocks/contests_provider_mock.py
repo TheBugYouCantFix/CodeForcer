@@ -14,4 +14,3 @@ class ContestsProviderMock(IContestsProvider):
 
     def validate_handle(self, handle: str) -> bool:
         return handle in self.valid_handles
-
