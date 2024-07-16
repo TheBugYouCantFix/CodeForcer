@@ -45,5 +45,12 @@ def invalid_email():
 
 
 @pytest.fixture
-def handle():
+def handle(contests_provider_mock):
+    handle = fake.word()
+    contests_provider_mock.valid_handles = [handle]
+    return handle
+
+
+@pytest.fixture
+def invalid_handle():
     return fake.word()
