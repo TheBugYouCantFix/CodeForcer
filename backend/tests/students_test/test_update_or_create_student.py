@@ -1,14 +1,6 @@
-import pytest
 from fastapi import status
 
 from tests.create_test_client import client
-
-
-@pytest.fixture(autouse=True)
-def setup_and_teardown(contests_provider_mock, students_repo_mock):
-    yield
-    contests_provider_mock.valid_handles = []
-    students_repo_mock.db.clear()
 
 
 def test_creates_student_if_not_exists_and_data_is_valid(email, handle, contests_provider_mock, students_repo_mock):

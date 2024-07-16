@@ -12,6 +12,14 @@ from tests.mocks.students_repository_mock import StudentRepositoryMock
 fake = Faker('en-US')
 
 
+@pytest.fixture(autouse=True)
+def setup_and_teardown(contests_provider_mock, students_repo_mock):
+    yield
+    contests_provider_mock.valid_handles = []
+    students_repo_mock.db.clear()
+    print('mocks cleared')
+
+
 @pytest.fixture
 def contests_provider_mock():
     contests_provider_mock = ContestsProviderMock()
