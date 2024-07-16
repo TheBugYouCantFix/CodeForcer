@@ -17,10 +17,10 @@ def test_creates_student_if_not_exists_and_data_is_valid(email, handle, contests
     assert students_repo_mock.get_student_by_email(email).model_dump() == request_data
 
 
-def test_does_not_update_or_create_if_handle_is_invalid(email, handle, contests_provider_mock):
+def test_does_not_update_or_create_if_handle_is_invalid(email, invalid_handle, contests_provider_mock):
     request_data = {
         "email": email,
-        "handle": handle
+        "handle": invalid_handle
     }
 
     response = client.put(f"/students/{email}", json=request_data)
