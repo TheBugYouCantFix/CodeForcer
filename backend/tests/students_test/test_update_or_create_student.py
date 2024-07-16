@@ -28,12 +28,7 @@ def test_returns_400_bad_request_if_handle_is_invalid(email, invalid_handle):
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
-def test_updates_existing_student_if_data_is_valid(
-        email,
-        existing_handle,
-        handle,
-        students_repo_mock
-):
+def test_updates_existing_student_if_data_is_valid(email, handle, students_repo_mock):
     request_data = {
         "email": email,
         "handle": handle
