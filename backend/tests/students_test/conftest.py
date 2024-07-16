@@ -19,16 +19,16 @@ def setup_and_teardown(contests_provider_mock, students_repo_mock):
 
 @pytest.fixture
 def contests_provider_mock():
-    contests_provider_mock = ContestsProviderMock()
-    container[IContestsProvider] = contests_provider_mock
-    return contests_provider_mock
+    contests_provider_mock_instance = ContestsProviderMock()
+    container[IContestsProvider] = contests_provider_mock_instance
+    return contests_provider_mock_instance
 
 
 @pytest.fixture
 def students_repo_mock():
-    students_repo_mock = StudentRepositoryMock()
-    container[IStudentsRepository] = students_repo_mock
-    return students_repo_mock
+    students_repo_mock_instance = StudentRepositoryMock()
+    container[IStudentsRepository] = students_repo_mock_instance
+    return students_repo_mock_instance
 
 
 @pytest.fixture
@@ -51,9 +51,9 @@ def invalid_email(email):
 
 @pytest.fixture
 def handle(contests_provider_mock):
-    handle = fake.word()
-    contests_provider_mock.valid_handles = [handle]
-    return handle
+    faked_handle = fake.word()
+    contests_provider_mock.valid_handles = [faked_handle]
+    return faked_handle
 
 
 @pytest.fixture
