@@ -64,5 +64,16 @@ def handle(contests_provider_mock):
 
 
 @pytest.fixture
+def existing_handle(students_repo_mock):
+    email = fake.email()
+    handle = fake.word()
+
+    if not students_repo_mock.db[email]:
+        students_repo_mock.db[email] = Student(email=email, handle=handle)
+
+    return handle
+
+
+@pytest.fixture
 def invalid_handle():
     return fake.word()
