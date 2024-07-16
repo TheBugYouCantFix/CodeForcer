@@ -33,6 +33,9 @@ class StudentRepositoryMock(IStudentsRepository):
         self.db[email] = new_student
 
     def delete_student(self, email: EmailStr) -> None:
+        if not self.db.get(email):
+            return
+
         self.db.pop(email)
 
     def email_exists(self, email: EmailStr) -> bool:
