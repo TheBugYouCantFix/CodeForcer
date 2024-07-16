@@ -17,7 +17,7 @@ def test_creates_student_if_not_exists_and_data_is_valid(email, handle, contests
     assert students_repo_mock.get_student_by_email(email).model_dump() == request_data
 
 
-def test_does_not_update_or_create_if_handle_is_invalid(email, invalid_handle, contests_provider_mock):
+def test_returns_422_unprocessable_entity_if_handle_is_invalid(email, invalid_handle, contests_provider_mock):
     request_data = {
         "email": email,
         "handle": invalid_handle
@@ -42,7 +42,7 @@ def test_updates_existing_student_if_data_is_valid(email, handle, contests_provi
     assert students_repo_mock.get_student_by_email(email).model_dump() == request_data
 
 
-def test_does_not_update_student_if_email_is_invalid(invalid_email, handle, contests_provider_mock):
+def test_returns_422_unprocessable_entity_if_email_is_invalid(invalid_email, handle, contests_provider_mock):
     contests_provider_mock.valid_handles = [handle]
 
     request_data = {
