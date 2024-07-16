@@ -40,5 +40,10 @@ def email():
 
 
 @pytest.fixture
+def invalid_email():
+    return fake.email() + '!'
+
+
+@pytest.fixture
 def handle():
     return fake.word()
