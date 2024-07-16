@@ -4,14 +4,9 @@ from src.container import container
 from src.features.contests.interfaces import IContestsProvider
 from src.features.students.interfaces import IStudentsRepository
 from src.features.students.model import Student
-from tests.mocks.data_generation import fake as outer_fake
+from tests.mocks.data_generation import fake
 from tests.mocks.contests_provider_mock import ContestsProviderMock
 from tests.mocks.students_repository_mock import StudentRepositoryMock
-
-
-@pytest.fixture()
-def fake():
-    return outer_fake
 
 
 @pytest.fixture(autouse=True)
@@ -37,15 +32,12 @@ def students_repo_mock():
 
 
 @pytest.fixture
-def email(fake):
+def email():
     return fake.email()
 
 
 @pytest.fixture
-def existing_email(students_repo_mock, fake):
-    email = fake.email()
-    handle = fake.word()
-
+def existing_email(students_repo_mock, email, handle):
     if not students_repo_mock.db.get(email):
         students_repo_mock.db[email] = Student(email=email, handle=handle)
 
@@ -53,22 +45,19 @@ def existing_email(students_repo_mock, fake):
 
 
 @pytest.fixture
-def invalid_email(fake):
-    return fake.email() + '!'
+def invalid_email(email):
+    return email + '!'
 
 
 @pytest.fixture
-def handle(contests_provider_mock, fake):
+def handle(contests_provider_mock):
     handle = fake.word()
     contests_provider_mock.valid_handles = [handle]
     return handle
 
 
 @pytest.fixture
-def existing_handle(students_repo_mock, contests_provider_mock, fake):
-    email = fake.email()
-    handle = fake.word()
-
+def existing_handle(students_repo_mock, contests_provider_mock, email, handle):
     contests_provider_mock.valid_handles = [handle]
 
     if not students_repo_mock.db.get(email):
@@ -78,5 +67,5 @@ def existing_handle(students_repo_mock, contests_provider_mock, fake):
 
 
 @pytest.fixture
-def invalid_handle(fake):
+def invalid_handle():
     return fake.word()
