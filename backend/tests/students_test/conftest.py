@@ -4,6 +4,7 @@ from faker import Faker
 from src.container import container
 from src.features.contests.interfaces import IContestsProvider
 from src.features.students.interfaces import IStudentsRepository
+from src.features.students.model import Student
 from tests.contests_test.data_generation import fake
 from tests.mocks.contests_provider_mock import ContestsProviderMock
 from tests.mocks.students_repository_mock import StudentRepositoryMock
@@ -37,6 +38,17 @@ def students_repo_mock():
 @pytest.fixture
 def email():
     return fake.email()
+
+
+@pytest.fixture
+def existing_email(students_repo_mock):
+    email = fake.email()
+    handle = fake.word()
+
+    if not students_repo_mock.db[email]:
+        students_repo_mock.db[email] = Student(email=email, handle=handle)
+
+    return email
 
 
 @pytest.fixture
