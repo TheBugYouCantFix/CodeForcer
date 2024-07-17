@@ -23,7 +23,7 @@ def test_create_student(email, handle):
     assert GetStudentQueryHandler(container[IStudentsRepository]).handle(email) == student_data
 
 
-def test_update_student(email, existing_handle, handle):
+def test_update_student(email, handle):
     # Arrange
     new_student = Student(email=email, handle=handle)
 
