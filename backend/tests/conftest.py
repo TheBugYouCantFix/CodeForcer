@@ -4,8 +4,8 @@ from src.container import container
 from src.features.contests.interfaces import IContestsProvider
 from src.features.students.interfaces import IStudentsRepository
 from src.features.students.model import Student
-from tests.mocks.data_generation import fake
 from tests.mocks.contests_provider_mock import ContestsProviderMock
+from tests.mocks.data_generation import fake
 from tests.mocks.students_repository_mock import StudentRepositoryMock
 
 
