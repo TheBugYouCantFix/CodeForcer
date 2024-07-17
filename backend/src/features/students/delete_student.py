@@ -1,4 +1,4 @@
-from fastapi import status, APIRouter
+from fastapi import status, APIRouter, HTTPException
 from pydantic import EmailStr
 
 from src.container import container
@@ -19,4 +19,10 @@ class DeleteStudentCommandHandler:
         self.students_repository = students_repository
 
     def handle(self, email: EmailStr) -> None:
+        if not self.students_repository.email_exists(email):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail='Student with given email is not found'
+            )
+
         self.students_repository.delete_student(email)
