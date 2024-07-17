@@ -69,3 +69,12 @@ def existing_handle(students_repo_mock, contests_provider_mock, email, handle):
 @pytest.fixture
 def invalid_handle():
     return fake.word()
+
+
+@pytest.fixture
+def contest(contests_provider_mock):
+    contest = fake.contest()
+
+    contests_provider_mock.contests[contest.id] = contest.model_copy()
+
+    return contest
