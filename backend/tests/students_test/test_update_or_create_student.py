@@ -1,5 +1,6 @@
 from fastapi import status
 
+from src.features.students.model import Student
 from tests.create_test_client import client
 
 
@@ -28,11 +29,13 @@ def test_returns_400_bad_request_if_handle_is_invalid(email, invalid_handle):
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
-def test_updates_existing_student_if_data_is_valid(email, handle, students_repo_mock):
+def test_updates_existing_student_if_data_is_valid_and_student_exists(email, handle, students_repo_mock):
     request_data = {
         "email": email,
         "handle": handle
     }
+
+    students_repo_mock.add_student(Student(email=email, handle=handle))
 
     response = client.put(f"/students/{email}", json=request_data)
 
