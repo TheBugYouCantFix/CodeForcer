@@ -4,7 +4,7 @@ from src.features.contests.models import Contest
 from tests.create_test_client import client
 
 
-def test_gets_contest_when_contest_exists(contest, students_repo_mock):
+def test_gets_contest_when_contest_exists(contest):
     response = client.get(f"/contests/{contest.id}", params={"key": "", "secret": ""})
 
     assert response.status_code == status.HTTP_200_OK
@@ -24,3 +24,25 @@ def test_gets_contest_when_contest_exists(contest, students_repo_mock):
 
         assert response_problem.name == problem.name
         assert response_problem.max_points == problem.max_points
+
+
+def test_gets_contest_with_single_submission_foreach_student(contest):
+    response = client.get(f"/contests/{contest.id}", params={"key": "", "secret": ""})
+
+    assert response.status_code == status.HTTP_200_OK
+
+    response_contest = Contest.model_validate_json(response.text)
+
+    for response_problem in response_contest.problems:
+        for problem in contest.problems:
+            if problem.index == response_problem.index:
+                break
+        else:
+            assert False, f"Problem with index {response_problem.index} not found in the original contest"
+
+        submission_authors: set[str] = set()
+
+        for response_submission in response_problem.submissions:
+            assert response_submission.author.handle not in submission_authors
+
+            submission_authors.add(response_submission.author.handle)
