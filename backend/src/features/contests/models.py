@@ -5,7 +5,6 @@ from collections import defaultdict
 from typing import Callable
 from pydantic import BaseModel, EmailStr
 
-from src.features.contests.submission_selectors import SubmissionSelector
 from src.features.students.model import Student
 
 
@@ -74,3 +73,6 @@ class Submission(BaseModel):
     def map_author_handle_to_email(self, handle_to_email_mapper: Callable[[str], EmailStr | None]) -> None:
         if self.author.email is None:
             self.author.email = handle_to_email_mapper(self.author.handle)
+
+
+SubmissionSelector = Callable[[list[Submission]], Submission]

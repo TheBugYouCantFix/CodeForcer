@@ -2,7 +2,7 @@ from typing import Callable, Annotated
 
 from pydantic.functional_validators import AfterValidator
 
-from src.features.contests.models import Submission
+from src.features.contests.models import Submission, SubmissionSelector
 
 
 def submission_name_validator(name: str) -> str:
@@ -10,7 +10,6 @@ def submission_name_validator(name: str) -> str:
     return name
 
 
-SubmissionSelector = Callable[[list[Submission]], Submission]
 SubmissionSelectorName = Annotated[str, AfterValidator(submission_name_validator)]
 
 submission_selectors: dict[str, SubmissionSelector] = {}
