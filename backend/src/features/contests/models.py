@@ -5,6 +5,7 @@ from collections import defaultdict
 from typing import Callable
 from pydantic import BaseModel, EmailStr
 
+from src.features.contests.submission_selectors import SubmissionSelector
 from src.features.students.model import Student
 
 
@@ -19,7 +20,7 @@ class Contest(BaseModel):
         for problem in self.problems:
             problem.map_handles_to_emails(handle_to_email_mapper)
 
-    def select_single_submission_for_each_participant(self, selector: Callable[[list[Submission]], Submission]) -> None:
+    def select_single_submission_for_each_participant(self, selector: SubmissionSelector) -> None:
         for problem in self.problems:
             problem.select_single_submission_for_each_participant(selector)
 
@@ -42,7 +43,7 @@ class Problem(BaseModel):
         for submission in self.submissions:
             submission.map_author_handle_to_email(handle_to_email_mapper)
 
-    def select_single_submission_for_each_participant(self, selector: Callable[[list[Submission]], Submission]) -> None:
+    def select_single_submission_for_each_participant(self, selector: SubmissionSelector) -> None:
         submissions_by_student = defaultdict(list[Submission])
 
         for submission in self.submissions:
