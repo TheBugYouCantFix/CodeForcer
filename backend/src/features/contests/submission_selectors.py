@@ -1,4 +1,4 @@
-from typing import Callable, Annotated
+from typing import Annotated
 
 from pydantic.functional_validators import AfterValidator
 
@@ -40,7 +40,11 @@ def latest_submission_selector(submissions: list[Submission]) -> Submission:
 
 @submission_selector("most points")
 def most_points_selector(submissions: list[Submission]) -> Submission:
-    return max(submissions, key=lambda s: (s.points, s.submission_time_utc))
+    return max(
+        submissions,
+        key=lambda submission: (submission.points if submission.points is not None else 0,
+                                submission.submission_time_utc)
+    )
 
 
 __all__ = ["submission_selectors", "SubmissionSelectorName"]
