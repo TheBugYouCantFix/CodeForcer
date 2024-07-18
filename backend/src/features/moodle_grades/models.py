@@ -7,7 +7,7 @@ from pydantic import BaseModel, EmailStr, Field
 
 class MoodleResultsData(BaseModel):
     contest: ContestData
-    legally_excused: list[EmailStr]
+    legally_excused: list[LegallyExcusedStudentData]
     late_submission_policy: LateSubmissionPolicyData
 
 
@@ -40,3 +40,8 @@ class SubmissionData(BaseModel):
 class LateSubmissionPolicyData(BaseModel):
     penalty: float = Field(ge=0, le=1)
     extra_time: int
+
+
+class LegallyExcusedStudentData(BaseModel):
+    email: EmailStr
+    excuse_duration: int
