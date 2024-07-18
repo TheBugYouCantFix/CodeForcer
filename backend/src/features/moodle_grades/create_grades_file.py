@@ -67,8 +67,8 @@ class CreateGradesFileCommand:
             else:
                 problem_points = CreateGradesFileCommand._get_grade_by_verdict(submission, problem)
 
-            problem_points = CreateGradesFileCommand._apply_late_submission_policy(results_data.late_submission_policy,
-                                                                                   results_data.contest, submission,
+            problem_points = CreateGradesFileCommand._apply_late_submission_policy(results_data,
+                                                                                   submission,
                                                                                    problem_points)
 
             student_grade_map[submission.author_email][0] += problem_points
@@ -79,22 +79,26 @@ class CreateGradesFileCommand:
 
     @staticmethod
     def _apply_late_submission_policy(
-            late_submission_policy: LateSubmissionPolicyData,
-            contest: ContestData,
+            moodle_results_data: MoodleResultsData,
             submission: SubmissionData,
             points: float
     ) -> float:
+        extra_time = timedelta(seconds=moodle_results_data.late_submission_policy.extra_time)
+        excuse_time = timedelta(seconds=moodle_results_data.get_excuse_duration_by_email(submission.author_email))
+        deadline_time = moodle_results_data.contest.start_time_utc + moodle_results_data.contest.duration + excuse_time
 
-        extra_time = timedelta(seconds=late_submission_policy.extra_time)
-        deadline_time = contest.start_time_utc + contest.duration
         deadline_time_extended = deadline_time + extra_time
         submission_time = submission.submission_time_utc
+
+        for excused_student in moodle_results_data.legally_excused:
+            if excused_student.email == submission.author_email:
+                excuse_time = timedelta(seconds=excused_student.excuse_duration)
 
         if submission_time > deadline_time_extended:
             return 0.0
 
         if submission_time > deadline_time:
-            points_deduced = points * late_submission_policy.penalty
+            points_deduced = points * moodle_results_data.late_submission_policy.penalty
             return points - points_deduced
 
         return points
