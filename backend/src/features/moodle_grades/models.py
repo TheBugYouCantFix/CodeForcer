@@ -10,6 +10,13 @@ class MoodleResultsData(BaseModel):
     legally_excused: list[LegallyExcusedStudentData]
     late_submission_policy: LateSubmissionPolicyData
 
+    def get_excuse_duration_by_email(self, email: EmailStr) -> int:
+        for excused_student in self.legally_excused:
+            if excused_student.email == email:
+                return excused_student.excuse_duration
+
+        return 0
+
 
 class ContestData(BaseModel):
     id: int
@@ -45,3 +52,4 @@ class LateSubmissionPolicyData(BaseModel):
 class LegallyExcusedStudentData(BaseModel):
     email: EmailStr
     excuse_duration: int
+
