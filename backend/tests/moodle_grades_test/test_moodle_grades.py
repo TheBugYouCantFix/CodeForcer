@@ -92,7 +92,7 @@ def test_get_moodle_grades_if_data_is_valid():
                 )
             ],
         ),
-        problem_max_grade_by_index={'A': 100, 'B': 60},
+        problem_max_grade_by_index={'A': 50, 'B': 30},
         legal_excuses={},
         late_submission_policy=LateSubmissionPolicy(
             penalty=0.2,
@@ -103,9 +103,9 @@ def test_get_moodle_grades_if_data_is_valid():
 
     expected_output = [
         ['Email', 'test contest Grade', 'test contest Feedback'],
-        ['a@a.a', '76.0', ''],
-        ['b@b.b', '60.0', ''],
-        ['c@c.c', '148.0', '']
+        ['a@a.a', '38.0', ''],
+        ['b@b.b', '30.0', ''],
+        ['c@c.c', '74.0', '']
     ]
 
     response = client.post("/moodle-grades", data=moodle_result_data.model_dump_json())

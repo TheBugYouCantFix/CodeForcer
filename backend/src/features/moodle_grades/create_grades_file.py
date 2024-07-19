@@ -94,10 +94,10 @@ class CreateGradesFileCommand:
 
             comment = f"({comment})" if comment != "" else comment
             feedback = f"Problem {problem.index}: {problem_points} {comment}\n\n"
-            if student_grade_map[submission.author_email][1] is not None:
-                student_grade_map[submission.author_email][1] += feedback
+            if student_grade_map[submission.author.email][1] is not None:
+                student_grade_map[submission.author.email][1] += feedback
             else:
-                student_grade_map[submission.author_email][1] = '"' + feedback
+                student_grade_map[submission.author.email][1] = '"' + feedback
 
     @staticmethod
     def _get_grade_by_verdict(submission: Submission, max_grade: float) -> float:
