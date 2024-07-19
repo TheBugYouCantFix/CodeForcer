@@ -90,10 +90,6 @@ class CreateGradesFileCommand:
         deadline_time_extended = deadline_time + extra_time
         submission_time = submission.submission_time_utc
 
-        for excused_student in moodle_results_data.legally_excused:
-            if excused_student.email == submission.author_email:
-                excuse_time = timedelta(seconds=excused_student.excuse_duration)
-
         if submission_time > deadline_time_extended:
             return 0.0
 
