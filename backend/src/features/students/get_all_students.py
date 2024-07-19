@@ -7,7 +7,7 @@ from .model import Student
 router = APIRouter()
 
 
-@router.get("/students", status_code=status.HTTP_200_OK)
+@router.get("/", status_code=status.HTTP_200_OK)
 async def get_all_students() -> list[Student]:
     return GetAllStudentsCommandHandler(
         container[IStudentsRepository]

@@ -9,7 +9,7 @@ from .interfaces import IStudentsRepository
 router = APIRouter()
 
 
-@router.post("/students", status_code=status.HTTP_201_CREATED)
+@router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_student(student: Student) -> Student | None:
     return CreateStudentCommandHandler(
         container[IStudentsRepository],

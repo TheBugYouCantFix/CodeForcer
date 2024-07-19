@@ -9,7 +9,7 @@ from .model import Student
 router = APIRouter()
 
 
-@router.put("/students/{email_or_handle}")
+@router.put("/{email_or_handle}")
 async def update_or_create_student(
         email_or_handle: str,
         updated_student: Student,

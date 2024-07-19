@@ -8,7 +8,7 @@ from .model import Student
 router = APIRouter()
 
 
-@router.get("/students/{email_or_handle}", status_code=status.HTTP_200_OK)
+@router.get("/{email_or_handle}", status_code=status.HTTP_200_OK)
 async def get_student(email_or_handle: str) -> Student:
     return GetStudentQueryHandler(
         container[IStudentsRepository]
