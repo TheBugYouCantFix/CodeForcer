@@ -44,8 +44,8 @@ class CreateGradesFileCommand:
         self._mark_grades(results_data.contest.problems, student_grade_map, results_data)
         self._write_to_file(writer, student_grade_map)
 
-        for email in student_grade_map.keys():
-            student_grade_map[email][1] += '"'
+        for _, feedback in student_grade_map.values():
+            feedback += '"'
 
         return file
 
@@ -70,9 +70,11 @@ class CreateGradesFileCommand:
             else:
                 problem_points = CreateGradesFileCommand._get_grade_by_verdict(submission, problem)
 
-            problem_points, comment = CreateGradesFileCommand._apply_late_submission_policy(results_data,
-                                                                                   submission,
-                                                                                   problem_points)
+            problem_points, comment = CreateGradesFileCommand._apply_late_submission_policy(
+                results_data,
+                submission,
+                problem_points
+            )
 
             student_grade_map[submission.author_email][0] += problem_points
 
