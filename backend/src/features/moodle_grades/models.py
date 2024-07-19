@@ -10,9 +10,6 @@ class MoodleResultsData(BaseModel):
     legal_excuses: dict[EmailStr, LegallyExcusedStudentData]
     late_submission_policy: LateSubmissionPolicyData
 
-    def __getitem__(self, email: EmailStr) -> LegallyExcusedStudentData | None:
-        return self.legal_excuses.get(email)
-
 
 class ContestData(BaseModel):
     id: int

@@ -85,7 +85,7 @@ class CreateGradesFileCommand:
     ) -> float:
         extra_time_seconds = moodle_results_data.late_submission_policy.extra_time
 
-        excused_student = moodle_results_data[submission.author_email]
+        excused_student = moodle_results_data.legal_excuses.get(submission.author_email)
         if excused_student is not None:
             excuse_time_seconds = excused_student.excuse_duration
         else:
