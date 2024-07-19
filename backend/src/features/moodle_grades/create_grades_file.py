@@ -84,7 +84,7 @@ class CreateGradesFileCommand:
             points: float
     ) -> float:
         penalty = moodle_results_data.late_submission_policy.penalty
-        legal_excuse = moodle_results_data.legal_excuses[submission.author_email]
+        legal_excuse = moodle_results_data.legal_excuses.get(submission.author_email)
         contest_start_time_utc = moodle_results_data.contest.start_time_utc
         contest_duration = moodle_results_data.contest.duration
         extra_time_seconds = moodle_results_data.late_submission_policy.extra_time
