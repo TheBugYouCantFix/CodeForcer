@@ -83,9 +83,20 @@ class CreateGradesFileCommand:
             submission: SubmissionData,
             points: float
     ) -> float:
-        extra_time = timedelta(seconds=moodle_results_data.late_submission_policy.extra_time)
-        excuse_time = timedelta(seconds=moodle_results_data.get_excuse_duration_by_email(submission.author_email))
-        deadline_time = moodle_results_data.contest.start_time_utc + moodle_results_data.contest.duration + excuse_time
+        extra_time_seconds = moodle_results_data.late_submission_policy.extra_time
+
+        excused_student = moodle_results_data[submission.author_email]
+        if excused_student is not None:
+            excuse_time_seconds = excused_student.excuse_duration
+        else:
+            excuse_time_seconds = 0
+
+        contest_start_time_utc = moodle_results_data.contest.start_time_utc
+        contest_duration = moodle_results_data.contest.duration
+
+        extra_time = timedelta(seconds=extra_time_seconds)
+        excuse_time = timedelta(seconds=excuse_time_seconds)
+        deadline_time = contest_start_time_utc + contest_duration + excuse_time
 
         deadline_time_extended = deadline_time + extra_time
         submission_time = submission.submission_time_utc
