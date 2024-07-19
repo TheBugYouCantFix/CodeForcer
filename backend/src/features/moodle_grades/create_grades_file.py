@@ -6,8 +6,8 @@ from datetime import datetime, timedelta
 from fastapi import status, APIRouter
 from fastapi.responses import StreamingResponse
 
-from .models import MoodleResultsData
 from src.features.contests.models import Problem, Submission
+from .models import MoodleResultsData
 from .submission_selectors import submission_selectors
 
 router = APIRouter()
