@@ -1,3 +1,21 @@
+export async function uploadFromSheet() {
+  const res = await fetch(import.meta.env.VITE_URL, {
+    method: "GET",
+    headers: { Authorization: `Bearer ${import.meta.env.VITE_TOKEN}` },
+  });
+
+  if (!res.ok) {
+    console.log(res);
+  }
+
+  const data = await res.json();
+  for (pair of data) {
+    await uploadSingleHandle(pair);
+  }
+
+  return data.length;
+}
+
 export async function uploadHandlesFile(file) {
   const formData = new FormData();
   formData.append("file", file);
