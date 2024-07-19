@@ -6,7 +6,7 @@ from src.features.contests.models import Submission, SubmissionSelector
 
 
 def submission_name_validator(name: str) -> str:
-    assert name in submission_selectors, f"Invalid submission selector name"
+    assert name in submission_selectors, "Invalid submission selector name"
     return name
 
 
@@ -34,7 +34,7 @@ def latest_submission_selector(submissions: list[Submission]) -> Submission:
 
 
 @submission_selector("latest successful")  # returns latest unsuccessful submission if no successful submissions
-def latest_submission_selector(submissions: list[Submission]) -> Submission:
+def latest_successful_submission_selector(submissions: list[Submission]) -> Submission:
     return max(submissions, key=lambda s: (s.is_successful, s.submission_time_utc))
 
 
