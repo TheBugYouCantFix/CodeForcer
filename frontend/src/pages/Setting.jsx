@@ -7,7 +7,7 @@ import { getContest, getSelectors } from "../api/contests.js";
 
 export async function loader({ params }) {
   if (!localStorage.getItem("api") || !localStorage.getItem("secret")) {
-    return redirect("/submissions");
+    return redirect("/contests");
   }
 
   const contest = await getContest(
@@ -21,7 +21,6 @@ export async function loader({ params }) {
 
 function Settings() {
   const { contest, selectors } = useLoaderData();
-  console.log(selectors);
 
   return (
     <>
