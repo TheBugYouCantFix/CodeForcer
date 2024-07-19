@@ -30,9 +30,9 @@ export default function FormHandleUpdate() {
         );
         reset();
       })
-      .catch(({ message }) => {
-        if (message.slice(0, 3) === "400") {
-          message = message.slice(5);
+      .catch((err) => {
+        let { message } = err;
+        if (err?.code === 400) {
           message = (
             <div>
               {message.slice(0, message.lastIndexOf("handle") + 6)}

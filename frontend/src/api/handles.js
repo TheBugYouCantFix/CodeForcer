@@ -31,7 +31,9 @@ export async function uploadSingleHandle(info) {
   if (!response.ok) {
     if (response.status == 400) {
       const data = await response.json();
-      throw new Error(data?.message || data?.detail);
+      let error = new Error(data?.message || data?.detail);
+      error.code = response.status;
+      throw error;
     }
     throw new Error(response.statusText);
   }
