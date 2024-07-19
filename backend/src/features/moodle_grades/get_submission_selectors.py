@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from starlette import status
 
-from src.features.moodle.submission_selectors import submission_selectors
+from src.features.moodle_grades.submission_selectors import submission_selectors
 
 router = APIRouter()
 

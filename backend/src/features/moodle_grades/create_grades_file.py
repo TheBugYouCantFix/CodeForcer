@@ -13,7 +13,7 @@ from .submission_selectors import submission_selectors
 router = APIRouter()
 
 
-@router.post("/grades", status_code=status.HTTP_200_OK)
+@router.post("/", status_code=status.HTTP_200_OK)
 async def create_grades_file(results_data: MoodleResultsData) -> StreamingResponse:
     filename = f"moodle_grades_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.csv"
 
