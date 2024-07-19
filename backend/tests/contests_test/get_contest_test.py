@@ -20,6 +20,7 @@ def test_gets_contest_when_contest_exists(contest):
     assert response_contest.start_time_utc == contest.start_time_utc
     assert response_contest.duration == contest.duration
     for response_problem in response_contest.problems:
+        problem = None
         for problem in contest.problems:
             if problem.index == response_problem.index:
                 break
