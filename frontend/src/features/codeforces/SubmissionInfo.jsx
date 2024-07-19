@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { BsFillArrowLeftSquareFill } from "react-icons/bs";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { handlePostRequest } from "../../api/contests.js";
 import { useLocalStorageState } from "../../hooks/useLocalStorage.js";
 import { Link, useNavigate } from "react-router-dom";
+import Select from "react-select";
+
 import {
   StyledCover,
   ButtonBack,
@@ -25,7 +27,13 @@ import SpinnerMini from "../../ui/SpinnnerMini.jsx";
 import FormElement from "../../ui/FormElement.jsx";
 import Input from "../../ui/Input.jsx";
 
-function SubmissionsInfo({ info }) {
+function SubmissionsInfo({ info, selectors }) {
+  const options = selectors?.map((el) => {
+    return {
+      value: el,
+      label: el.slice(0, 1).toUpperCase() + el.slice(1),
+    };
+  });
   const definedUsers = {
     ...info,
     problems: info.problems.map((item) => {
@@ -153,6 +161,7 @@ function SubmissionsInfo({ info }) {
             {isGetting ? <SpinnerMini /> : "Create a rating file"}
           </Button>
         )}
+        <Select options={options} />
       </List>
     </StyledCover>
   );
