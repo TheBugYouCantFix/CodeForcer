@@ -67,11 +67,18 @@ class CreateGradesFileCommand:
             else:
                 problem_points = CreateGradesFileCommand._get_grade_by_verdict(submission, problem)
 
-            problem_points = CreateGradesFileCommand._apply_late_submission_policy(results_data,
+            problem_points, comment = CreateGradesFileCommand._apply_late_submission_policy(results_data,
                                                                                    submission,
                                                                                    problem_points)
 
             student_grade_map[submission.author_email][0] += problem_points
+
+            comment = f"({comment})" if comment != "" else comment
+            feedback = f"Problem {problem.index}: {problem_points} {comment}\r\n"
+            if student_grade_map[submission.author_email][1] is not None:
+                student_grade_map[submission.author_email][1] += feedback
+            else:
+                student_grade_map[submission.author_email][1] = feedback
 
     @staticmethod
     def _get_grade_by_verdict(submission: SubmissionData, problem: ProblemData) -> float:
@@ -81,8 +88,8 @@ class CreateGradesFileCommand:
     def _apply_late_submission_policy(
             moodle_results_data: MoodleResultsData,
             submission: SubmissionData,
-            points: float
-    ) -> float:
+            points: float,
+    ) -> (float, str):
         penalty = moodle_results_data.late_submission_policy.penalty
         legal_excuse = moodle_results_data.legal_excuses.get(submission.author_email)
         contest_start_time_utc = moodle_results_data.contest.start_time_utc
@@ -97,13 +104,16 @@ class CreateGradesFileCommand:
 
         deadline_time_extended = deadline_time + extra_time
 
+        comment = ""
         if submission_time > deadline_time_extended:
-            return 0.0
+            comment = "submitted after the deadline"
+            return 0.0, comment
 
         if submission_time > deadline_time:
-            return points * (1 - penalty)
+            comment = f"Late submission policy applied: {penalty * 100}% grade reduction"
+            return points * (1 - penalty), comment
 
-        return points
+        return points, comment
 
     @staticmethod
     def _write_to_file(writer: csv.writer, student_grade_map: defaultdict[str, list[float | str]]) -> None:
