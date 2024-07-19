@@ -32,22 +32,20 @@ export default function FormHandleUpdate() {
       })
       .catch((err) => {
         let { message } = err;
-        if (err?.code === 400) {
+        if (err.code === 400) {
           message = (
             <div>
-              {message.slice(0, message.lastIndexOf("handle") + 6)}
+              {message}
               <span
                 style={{ color: "var(--color-red-400)", fontWeight: "500" }}
               >
-                {message.slice(
-                  message.lastIndexOf("handle") + 6,
-                  message.indexOf("not"),
-                )}
+                {err.handle}
               </span>
-              {"not found"}
+              {" is not found"}
             </div>
           );
         }
+
         toast.error(message);
       })
       .finally(() => {
