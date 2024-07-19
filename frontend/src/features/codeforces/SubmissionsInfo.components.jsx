@@ -1,4 +1,4 @@
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import Input from "../../ui/Input.jsx";
 
 export const StyledCover = styled.div`
