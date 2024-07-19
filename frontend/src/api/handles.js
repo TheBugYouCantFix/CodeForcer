@@ -26,10 +26,13 @@ export async function uploadSingleHandle(info) {
     },
     body: JSON.stringify(info),
   });
-
   console.log("Single handle uploading response: ", response);
 
   if (!response.ok) {
+    if (response.status == 400) {
+      const data = await response.json();
+      throw new Error(data?.message);
+    }
     throw new Error(response.statusText);
   }
 

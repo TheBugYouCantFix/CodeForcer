@@ -25,11 +25,30 @@ export default function FormHandleUpdate() {
 
     uploadSingleHandle(data)
       .then((res) => {
-        toast.success(`Successfully ${res.status == 204 ? "updated" : "created"}!`);
+        toast.success(
+          `Successfully ${res.status == 204 ? "updated" : "created"}!`,
+        );
         reset();
       })
-      .catch((err) => {
-        toast.error(err.message);
+      .catch(({ message }) => {
+        if (message.slice(0, 3) === "400") {
+          message = message.slice(5);
+          message = (
+            <div>
+              {message.slice(0, message.lastIndexOf("handle") + 6)}
+              <span
+                style={{ color: "var(--color-red-400)", fontWeight: "500" }}
+              >
+                {message.slice(
+                  message.lastIndexOf("handle") + 6,
+                  message.indexOf("not"),
+                )}
+              </span>
+              {"not found"}
+            </div>
+          );
+        }
+        toast.error(message);
       })
       .finally(() => {
         setIsGetting(false);
