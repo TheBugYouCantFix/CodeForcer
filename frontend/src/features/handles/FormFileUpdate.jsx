@@ -3,43 +3,37 @@ import { useForm } from "react-hook-form";
 import Form from "../../ui/Form";
 import Heading from "../../ui/Heading";
 import FileInput from "../../ui/FileInput";
-import Input from "../../ui/Input";
 import Button from "../../ui/Button";
 import FormElement from "../../ui/FormElement";
-import styled from "styled-components";
-import { uploadHandlesFile } from "../../api/handles";
+import { uploadHandlesFile, uploadFromSheet } from "../../api/handles";
 import { useState } from "react";
 import SpinnerMini from "../../ui/SpinnnerMini";
-
-const Error = styled.span`
-  display: flex;
-  justify-content: center;
-  text-align: center;
-  font-size: 1.4rem;
-  color: var(--color-red-400);
-`;
 
 export default function FormFileUpdate() {
   const {
     register,
     handleSubmit,
     watch,
-    setError,
     reset,
     formState: { errors },
   } = useForm();
 
   const watchFileInput = watch("file");
 
+  function handleGoogleClick() {
+    setIsGetting(true);
+    uploadFromSheet()
+      .then((res) => {
+        toast.success(`Successfully updated ${res} handles`);
+      })
+      .catch((err) => {
+        toast.error(err.message);
+      })
+      .finally(() => setIsGetting(false));
+  }
+
   const [isGetting, setIsGetting] = useState(false);
-  function onSubmit({ file, link }) {
-    if (file.length === 0 && link.trim().length == 0) {
-      setError("neitherItem", {
-        type: "manual",
-        message: "You must fill out either file or link field",
-      });
-      return;
-    }
+  function onSubmit({ file }) {
     setIsGetting(true);
     uploadHandlesFile(file[0])
       .then((res) => {
@@ -61,28 +55,30 @@ export default function FormFileUpdate() {
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
-      <FormElement label="File from Local Storage" type="file">
+      <Heading as="h2">Update with file</Heading>
+      <FormElement
+        label="File from Local Storage"
+        type="file"
+        error={errors?.file?.message}
+      >
         <FileInput
           edited={watchFileInput && "true"}
-          text={
-            watchFileInput ? watchFileInput[0]?.name : "*.csv, *.xls, *.xlsx"
-          }
-          accept={".csv, .xls, .xlsx"}
+          text={watchFileInput ? watchFileInput[0]?.name : "*.csv"}
+          accept={".csv"}
           register={register("file")}
           disabled={isGetting}
         />
-      </FormElement>
-      <Heading as="h2">Choose one of the options</Heading>
-      <FormElement label="Link to Google Sheets">
-        <Input
+        <Button
           disabled={isGetting}
-          placeholder="https://docs.google.com/spreadsheets/..."
-          {...register("link")}
-        />
+          type="submit"
+          style={{ width: "100%", marginTop: "2.5rem" }}
+        >
+          {isGetting ? <SpinnerMini /> : "Submit"}
+        </Button>
       </FormElement>
-      {errors.neitherItem && <Error>{errors?.neitherItem.message}</Error>}
-      <Button disabled={isGetting} type="submit">
-        {isGetting ? <SpinnerMini /> : "Submit"}
+      <Heading as="h2">Update with connected Google Sheet</Heading>
+      <Button onClick={handleGoogleClick} disabled={isGetting} type="button">
+        {isGetting ? <SpinnerMini /> : "Update from Sheet"}
       </Button>
     </Form>
   );
