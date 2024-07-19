@@ -6,7 +6,9 @@ from datetime import datetime, timedelta
 from fastapi import status, APIRouter
 from fastapi.responses import StreamingResponse
 
-from .models import MoodleResultsData, ProblemData, SubmissionData
+from .models import MoodleResultsData
+from src.features.contests.models import Problem, Submission
+from .submission_selectors import submission_selectors
 
 router = APIRouter()
 
@@ -38,8 +40,10 @@ class CreateGradesFileCommand:
         file = StringIO()
         writer = csv.writer(file)
 
-        contest_name = results_data.contest.name
-        writer.writerow(['Email', f'{contest_name} Grade', f'{contest_name} Feedback'])
+        contest = results_data.contest
+        contest.select_single_submission_for_each_participant(submission_selectors['latest'])
+
+        writer.writerow(['Email', f'{contest.name} Grade', f'{contest.name} Feedback'])
 
         self._mark_grades(results_data.contest.problems, student_grade_map, results_data)
         self._write_to_file(writer, student_grade_map)
@@ -48,7 +52,7 @@ class CreateGradesFileCommand:
 
     def _mark_grades(
             self,
-            problems: list[ProblemData],
+            problems: list[Problem],
             student_grade_map: defaultdict[str, list[float | str]],
             results_data: MoodleResultsData
     ) -> None:
@@ -57,34 +61,36 @@ class CreateGradesFileCommand:
 
     @staticmethod
     def _update_grades(
-            problem: ProblemData,
+            problem: Problem,
             student_grade_map: defaultdict[str, list[float | str]],
             results_data: MoodleResultsData
     ) -> None:
+        max_grade = results_data.problem_max_grade_by_index[problem.index]
+
         for submission in problem.submissions:
             if submission.points and problem.max_points:
-                problem_points = submission.points / problem.max_points * problem.max_grade
+                problem_points = submission.points / problem.max_points * max_grade
             else:
-                problem_points = CreateGradesFileCommand._get_grade_by_verdict(submission, problem)
+                problem_points = CreateGradesFileCommand._get_grade_by_verdict(submission, max_grade)
 
             problem_points = CreateGradesFileCommand._apply_late_submission_policy(results_data,
                                                                                    submission,
                                                                                    problem_points)
 
-            student_grade_map[submission.author_email][0] += problem_points
+            student_grade_map[submission.author.email][0] += problem_points
 
     @staticmethod
-    def _get_grade_by_verdict(submission: SubmissionData, problem: ProblemData) -> float:
-        return problem.max_grade if submission.is_successful else 0
+    def _get_grade_by_verdict(submission: Submission, max_grade: float) -> float:
+        return max_grade if submission.is_successful else 0
 
     @staticmethod
     def _apply_late_submission_policy(
             moodle_results_data: MoodleResultsData,
-            submission: SubmissionData,
+            submission: Submission,
             points: float
     ) -> float:
         penalty = moodle_results_data.late_submission_policy.penalty
-        legal_excuse = moodle_results_data.legal_excuses.get(submission.author_email)
+        legal_excuse = moodle_results_data.legal_excuses.get(submission.author.email)
         contest_start_time_utc = moodle_results_data.contest.start_time_utc
         contest_duration = moodle_results_data.contest.duration
         extra_time_seconds = moodle_results_data.late_submission_policy.extra_time
