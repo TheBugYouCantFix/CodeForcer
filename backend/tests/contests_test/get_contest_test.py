@@ -1,8 +1,6 @@
-from datetime import datetime, timedelta
-
 from fastapi import status
 
-from src.features.contests.models import Contest, Submission
+from src.features.contests.models import Contest
 from src.features.students.models import Student
 from tests.create_test_client import client
 from tests.mocks.data_generation import fake
