@@ -10,17 +10,17 @@ export async function loader({ params }) {
     return redirect("/contests");
   }
 
-  const contest = await getContest(
+  const info = await getContest(
     params.contestId,
     JSON.parse(localStorage.getItem("api")),
     JSON.parse(localStorage.getItem("secret")),
   );
   const selectors = await getSelectors();
-  return { contest, selectors };
+  return { info, selectors };
 }
 
 function Settings() {
-  const { contest, selectors } = useLoaderData();
+  const { info, selectors } = useLoaderData();
 
   return (
     <>
@@ -37,7 +37,7 @@ function Settings() {
         </p>
         <p>You can also copy the list of undefined participants</p>
       </Description>
-      <SubmissionsInfo info={contest} selectors={selectors} />
+      <SubmissionsInfo info={info} selectors={selectors} />
     </>
   );
 }
