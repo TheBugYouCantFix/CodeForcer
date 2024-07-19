@@ -8,7 +8,6 @@ export async function getContest(contestID, APIKey, secretKey) {
   }
 
   const data = await response.json();
-  console.log(data);
   return data;
 }
 export async function getSelectors() {
@@ -47,11 +46,12 @@ export async function handlePostRequest(info, data) {
         };
       }),
     },
-    legally_excused: [],
+    legal_excuses: {},
     late_submission_policy: {
       penalty: penalty < 0 ? 0 : penalty > 1 ? 1 : penalty,
       extra_time: additionTime,
     },
+    submission_selector_name: data.selector.value,
   };
 
   console.log("Body of request:", body);
