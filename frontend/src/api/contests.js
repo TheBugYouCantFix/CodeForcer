@@ -7,7 +7,19 @@ export async function getContest(contestID, APIKey, secretKey) {
     throw response;
   }
 
-  const data = response.json();
+  const data = await response.json();
+  console.log(data);
+  return data;
+}
+export async function getSelectors() {
+  const url = `/submission-selectors`;
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw response;
+  }
+
+  const data = await response.json();
   return data;
 }
 export async function handlePostRequest(info, data) {
@@ -15,7 +27,8 @@ export async function handlePostRequest(info, data) {
   const additionTime =
     parseFloat(data["additional-days"] ? data["additional-days"] : 0) * 86400 +
     parseFloat(data["additional-hours"] ? data["additional-hours"] : 0) * 3600 +
-    parseFloat(data["additional-minutes"] ? data["additional-minutes"] : 0) * 60;
+    parseFloat(data["additional-minutes"] ? data["additional-minutes"] : 0) *
+      60;
   const url = `/moodle_grades`;
 
   const body = {
