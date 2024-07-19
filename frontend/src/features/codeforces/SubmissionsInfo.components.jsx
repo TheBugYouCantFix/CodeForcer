@@ -15,6 +15,17 @@ export const StyledCover = styled.div`
   box-shadow: var(--shadow-md);
   border-radius: var(--border-radius-md);
 
+  h2 {
+    font-size: 2rem;
+
+    @media (max-width: 767.98px) {
+      font-size: 1.6rem;
+    }
+  }
+  h2:not(:last-child) {
+    margin-bottom: 2.5rem;
+  }
+
   @media (max-width: 567.98px) {
     margin-left: -2rem;
     margin-right: -2rem;
@@ -36,27 +47,24 @@ export const ButtonBack = styled.button`
     width: 5rem;
     height: 5rem;
     transition: fill 0.3s ease;
-
-    @media (max-width: 479.98px) {
-      width: 3rem;
-      height: 3rem;
-    }
   }
   &:hover svg {
     fill: var(--color-brand-600);
   }
 
-  @media (max-width: 399.98px) {
+  @media (max-width: 479.98px) {
     display: none;
   }
 `;
 
 export const Description = styled.div`
   display: flex;
+  align-items: center;
+  gap: 1rem;
   justify-content: center;
 
   &:not(:last-child) {
-    margin-bottom: 3.5rem;
+    margin-bottom: 1rem;
   }
 `;
 
@@ -65,6 +73,7 @@ export const List = styled.form`
   display: flex;
   flex-direction: column;
   gap: 3rem;
+  margin-top: 3rem;
 
   > button {
     align-self: center;
@@ -101,12 +110,6 @@ export const Item = styled.div`
   > input:not(:last-child) {
     margin-bottom: 0.2rem;
   }
-
-  ${(props) =>
-    parseInt(props.undefined) > 0 &&
-    css`
-      border: 1px solid var(--color-yellow-700);
-    `}
 `;
 
 export const ItemRow = styled.div`
