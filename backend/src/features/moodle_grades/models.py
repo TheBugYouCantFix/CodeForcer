@@ -43,6 +43,5 @@ class LateSubmissionPolicyData(BaseModel):
 
 
 class LegallyExcusedStudentData(BaseModel):
-    email: EmailStr
     excuse_duration: int
 
