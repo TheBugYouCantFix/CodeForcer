@@ -6,7 +6,6 @@ from src.container import container
 from src.features.students.interfaces import IStudentsRepository
 from .submission_selectors import submission_selectors, SubmissionSelectorName
 from .interfaces import IContestsProvider
-from .models import Contest
 
 router = APIRouter()
 
@@ -16,11 +15,15 @@ async def get_contest(
         contest_id: int,
         key: str, secret: str,
         submission_selector_name: SubmissionSelectorName = 'latest'
-) -> Contest:
-    return GetContestQuery(
+):
+    contest = GetContestQuery(
         container[IContestsProvider],
         container[IStudentsRepository]
     ).handle(contest_id, key, secret, submission_selector_name)
+    return {
+        "contest": contest,
+        "participants": contest.participants
+    }
 
 
 class GetContestQuery:
@@ -31,7 +34,7 @@ class GetContestQuery:
         self.contests_provider = contests_provider
         self.students_repository = students_repository
 
-    def handle(self, contest_id: int, api_key: str, api_secret: str, submission_selector_name: str) -> Contest:
+    def handle(self, contest_id: int, api_key: str, api_secret: str, submission_selector_name: str):
         contest = self.contests_provider.get_contest(contest_id, api_key, api_secret)
 
         contest.select_single_submission_for_each_participant(selector=submission_selectors[submission_selector_name])
