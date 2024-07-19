@@ -18,7 +18,7 @@ app.include_router(moodle_grades_router, prefix='/api/moodle-grades')
 async def http_exception_handler(_, exc: HTTPException):
     return JSONResponse(
         status_code=exc.status_code,
-        content={"message": str(exc)},
+        content={"message": exc.detail},
     )
 
 
