@@ -1,7 +1,7 @@
 export async function uploadHandlesFile(file) {
   const formData = new FormData();
   formData.append("file", file);
-  const url = `/students/file`;
+  const url = `/api/students/file`;
 
   const response = await fetch(url, {
     method: "PATCH",
@@ -17,7 +17,7 @@ export async function uploadHandlesFile(file) {
   return response;
 }
 export async function uploadSingleHandle(info) {
-  const url = `/students/${info.email}`;
+  const url = `/api/students/${info.email}`;
 
   const response = await fetch(url, {
     method: "PUT",
