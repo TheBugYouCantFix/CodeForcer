@@ -15,7 +15,7 @@ def test_contest_map_handles_to_emails():
 
     unmapped_participants = [
         participant
-        for participant in contest.get_participants
+        for participant in contest.participants
         if participant.email is None
     ]
 

@@ -57,7 +57,7 @@ def test_gets_contest_with_mapped_emails_foreach_student(contest, students_repo_
     students_by_email = {
         (fake_email := fake.email()): Student(email=fake_email, handle=student.handle)
         for student
-        in contest.get_participants
+        in contest.participants
         if student.email is None
     }
 
@@ -68,7 +68,7 @@ def test_gets_contest_with_mapped_emails_foreach_student(contest, students_repo_
     assert response.status_code == status.HTTP_200_OK
 
     response_contest = Contest.model_validate_json(response.text)
-    for student in response_contest.get_participants:
+    for student in response_contest.participants:
         assert student.email is not None
         if student.email in students_by_email:
             assert student == students_by_email[student.email]
@@ -119,5 +119,5 @@ def test_gets_contest_with_latest_submission_for_each_student_if_selected_select
     assert response.status_code == status.HTTP_200_OK
 
     response_contest = Contest.model_validate_json(response.text)
-    assert len(response_contest.get_participants) == 1
+    assert len(response_contest.participants) == 1
     assert response_contest.problems[0].submissions[0].id == 3

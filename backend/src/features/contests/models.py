@@ -24,11 +24,11 @@ class Contest(BaseModel):
             problem.select_single_submission_for_each_participant(selector)
 
     @property
-    def get_participants(self) -> set[Student]:
+    def participants(self) -> set[Student]:
         return {
             participant
             for problem in self.problems
-            for participant in problem.get_participants
+            for participant in problem.participants
         }
 
 
@@ -57,7 +57,7 @@ class Problem(BaseModel):
         self.submissions = selected_submissions
 
     @property
-    def get_participants(self) -> set[Student]:
+    def participants(self) -> set[Student]:
         return {submission.author for submission in self.submissions}
 
 
