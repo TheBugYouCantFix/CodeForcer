@@ -4,9 +4,8 @@ from fastapi import status
 
 from src.features.contests.models import Contest, Problem, Submission
 from src.features.students.models import Student
-from tests.create_test_client import client
-
 from src.features.moodle_grades.models import MoodleResultsData, LateSubmissionPolicy
+from tests.create_test_client import client
 
 
 def test_get_moodle_grades_if_data_is_valid():
