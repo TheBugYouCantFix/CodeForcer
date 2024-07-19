@@ -12,7 +12,7 @@ from src.features.moodle_grades.models import (
     ProblemData,
     SubmissionData
 )
-from src.features.students.model import Student
+from src.features.students.models import Student
 
 fake = Faker('en-US')
 

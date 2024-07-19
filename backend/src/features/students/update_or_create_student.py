@@ -4,7 +4,7 @@ from validate_email import validate_email
 from src.container import container
 from src.features.contests.interfaces import IContestsProvider
 from .interfaces import IStudentsRepository
-from .model import Student
+from .models import Student
 
 router = APIRouter()
 

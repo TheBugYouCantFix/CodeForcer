@@ -2,7 +2,7 @@ from fastapi import status, APIRouter
 
 from src.container import container
 from .interfaces import IStudentsRepository
-from .model import Student
+from .models import Student
 
 router = APIRouter()
 

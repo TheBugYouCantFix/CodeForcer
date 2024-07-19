@@ -3,7 +3,7 @@ from starlette import status
 
 from src.container import container
 from src.features.contests.interfaces import IContestsProvider
-from .model import Student
+from .models import Student
 from .interfaces import IStudentsRepository
 
 router = APIRouter()

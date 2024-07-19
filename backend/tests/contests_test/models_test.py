@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from src.features.students.model import Student
+from src.features.students.models import Student
 from src.features.contests.models import Contest, Problem, Submission
 from src.features.moodle_grades.submission_selectors import submission_selectors
 from tests.mocks.data_generation import fake

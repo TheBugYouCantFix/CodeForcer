@@ -1,5 +1,5 @@
 from src.container import container
-from src.features.students.model import Student
+from src.features.students.models import Student
 from src.features.students.create_student import CreateStudentCommandHandler
 from src.features.students.update_or_create_student import UpdateOrCreateStudentCommandHandler
 from src.features.students.get_all_students import GetAllStudentsCommandHandler

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from pydantic import EmailStr
 
-from src.features.students.model import Student
+from src.features.students.models import Student
 
 
 class IStudentsRepository(ABC):

@@ -1,7 +1,7 @@
 from pydantic import EmailStr
 
 from src.features.students.interfaces import IStudentsRepository
-from src.features.students.model import Student
+from src.features.students.models import Student
 
 
 class StudentRepositoryMock(IStudentsRepository):
