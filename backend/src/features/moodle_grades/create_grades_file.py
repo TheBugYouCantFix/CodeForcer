@@ -44,6 +44,9 @@ class CreateGradesFileCommand:
         self._mark_grades(results_data.contest.problems, student_grade_map, results_data)
         self._write_to_file(writer, student_grade_map)
 
+        for email in student_grade_map.keys():
+            student_grade_map[email][1] += '"'
+
         return file
 
     def _mark_grades(
@@ -74,11 +77,11 @@ class CreateGradesFileCommand:
             student_grade_map[submission.author_email][0] += problem_points
 
             comment = f"({comment})" if comment != "" else comment
-            feedback = f"Problem {problem.index}: {problem_points} {comment}\r\n"
+            feedback = f"Problem {problem.index}: {problem_points} {comment}\n\n\n"
             if student_grade_map[submission.author_email][1] is not None:
                 student_grade_map[submission.author_email][1] += feedback
             else:
-                student_grade_map[submission.author_email][1] = feedback
+                student_grade_map[submission.author_email][1] = '"' + feedback
 
     @staticmethod
     def _get_grade_by_verdict(submission: SubmissionData, problem: ProblemData) -> float:
