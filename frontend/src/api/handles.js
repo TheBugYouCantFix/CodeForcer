@@ -9,7 +9,8 @@ export async function uploadFromSheet() {
   }
 
   const data = await res.json();
-  for (pair of data) {
+
+  for (const pair of data) {
     await uploadSingleHandle(pair);
   }
 
