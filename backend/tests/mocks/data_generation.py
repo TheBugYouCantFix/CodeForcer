@@ -23,7 +23,8 @@ class MoodleResultsDataProvider(BaseProvider):
             contest=contest,
             legal_excuses={},
             late_submission_policy=fake.late_submission_policy_data(),
-            problem_max_grade_by_index={}
+            problem_max_grade_by_index={},
+            submission_selector_name='latest'
         )
 
 
