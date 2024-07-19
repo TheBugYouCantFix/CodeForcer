@@ -3,13 +3,13 @@ from starlette import status
 
 from src.container import container
 from src.features.contests.interfaces import IContestsProvider
-from .model import Student
+from .models import Student
 from .interfaces import IStudentsRepository
 
 router = APIRouter()
 
 
-@router.post("/students", status_code=status.HTTP_201_CREATED)
+@router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_student(student: Student) -> Student | None:
     return CreateStudentCommandHandler(
         container[IStudentsRepository],

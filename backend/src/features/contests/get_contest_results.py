@@ -6,7 +6,7 @@ from .interfaces import IContestsProvider
 router = APIRouter()
 
 
-@router.get("/contests/{contest_id}/results", status_code=status.HTTP_200_OK)
+@router.get("/{contest_id}/results", status_code=status.HTTP_200_OK)
 async def get_contest_results(contest_id: int, key: str, secret: str):
     return GetContestResultsQuery(
         container[IContestsProvider]

@@ -1,6 +1,6 @@
 from fastapi import status
 
-from src.features.students.model import Student
+from src.features.students.models import Student
 from tests.create_test_client import client
 
 

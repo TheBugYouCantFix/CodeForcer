@@ -5,7 +5,7 @@ from collections import defaultdict
 from typing import Callable
 from pydantic import BaseModel, EmailStr
 
-from src.features.students.model import Student
+from src.features.students.models import Student
 
 
 class Contest(BaseModel):
@@ -24,11 +24,11 @@ class Contest(BaseModel):
             problem.select_single_submission_for_each_participant(selector)
 
     @property
-    def get_participants(self) -> set[Student]:
+    def participants(self) -> set[Student]:
         return {
             participant
             for problem in self.problems
-            for participant in problem.get_participants
+            for participant in problem.participants
         }
 
 
@@ -57,7 +57,7 @@ class Problem(BaseModel):
         self.submissions = selected_submissions
 
     @property
-    def get_participants(self) -> set[Student]:
+    def participants(self) -> set[Student]:
         return {submission.author for submission in self.submissions}
 
 
@@ -76,3 +76,8 @@ class Submission(BaseModel):
 
 
 SubmissionSelector = Callable[[list[Submission]], Submission]
+
+
+class ContestResponse(BaseModel):
+    contest: Contest
+    participants: set[Student]

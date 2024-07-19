@@ -7,13 +7,13 @@ from src.container import container
 from src.features.contests.interfaces import IContestsProvider
 from .interfaces import IStudentsRepository
 from .update_or_create_student import UpdateOrCreateStudentCommandHandler
-from .model import Student
+from .models import Student, UpdatedOrCreatedStudentsResponse
 
 router = APIRouter()
 
 
-@router.patch("/students/file", status_code=status.HTTP_201_CREATED)
-async def update_or_create_students_from_file(file: UploadFile = File(...)) -> list[Student]:
+@router.patch("/file", status_code=status.HTTP_201_CREATED)
+async def update_or_create_students_from_file(file: UploadFile = File(...)) -> UpdatedOrCreatedStudentsResponse:
     return UpdateOrCreateStudentsFromFileCommandHandler(
         container[IStudentsRepository],
         container[IContestsProvider]
@@ -25,7 +25,7 @@ class UpdateOrCreateStudentsFromFileCommandHandler:
         self.students_repository = students_repository
         self.contests_provider = contests_provider
 
-    def handle(self, file: UploadFile) -> list[Student]:
+    def handle(self, file: UploadFile) -> UpdatedOrCreatedStudentsResponse:
         file_location = f"temp_{file.filename}"
         with open(file_location, "wb+") as file_object:
             file_object.write(file.file.read())
@@ -35,16 +35,21 @@ class UpdateOrCreateStudentsFromFileCommandHandler:
         if path.exists(file_location):
             remove(file_location)
 
-        return filter(
-            lambda student: student is not None, [
-                UpdateOrCreateStudentCommandHandler(
-                    self.students_repository,
-                    self.contests_provider
-                ).handle(student.email, student)
-                for student
-                in students
-            ]
-        )
+        updated = 0
+        created = 0
+
+        for student in students:
+            result = UpdateOrCreateStudentCommandHandler(
+                self.students_repository,
+                self.contests_provider
+            ).handle(student.email, student)
+
+            if result is None:
+                updated += 1
+            else:
+                created += 1
+
+        return UpdatedOrCreatedStudentsResponse(updated=updated, created=created)
 
 
 def _parse_students_data(file_path: str) -> list[Student]:

@@ -1,24 +1,15 @@
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
 from uvicorn import run
-from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from src.features.students.route import router as students_router
 from src.features.contests.route import router as contests_router
 from src.features.moodle_grades.route import router as moodle_grades_router
 
-app = FastAPI()
-app.include_router(students_router)
-app.include_router(contests_router)
-app.include_router(moodle_grades_router)
+app = FastAPI(title='CodeForcer')
 
-
-@app.exception_handler(StarletteHTTPException)
-async def http_exception_handler(_, exc):
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={"message": str(exc)},
-    )
+app.include_router(students_router, prefix='/api/students')
+app.include_router(contests_router, prefix='/api/contests')
+app.include_router(moodle_grades_router, prefix='/api/moodle-grades')
 
 
 if __name__ == '__main__':

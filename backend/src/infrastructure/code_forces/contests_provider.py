@@ -5,7 +5,7 @@ from typing import Callable
 from fastapi import HTTPException, status
 from pytz import timezone
 
-from src.features.students.model import Student
+from src.features.students.models import Student
 from src.features.contests.models import Contest, Submission, Problem
 from src.features.contests.interfaces import IContestsProvider
 from .enums import CfVerdict
@@ -79,6 +79,12 @@ class CodeForcesContestsProvider(IContestsProvider):
         )
 
     def validate_handle(self, handle: str) -> bool:
+        if ';' in handle:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='CodeForces handle cannot contain \';\''
+            )
+
         anonymous_requests_sender = self.anonymous_requests_sender_factory()
         return anonymous_requests_sender.validate_handle(handle) is not None
 

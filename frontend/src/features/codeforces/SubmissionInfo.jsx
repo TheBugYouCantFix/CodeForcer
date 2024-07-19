@@ -16,7 +16,6 @@ import {
   ItemRow,
   ItemInput,
   Error,
-  UndefinedUsersList,
   UndefinedDescription,
   LateSubmissionsContainer,
   TimeConfiguration,
@@ -62,8 +61,24 @@ const selectTheme = (theme) => ({
     neutral90: "var(--color-grey-900)",
   },
 });
+function download(filename, text) {
+  var element = document.createElement("a");
+  element.setAttribute(
+    "href",
+    "data:text/plain;charset=utf-8," + encodeURIComponent(text),
+  );
+  element.setAttribute("download", filename);
+
+  element.style.display = "none";
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+}
 
 function SubmissionsInfo({ info, selectors }) {
+  const { contest, participants } = info;
   const options = selectors?.map((el) => {
     return {
       value: el,
@@ -71,8 +86,8 @@ function SubmissionsInfo({ info, selectors }) {
     };
   });
   const definedUsers = {
-    ...info,
-    problems: info.problems.map((item) => {
+    ...contest,
+    problems: contest.problems.map((item) => {
       return {
         ...item,
         submissions: item.submissions.filter(
@@ -81,15 +96,16 @@ function SubmissionsInfo({ info, selectors }) {
       };
     }),
   };
-  const unpossibleReqest = definedUsers.problems.every(
-    (item) => item.submissions.length === 0,
-  );
+  const undefinedUsers = participants
+    .filter((el) => el?.email === null)
+    .map((el) => el?.handle);
+  const unpossibleReqest = undefinedUsers.length === participants.length;
 
   const navigate = useNavigate();
 
   const [contestInfo, setContestInfo] = useLocalStorageState(
     {},
-    `contest-${info.id}`,
+    `contest-${contest.id}`,
   );
 
   const {
@@ -153,12 +169,33 @@ function SubmissionsInfo({ info, selectors }) {
       <ButtonBack onClick={() => navigate("/contests")}>
         <BsFillArrowLeftSquareFill />
       </ButtonBack>
-      <Heading as="h2">Contest &quot;{info.name}&quot;</Heading>
+      <Heading as="h2">Contest &quot;{contest.name}&quot;</Heading>
       <Description>
-        Total number of problems: {info.problems.length}
+        Total number of problems: {contest.problems.length}
+      </Description>
+      <Description>
+        {undefinedUsers.length > 0 && (
+          <>
+            <span style={{ color: "var(--color-red-400)" }}>
+              Undefined participants: {undefinedUsers.length}
+            </span>
+            <Button
+              onClick={() =>
+                download(
+                  `undefined-participants-${contest.name}`,
+                  undefinedUsers.join("\n"),
+                )
+              }
+              size="small"
+              variation="secondary"
+            >
+              Download
+            </Button>
+          </>
+        )}
       </Description>
       <List onSubmit={handleSubmit(onSubmit)}>
-        {info.problems.map((item, index) => (
+        {contest.problems.map((item, index) => (
           <SubmissionItem key={index} item={item} index={index}>
             <>
               <strong>
@@ -283,41 +320,16 @@ function SubmissionsSettings({ register, isGetting, contestInfo }) {
   );
 }
 
-function SubmissionItem({ index, item, children }) {
-  const undefinedUsers = item.submissions.filter((item) => !item.author.email);
-  const [isOpen, setIsOpen] = useState(false);
-
+function SubmissionItem({ item, children }) {
   return (
-    <Item undefined={undefinedUsers.length}>
+    <Item>
       {children}
       <ItemRow>
         <span>
           Total number of sumbissions:
           <strong>{item?.submissions?.length}</strong>
         </span>
-
-        {undefinedUsers.length > 0 ? (
-          <span>
-            Undefined participants: <strong>{undefinedUsers?.length}</strong>
-            <Button
-              size="small"
-              type="button"
-              onClick={() => setIsOpen((open) => !open)}
-            >
-              {!isOpen ? "SHOW" : "HIDE"}
-            </Button>
-          </span>
-        ) : (
-          <span>All users are defined</span>
-        )}
       </ItemRow>
-      {isOpen && (
-        <UndefinedUsersList id={`list-${index}`}>
-          {undefinedUsers.map((user) => (
-            <span key={user?.author?.handle}>{user?.author?.handle}</span>
-          ))}
-        </UndefinedUsersList>
-      )}
     </Item>
   );
 }

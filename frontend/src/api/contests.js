@@ -1,5 +1,5 @@
 export async function getContest(contestID, APIKey, secretKey) {
-  const url = `/contests/${contestID}?key=${APIKey}&secret=${secretKey}`;
+  const url = `/api/contests/${contestID}?key=${APIKey}&secret=${secretKey}`;
 
   const response = await fetch(url);
 
@@ -10,8 +10,9 @@ export async function getContest(contestID, APIKey, secretKey) {
   const data = await response.json();
   return data;
 }
+
 export async function getSelectors() {
-  const url = `/submission-selectors`;
+  const url = `/api/moodle-grades/submission-selectors`;
   const response = await fetch(url);
 
   if (!response.ok) {
@@ -21,6 +22,7 @@ export async function getSelectors() {
   const data = await response.json();
   return data;
 }
+
 export async function handlePostRequest(info, data) {
   const penalty = data.penalty ? parseFloat(data.penalty) / 100 : 0;
   const additionTime =
@@ -28,15 +30,14 @@ export async function handlePostRequest(info, data) {
     parseFloat(data["additional-hours"] ? data["additional-hours"] : 0) * 3600 +
     parseFloat(data["additional-minutes"] ? data["additional-minutes"] : 0) *
       60;
-  const url = `/moodle_grades`;
 
+  const url = `/api/moodle-grades`;
   const body = {
     contest: {
       ...info,
-      problems: info.problems.map((item, index) => {
+      problems: info.problems.map((item) => {
         return {
           ...item,
-          max_grade: parseFloat(data[`${index}`]),
           submissions: item.submissions.map((item) => {
             return {
               ...item,
@@ -46,6 +47,10 @@ export async function handlePostRequest(info, data) {
         };
       }),
     },
+    problem_max_grade_by_index: info.problems.reduce(
+      (acc, cur, idx) => ({ ...acc, [cur.index]: data[idx.toString()] }),
+      {},
+    ),
     legal_excuses: {},
     late_submission_policy: {
       penalty: penalty < 0 ? 0 : penalty > 1 ? 1 : penalty,
