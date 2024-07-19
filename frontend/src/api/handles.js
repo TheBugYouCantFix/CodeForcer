@@ -16,6 +16,7 @@ export async function uploadHandlesFile(file) {
 
   return response;
 }
+
 export async function uploadSingleHandle(info) {
   const url = `/api/students/${info.email}`;
 
