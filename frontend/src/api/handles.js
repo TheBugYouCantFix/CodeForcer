@@ -14,7 +14,20 @@ export async function uploadFromSheet() {
     try {
       await uploadSingleHandle(pair);
     } catch (err) {
-      toast.err(err.message);
+      let { message } = err;
+      if (err.code === 400) {
+        message = (
+          <div>
+            {message}
+            <span style={{ color: "var(--color-red-400)", fontWeight: "500" }}>
+              {err.handle}
+            </span>
+            {" is not found"}
+          </div>
+        );
+      }
+
+      toast.error(message);
       continue;
     }
   }
