@@ -5,8 +5,6 @@ stages:
 
 pylint:
   stage: lint
-  tags:
-    - python
   image:
     name: python:3.12
     pull_policy: if-not-present
@@ -23,8 +21,6 @@ pylint:
 
 pytest:
   stage: test
-  tags:
-    - python
   image:
     name: python:3.12
     pull_policy: if-not-present
