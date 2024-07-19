@@ -7,15 +7,11 @@ from pydantic import BaseModel, EmailStr, Field
 
 class MoodleResultsData(BaseModel):
     contest: ContestData
-    legally_excused: list[LegallyExcusedStudentData]
+    legal_excuses: dict[EmailStr, LegallyExcusedStudentData]
     late_submission_policy: LateSubmissionPolicyData
 
-    def get_excuse_duration_by_email(self, email: EmailStr) -> int:
-        for excused_student in self.legally_excused:
-            if excused_student.email == email:
-                return excused_student.excuse_duration
-
-        return 0
+    def __getitem__(self, email: EmailStr) -> LegallyExcusedStudentData | None:
+        return self.legal_excuses.get(email)
 
 
 class ContestData(BaseModel):
