@@ -11,7 +11,12 @@ export async function uploadFromSheet() {
   const data = await res.json();
 
   for (const pair of data) {
-    await uploadSingleHandle(pair);
+    try {
+      await uploadSingleHandle(pair);
+    } catch (err) {
+      toast.err(err.message);
+      continue;
+    }
   }
 
   return data.length;
