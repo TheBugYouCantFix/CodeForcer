@@ -97,7 +97,8 @@ def test_get_moodle_grades_if_data_is_valid():
         late_submission_policy=LateSubmissionPolicy(
             penalty=0.2,
             extra_time=259200
-        )
+        ),
+        submission_selector_name='latest'
     )
 
     expected_output = 'Email,test contest Grade,test contest Feedback\r\na@a.a,76.0,\r\nb@b.b,60.0,\r\nc@c.c,148.0,\r\n'
