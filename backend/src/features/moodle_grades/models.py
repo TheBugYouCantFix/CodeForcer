@@ -10,6 +10,7 @@ class MoodleResultsData(BaseModel):
     problem_max_grade_by_index: dict[str, float]
     legal_excuses: dict[EmailStr, LegalExcuse]
     late_submission_policy: LateSubmissionPolicy
+    submission_selector_name: str
 
 
 class LateSubmissionPolicy(BaseModel):

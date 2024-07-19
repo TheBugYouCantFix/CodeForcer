@@ -41,7 +41,9 @@ class CreateGradesFileCommand:
         writer = csv.writer(file)
 
         contest = results_data.contest
-        contest.select_single_submission_for_each_participant(submission_selectors['latest'])
+        contest.select_single_submission_for_each_participant(
+            submission_selectors[results_data.submission_selector_name]
+        )
 
         writer.writerow(['Email', f'{contest.name} Grade', f'{contest.name} Feedback'])
 
