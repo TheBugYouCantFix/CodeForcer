@@ -77,7 +77,7 @@ class CreateGradesFileCommand:
             student_grade_map[submission.author_email][0] += problem_points
 
             comment = f"({comment})" if comment != "" else comment
-            feedback = f"Problem {problem.index}: {problem_points} {comment}\n\n\n"
+            feedback = f"Problem {problem.index}: {problem_points} {comment}\n\n"
             if student_grade_map[submission.author_email][1] is not None:
                 student_grade_map[submission.author_email][1] += feedback
             else:
