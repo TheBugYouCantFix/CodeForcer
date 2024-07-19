@@ -6,7 +6,7 @@ from src.features.contests.models import Contest, Problem, Submission
 from src.features.students.models import Student
 from tests.create_test_client import client
 
-from src.features.moodle_grades.models import MoodleResultsData, LateSubmissionPolicyData
+from src.features.moodle_grades.models import MoodleResultsData, LateSubmissionPolicy
 
 
 def test_get_moodle_grades_if_data_is_valid():
@@ -95,7 +95,7 @@ def test_get_moodle_grades_if_data_is_valid():
         ),
         problem_max_grade_by_index={'A': 100, 'B': 60},
         legal_excuses={},
-        late_submission_policy=LateSubmissionPolicyData(
+        late_submission_policy=LateSubmissionPolicy(
             penalty=0.2,
             extra_time=259200
         )

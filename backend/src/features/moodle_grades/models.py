@@ -9,10 +9,10 @@ class MoodleResultsData(BaseModel):
     contest: Contest
     problem_max_grade_by_index: dict[str, float]
     legal_excuses: dict[EmailStr, LegalExcuse]
-    late_submission_policy: LateSubmissionPolicyData
+    late_submission_policy: LateSubmissionPolicy
 
 
-class LateSubmissionPolicyData(BaseModel):
+class LateSubmissionPolicy(BaseModel):
     penalty: float = Field(ge=0, le=1)
     extra_time: int
 

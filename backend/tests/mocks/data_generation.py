@@ -7,7 +7,7 @@ from faker.providers import BaseProvider
 from src.features.contests.models import Contest, Problem, Submission
 from src.features.moodle_grades.models import (
     MoodleResultsData,
-    LateSubmissionPolicyData
+    LateSubmissionPolicy
 )
 from src.features.students.models import Student
 
@@ -27,10 +27,10 @@ class MoodleResultsDataProvider(BaseProvider):
         )
 
 
-class LateSubmissionPolicyDataProvider(BaseProvider):
+class LateSubmissionPolicyProvider(BaseProvider):
     @staticmethod
-    def late_submission_policy_data() -> LateSubmissionPolicyData:
-        return LateSubmissionPolicyData(
+    def late_submission_policy() -> LateSubmissionPolicy:
+        return LateSubmissionPolicy(
             penalty=fake.pyfloat(min_value=0, max_value=1),
             extra_time=fake.random_int(min=3600, max=360000)
         )
@@ -95,4 +95,4 @@ fake.add_provider(ProblemProvider)
 fake.add_provider(SubmissionProvider)
 fake.add_provider(StudentProvider)
 fake.add_provider(MoodleResultsDataProvider)
-fake.add_provider(LateSubmissionPolicyDataProvider)
+fake.add_provider(LateSubmissionPolicyProvider)
