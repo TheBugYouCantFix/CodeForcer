@@ -6,7 +6,7 @@ from src.features.contests.models import Contest, Problem, Submission
 from src.features.students.models import Student
 from tests.create_test_client import client
 
-from src.features.moodle_grades.models import MoodleResultsData, LateSubmissionPolicy
+from src.features.moodle.models import MoodleResultsData, LateSubmissionPolicy
 
 
 def test_get_moodle_grades_if_data_is_valid():

@@ -5,7 +5,7 @@ from faker import Faker
 from faker.providers import BaseProvider
 
 from src.features.contests.models import Contest, Problem, Submission
-from src.features.moodle_grades.models import (
+from src.features.moodle.models import (
     MoodleResultsData,
     LateSubmissionPolicy
 )
