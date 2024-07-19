@@ -87,23 +87,23 @@ def test_gets_contest_with_latest_submission_for_each_student_if_selected_select
             passed_test_count=10,
             points=100.0,
             submission_time_utc=datetime.now(),
-            programming_language="Python"
+            programming_language="С#"
         ),
         Submission(
             id=2,
             author=Student(handle="student1", email=None),
             is_successful=False,
             passed_test_count=0,
-            points=0.0,
+            points=50.0,
             submission_time_utc=datetime.now() + timedelta(days=2),
-            programming_language="Python"
+            programming_language="Haskell"
         ),
         Submission(
             id=3,
             author=Student(handle="student1", email=None),
             is_successful=False,
-            passed_test_count=5,
-            points=50.0,
+            passed_test_count=0,
+            points=0.0,
             submission_time_utc=datetime.now() + timedelta(days=3),
             programming_language="Python"
         )
