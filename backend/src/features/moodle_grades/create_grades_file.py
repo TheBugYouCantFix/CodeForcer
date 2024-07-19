@@ -3,7 +3,7 @@ from io import StringIO
 from collections import defaultdict
 from datetime import datetime, timedelta
 
-from fastapi import status, APIRouter
+from fastapi import status, APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 
 from src.features.contests.models import Problem, Submission
@@ -67,6 +67,12 @@ class CreateGradesFileCommand:
             student_grade_map: defaultdict[str, list[float | str]],
             results_data: MoodleResultsData
     ) -> None:
+        if problem.index not in results_data.problem_max_grade_by_index:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Problem {problem.index} has no max grade specified"
+            )
+
         max_grade = results_data.problem_max_grade_by_index[problem.index]
 
         for submission in problem.submissions:
