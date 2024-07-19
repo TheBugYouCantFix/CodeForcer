@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
+from fastapi.exceptions import HTTPException
 from uvicorn import run
-from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from src.features.students.route import router as students_router
 from src.features.contests.route import router as contests_router
@@ -14,11 +14,11 @@ app.include_router(contests_router, prefix='/api/contests')
 app.include_router(moodle_grades_router, prefix='/api/moodle-grades')
 
 
-@app.exception_handler(StarletteHTTPException)
-async def http_exception_handler(_, exc):
+@app.exception_handler(HTTPException)
+async def http_exception_handler(_, exc: HTTPException):
     return JSONResponse(
         status_code=exc.status_code,
-        content={"message": str(exc)},
+        content={"message": str(exc.detail)},
     )
 
 
