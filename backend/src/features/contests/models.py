@@ -76,3 +76,8 @@ class Submission(BaseModel):
 
 
 SubmissionSelector = Callable[[list[Submission]], Submission]
+
+
+class ContestResponse(BaseModel):
+    contest: Contest
+    participants: set[Student]

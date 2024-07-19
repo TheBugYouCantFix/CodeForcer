@@ -5,6 +5,7 @@ from starlette import status
 from src.container import container
 from src.features.students.interfaces import IStudentsRepository
 from .interfaces import IContestsProvider
+from .models import ContestResponse
 
 router = APIRouter()
 
@@ -13,15 +14,16 @@ router = APIRouter()
 async def get_contest(
         contest_id: int,
         key: str, secret: str
-):
+) -> ContestResponse:
     contest = GetContestQuery(
         container[IContestsProvider],
         container[IStudentsRepository]
     ).handle(contest_id, key, secret)
-    return {
-        "contest": contest,
-        "participants": contest.participants
-    }
+
+    return ContestResponse(
+        contest=contest,
+        participants=contest.participants
+    )
 
 
 class GetContestQuery:
