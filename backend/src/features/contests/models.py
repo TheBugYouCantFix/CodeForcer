@@ -31,6 +31,10 @@ class Contest(BaseModel):
             for participant in problem.participants
         }
 
+    @property
+    def end_time_utc(self) -> datetime:
+        return self.start_time_utc + self.duration
+
 
 class Problem(BaseModel):
     index: str
