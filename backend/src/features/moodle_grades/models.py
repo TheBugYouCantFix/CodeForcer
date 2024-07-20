@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import datetime
+
 from src.features.contests.models import Contest
 
 from pydantic import BaseModel, EmailStr, Field
@@ -19,4 +21,5 @@ class LateSubmissionPolicy(BaseModel):
 
 
 class LegalExcuse(BaseModel):
+    start_time_utc: datetime
     duration: int
