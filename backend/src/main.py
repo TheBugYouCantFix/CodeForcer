@@ -6,11 +6,14 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from src.features.students.route import router as students_router
 from src.features.contests.route import router as contests_router
 from src.features.moodle_grades.route import router as moodle_grades_router
+from src.features.moodle_grades.submissions_archive import router as submissions_archive_router
 
 app = FastAPI()
 app.include_router(students_router)
 app.include_router(contests_router)
 app.include_router(moodle_grades_router)
+app.include_router(submissions_archive_router)
+
 
 
 @app.exception_handler(StarletteHTTPException)
