@@ -115,13 +115,20 @@ class CreateGradesFileCommand:
         contest_duration = moodle_results_data.contest.duration
         extra_time_seconds = moodle_results_data.late_submission_policy.extra_time
         submission_time = submission.submission_time_utc
-        excuse_time_seconds = 0 if legal_excuse is None else legal_excuse.duration
 
         extra_time = timedelta(seconds=extra_time_seconds)
-        excuse_time = timedelta(seconds=excuse_time_seconds)
-        deadline_time = contest_start_time_utc + contest_duration + excuse_time
-
+        deadline_time = contest_start_time_utc + contest_duration
         deadline_time_extended = deadline_time + extra_time
+
+        if legal_excuse is not None:
+            excuse_time = timedelta(seconds=legal_excuse.duration)
+            time_between_contest_start_and_excuse_start = contest_start_time_utc - legal_excuse.start_time_utc
+
+            if time_between_contest_start_and_excuse_start.total_seconds() > 0:
+                excuse_time -= time_between_contest_start_and_excuse_start
+
+            deadline_time += excuse_time
+            deadline_time_extended += excuse_time
 
         comment = ""
         if submission_time > deadline_time_extended:
