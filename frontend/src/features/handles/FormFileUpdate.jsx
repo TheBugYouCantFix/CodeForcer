@@ -23,8 +23,16 @@ export default function FormFileUpdate() {
   function handleGoogleClick() {
     setIsGetting(true);
     uploadFromSheet()
-      .then((res) => {
-        toast.success(`Successfully updated ${res} handles`);
+      .then(({ updated, created }) => {
+        toast.success(
+          updated && created
+            ? `Updated: ${updated}\nCreated: ${created}`
+            : updated
+              ? `Updated: ${updated}`
+              : created
+                ? `Created: ${created}`
+                : "Nothing new :)",
+        );
       })
       .catch((err) => {
         toast.error(err.message);

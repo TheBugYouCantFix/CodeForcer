@@ -25,6 +25,11 @@ const FileInputLabel = styled.label`
   }
 
   ${(props) =>
+    props.disabled &&
+    css`
+      pointer-events: none;
+    `}
+  ${(props) =>
     props.edited === "true" &&
     css`
       & span {
@@ -53,7 +58,7 @@ const FileInputButton = styled.span`
 
 function FileInput({ edited, text, register, accept, disabled }) {
   return (
-    <FileInputLabel edited={edited}>
+    <FileInputLabel edited={edited} disabled={disabled}>
       <FileInputText>{text}</FileInputText>
       <FileInputElement accept={accept} {...register} disabled={disabled} />
       <FileInputButton>Browse</FileInputButton>

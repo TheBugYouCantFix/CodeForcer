@@ -57,6 +57,7 @@ const Button = styled.button`
 
   &:disabled {
     opacity: 0.5;
+    pointer-events: none;
   }
 
   ${(props) => sizes[props.size]}

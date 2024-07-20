@@ -1,3 +1,5 @@
+import toast from "react-hot-toast";
+
 export async function uploadFromSheet() {
   const res = await fetch(import.meta.env.VITE_URL, {
     method: "GET",
@@ -10,29 +12,23 @@ export async function uploadFromSheet() {
 
   const data = await res.json();
 
+  let updated = 0;
+  let created = 0;
   for (const pair of data) {
     try {
-      await uploadSingleHandle(pair);
-    } catch (err) {
-      let { message } = err;
-      if (err.code === 400) {
-        message = (
-          <div>
-            {message}
-            <span style={{ color: "var(--color-red-400)", fontWeight: "500" }}>
-              {err.handle}
-            </span>
-            {" is not found"}
-          </div>
-        );
+      const res = await uploadSingleHandle(pair);
+      if (res.status === 201) {
+        ++created;
       }
-
-      toast.error(message);
-      continue;
+      if (res.status == 204) {
+        ++updated;
+      }
+    } catch (err) {
+      toast.error(`${err?.handle ? err.handle : "User"} is not found`);
     }
   }
 
-  return data.length;
+  return { updated, created };
 }
 
 export async function uploadHandlesFile(file) {
