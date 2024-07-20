@@ -6,8 +6,8 @@ from datetime import datetime, timedelta
 from fastapi import status, APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 
-from src.features.contests.models import Problem, Submission
-from .models import MoodleResultsData
+from src.features.contests.models import Problem, Submission, Contest
+from .models import MoodleResultsData, LegalExcuse
 from .submission_selectors import submission_selectors
 
 router = APIRouter()
@@ -109,30 +109,36 @@ class CreateGradesFileCommand:
             submission: Submission,
             points: float
     ) -> (float, str):
+        contest = moodle_results_data.contest
+
+        extra_time = timedelta(seconds=moodle_results_data.late_submission_policy.extra_time)
         penalty = moodle_results_data.late_submission_policy.penalty
+
+        submission_time_utc = submission.submission_time_utc
         legal_excuse = moodle_results_data.legal_excuses.get(submission.author.email)
-        contest_start_time_utc = moodle_results_data.contest.start_time_utc
-        contest_duration = moodle_results_data.contest.duration
-        extra_time_seconds = moodle_results_data.late_submission_policy.extra_time
-        submission_time = submission.submission_time_utc
-        excuse_time_seconds = 0 if legal_excuse is None else legal_excuse.duration
+        deadline = contest.end_time_utc
+        late_submission_deadline = deadline + extra_time
 
-        extra_time = timedelta(seconds=extra_time_seconds)
-        excuse_time = timedelta(seconds=excuse_time_seconds)
-        deadline_time = contest_start_time_utc + contest_duration + excuse_time
+        if legal_excuse is not None:
+            deadline_offset = CreateGradesFileCommand._get_deadline_offset(legal_excuse, contest)
 
-        deadline_time_extended = deadline_time + extra_time
+            deadline += deadline_offset
+            late_submission_deadline += deadline_offset
 
-        comment = ""
-        if submission_time > deadline_time_extended:
-            comment = "submitted after the deadline"
-            return 0.0, comment
+        if submission_time_utc > late_submission_deadline:
+            return 0.0, "Submitted after the deadline"
 
-        if submission_time > deadline_time:
-            comment = f"Late submission policy applied: {penalty * 100}% grade reduction"
-            return points * (1 - penalty), comment
+        if submission_time_utc > deadline:
+            return points * (1 - penalty), f"Late submission policy applied: {penalty * 100}% grade reduction"
 
-        return points, comment
+        return points, ""
+
+    @staticmethod
+    def _get_deadline_offset(legal_excuse: LegalExcuse, contest: Contest) -> timedelta:
+        if legal_excuse.intersects_with(contest):
+            return legal_excuse.end_time_utc - max(contest.start_time_utc, legal_excuse.start_time_utc)
+
+        return timedelta(0)
 
     @staticmethod
     def _write_to_file(writer: csv.writer, student_grade_map: defaultdict[str, list[float | str]]) -> None:
