@@ -68,9 +68,16 @@ def _parse_students_data_from_csv(file_path: str) -> list[Student]:
     with open(file_path, mode='r', encoding=None) as file:
         csv_reader = DictReader(file)
 
-        return [
-            Student(
-                email=row['email'],
-                handle=row['handle']
-            ) for row in csv_reader
-        ]
+        students: list[Student] = []
+
+        for row in csv_reader:
+            row: dict = row
+            row = {
+                key.lower().replace('-', '').replace('\'', ''): value
+                for key, value
+                in row.items()
+            }
+
+            students.append(Student(email=row['email'], handle=row['handle']))
+
+        return students
