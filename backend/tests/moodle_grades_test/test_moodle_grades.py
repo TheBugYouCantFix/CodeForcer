@@ -405,7 +405,7 @@ def test_get_moodle_grades_with_legal_excuses_and_late_submission_policy_case2()
                             passed_test_count=52,
                             points=30,
                             programming_language='C++',
-                            submission_time_utc=datetime.now() + timedelta(days=8),
+                            submission_time_utc=datetime.now() + timedelta(days=6),
                         ),
                         Submission(
                             id=5,
@@ -441,7 +441,7 @@ def test_get_moodle_grades_with_legal_excuses_and_late_submission_policy_case2()
         ['Email', 'test contest Grade', 'test contest Feedback'],
         ['a@a.a', '38.0', 'any'],
         ['b@b.b', '30.0', 'any'],
-        ['c@c.c', '74.0', 'any']
+        ['c@c.c', '80.0', 'any']
     ]
 
     response = client.post("/moodle-grades", data=moodle_result_data.model_dump_json())
