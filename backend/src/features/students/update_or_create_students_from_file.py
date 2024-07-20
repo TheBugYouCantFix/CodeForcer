@@ -26,14 +26,14 @@ class UpdateOrCreateStudentsFromFileCommandHandler:
         self.contests_provider = contests_provider
 
     def handle(self, file: UploadFile) -> UpdatedOrCreatedStudentsResponse:
-        file_location = f"temp_{file.filename}"
-        with open(file_location, "wb+") as file_object:
+        file_path = f"temp_{file.filename}"
+        with open(file_path, "wb+") as file_object:
             file_object.write(file.file.read())
 
-        students = _parse_students_data(file_location)
+        students = _parse_students_data(file_path)
 
-        if path.exists(file_location):
-            remove(file_location)
+        if path.exists(file_path):
+            remove(file_path)
 
         updated = 0
         created = 0
@@ -68,9 +68,16 @@ def _parse_students_data_from_csv(file_path: str) -> list[Student]:
     with open(file_path, mode='r', encoding=None) as file:
         csv_reader = DictReader(file)
 
-        return [
-            Student(
-                email=row['email'],
-                handle=row['handle']
-            ) for row in csv_reader
-        ]
+        students: list[Student] = []
+
+        for row in csv_reader:
+            row: dict = row
+            row = {
+                key.lower().replace('-', '').replace('\'', ''): value
+                for key, value
+                in row.items()
+            }
+
+            students.append(Student(email=row['email'], handle=row['handle']))
+
+        return students
