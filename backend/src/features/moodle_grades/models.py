@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from src.features.contests.models import Contest
 
@@ -22,4 +22,11 @@ class LateSubmissionPolicy(BaseModel):
 
 class LegalExcuse(BaseModel):
     start_time_utc: datetime
-    duration: int
+    duration: timedelta
+
+    @property
+    def end_time_utc(self):
+        return self.start_time_utc + self.duration
+
+    def intersects_with(self, contest: Contest):
+        return contest.start_time_utc < self.end_time_utc and self.start_time_utc < contest.end_time_utc
