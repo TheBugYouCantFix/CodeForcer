@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import csv
+from enum import Enum
 from io import StringIO
 from collections import defaultdict
 from datetime import datetime, timedelta
@@ -8,7 +11,7 @@ from fastapi.responses import StreamingResponse
 
 from src.features.contests.models import Problem, Submission, Contest
 from .models import MoodleResultsData, LegalExcuse
-from .submission_selectors import submission_selectors
+from .submission_selectors import submission_selectors, submission_selector
 
 router = APIRouter()
 
@@ -40,6 +43,11 @@ def handle_create_grades_file(results_data: MoodleResultsData) -> StringIO:
     writer = csv.writer(file)
 
     contest = results_data.contest
+
+    @submission_selector("absolute best")
+    def absolute_best_submission_selector(submissions: list[Submission]) -> Submission:
+        return max(submissions, key=lambda submission: calculate_grade(10, 10, results_data, submission)[0])
+
     contest.select_single_submission_for_each_participant(
         submission_selectors[results_data.submission_selector_name]
     )
@@ -75,25 +83,40 @@ def update_grades(
     max_grade = results_data.problem_max_grade_by_index[problem.index]
 
     for submission in problem.submissions:
-        if submission.points is None or problem.max_points is None:
-            problem_points = get_grade_by_verdict(submission, max_grade)
-        else:
-            problem_points = submission.points / problem.max_points * max_grade
+        grade, submission_time_type = calculate_grade(max_grade, problem.max_points, results_data, submission)
 
-        problem_points, comment = apply_late_submission_policy(results_data, submission, problem_points)
+        comment = get_comment_from_submission_time_type(
+            submission_time_type,
+            results_data.late_submission_policy.penalty
+        )
 
-        student_grade_map[submission.author.email][0] += problem_points
+        feedback = f"Problem {problem.index}: {grade} {comment}\n\n"
 
-        comment = f"({comment})" if comment != "" else comment
-        feedback = f"Problem {problem.index}: {problem_points} {comment}\n\n"
+        student_grade_map[submission.author.email][0] += grade
         student_grade_map[submission.author.email][1] += feedback
+
+
+def calculate_grade(
+        max_grade: float,
+        max_points: float,
+        results_data: MoodleResultsData,
+        submission: Submission
+) -> (float, SubmissionTimeType):
+    if submission.points is None or max_points is None:
+        grade = get_grade_by_verdict(submission, max_grade)
+    else:
+        grade = submission.points / max_points * max_grade
+
+    grade, submission_time_type = apply_late_submission_policy(results_data, submission, grade)
+
+    return grade, submission_time_type
 
 
 def apply_late_submission_policy(
         moodle_results_data: MoodleResultsData,
         submission: Submission,
-        points: float
-) -> (float, str):
+        grade: float
+) -> (float, SubmissionTimeType):
     contest = moodle_results_data.contest
 
     extra_time = timedelta(seconds=moodle_results_data.late_submission_policy.extra_time)
@@ -111,12 +134,12 @@ def apply_late_submission_policy(
         late_submission_deadline += deadline_offset
 
     if submission_time_utc > late_submission_deadline:
-        return 0.0, "Submitted after the deadline"
+        return 0.0, SubmissionTimeType.AFTER_LATE_SUBMISSION_POLICY
 
     if submission_time_utc > deadline:
-        return points * (1 - penalty), f"Late submission policy applied: {penalty * 100}% grade reduction"
+        return grade * (1 - penalty), SubmissionTimeType.LATE_SUBMISSION_POLICY
 
-    return points, ""
+    return grade, SubmissionTimeType.IN_TIME
 
 
 def get_deadline_offset(legal_excuse: LegalExcuse, contest: Contest) -> timedelta:
@@ -130,6 +153,24 @@ def get_grade_by_verdict(submission: Submission, max_grade: float) -> float:
     return max_grade if submission.is_successful else 0
 
 
+def get_comment_from_submission_time_type(submission_time_type: SubmissionTimeType, penalty: float) -> str:
+    match submission_time_type:
+        case SubmissionTimeType.IN_TIME:
+            return ""
+        case SubmissionTimeType.LATE_SUBMISSION_POLICY:
+            return f"(Late submission policy applied: {penalty * 100}% grade reduction)"
+        case SubmissionTimeType.AFTER_LATE_SUBMISSION_POLICY:
+            return "(Submitted after the deadline)"
+
+    return ""
+
+
 def write_grades_to_file(writer: csv.writer, student_grade_map: defaultdict[str, list[float | str]]) -> None:
     for email, (grade, feedback) in student_grade_map.items():
         writer.writerow([email, grade, feedback])
+
+
+class SubmissionTimeType(Enum):
+    IN_TIME = 0
+    LATE_SUBMISSION_POLICY = 1
+    AFTER_LATE_SUBMISSION_POLICY = 2

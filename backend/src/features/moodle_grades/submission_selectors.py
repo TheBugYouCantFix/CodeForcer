@@ -47,4 +47,4 @@ def most_points_selector(submissions: list[Submission]) -> Submission:
     )
 
 
-__all__ = ["submission_selectors", "SubmissionSelectorName"]
+__all__ = ["submission_selectors", "SubmissionSelectorName", "submission_selector"]
