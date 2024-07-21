@@ -64,6 +64,9 @@ def fill_problem_folders(contest: Contest, submission_file_names: list[str]):
             else:
                 continue
 
+            if submission.author.email is None:
+                continue
+
             language_name = get_file_extension(submission_file_name) + '/'
             new_submission_file_path = os.path.join(problem_path, language_name)
 
