@@ -62,3 +62,4 @@ deploy:
     - pylint
     - pytest
     - front_lint
+  parallel: 2
