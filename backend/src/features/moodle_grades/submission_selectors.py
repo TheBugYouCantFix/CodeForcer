@@ -25,8 +25,7 @@ def submission_selector(name: str):
 
 @submission_selector("absolute best")
 def absolute_best_submission_selector(submissions: list[Submission]) -> Submission:
-    raise RuntimeError("Default implementation should not be reachable. "
-                       "If you see this message, something went terribly wrong")
+    return most_points_selector(submissions)
 
 
 @submission_selector("latest")
