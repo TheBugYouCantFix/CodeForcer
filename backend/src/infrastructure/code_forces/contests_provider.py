@@ -67,6 +67,10 @@ class CodeForcesContestsProvider(IContestsProvider):
 
                 problem.max_points = max_points_from_submissions
 
+            for submission in problem.submissions:
+                if submission.points is None:
+                    submission.points = problem.max_points if submission.is_successful else 0
+
         return Contest(
             id=contest_id,
             name=cf_contest.name,

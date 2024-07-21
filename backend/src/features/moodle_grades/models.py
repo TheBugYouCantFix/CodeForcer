@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 
 from src.features.contests.models import Contest
+from src.utils.timed_event import TimedEvent
 
 from pydantic import BaseModel, EmailStr, Field
 
@@ -28,5 +29,5 @@ class LegalExcuse(BaseModel):
     def end_time_utc(self):
         return self.start_time_utc + self.duration
 
-    def intersects_with(self, contest: Contest):
-        return contest.start_time_utc < self.end_time_utc and self.start_time_utc < contest.end_time_utc
+    def intersects_with(self, other: TimedEvent):
+        return other.start_time_utc < self.end_time_utc and self.start_time_utc < other.end_time_utc

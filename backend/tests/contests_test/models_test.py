@@ -80,7 +80,7 @@ def test_contest_select_single_submission_for_each_participant_most_points():
         ),
     ]
 
-    selector = submission_selectors["most passed test count"]
+    selector = submission_selectors["most points"]
 
     problem = Problem(index="A", name="Problem A", max_points=100.0, submissions=submissions)
 

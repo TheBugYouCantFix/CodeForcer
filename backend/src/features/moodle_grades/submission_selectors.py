@@ -13,32 +13,35 @@ def submission_name_validator(name: str) -> str:
 SubmissionSelectorName = Annotated[str, AfterValidator(submission_name_validator)]
 
 submission_selectors: dict[str, SubmissionSelector] = {}
+submission_selectors_descriptions: dict[str, str] = {}
 
 
-def submission_selector(name: str):
+def submission_selector(name: str, description: str = ""):
     def decorator(selector: SubmissionSelector):
         submission_selectors[name] = selector
+        submission_selectors_descriptions[name] = description
         return selector
 
     return decorator
 
 
-@submission_selector("most passed test count")
-def most_passed_test_count_selector(submissions: list[Submission]) -> Submission:
-    return max(submissions, key=lambda s: (s.passed_test_count, s.submission_time_utc))
+@submission_selector("absolute best",
+                     "selects the best submission, takes late submission policy and legal excuses into account")
+def absolute_best_submission_selector(submissions: list[Submission]) -> Submission:
+    return most_points_selector(submissions)
 
 
-@submission_selector("latest")
+@submission_selector("latest", "selects the latest submission")
 def latest_submission_selector(submissions: list[Submission]) -> Submission:
     return max(submissions, key=lambda s: s.submission_time_utc)
 
 
-@submission_selector("latest successful")  # returns latest unsuccessful submission if no successful submissions
+@submission_selector("latest successful", "returns latest unsuccessful submission if no successful submissions")
 def latest_successful_submission_selector(submissions: list[Submission]) -> Submission:
     return max(submissions, key=lambda s: (s.is_successful, s.submission_time_utc))
 
 
-@submission_selector("most points")
+@submission_selector("most points", "selects the submission with the most points on CodeForces")
 def most_points_selector(submissions: list[Submission]) -> Submission:
     return max(
         submissions,
@@ -47,4 +50,4 @@ def most_points_selector(submissions: list[Submission]) -> Submission:
     )
 
 
-__all__ = ["submission_selectors", "SubmissionSelectorName"]
+__all__ = ["submission_selectors", "SubmissionSelectorName", "submission_selector"]
