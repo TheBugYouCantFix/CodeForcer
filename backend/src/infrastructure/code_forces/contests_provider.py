@@ -57,7 +57,15 @@ class CodeForcesContestsProvider(IContestsProvider):
 
         for problem in problems:
             if problem.max_points is None:
-                problem.max_points = _get_max_points_from_submissions(problem)
+                max_points_from_submissions = _get_max_points_from_submissions(problem)
+
+                if max_points_from_submissions == 0:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail=f'Max points for the problem {problem.index} is undefined'
+                    )
+
+                problem.max_points = max_points_from_submissions
 
         return Contest(
             id=contest_id,
