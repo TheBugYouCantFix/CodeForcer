@@ -450,7 +450,6 @@ def test_get_moodle_grades_with_legal_excuses_and_late_submission_policy_case2()
     assert_response_with_expected_output(response, expected_output)
 
 
-
 def test_selects_latest_submission():
     moodle_result_data = MoodleResultsData(
         contest=Contest(
@@ -572,6 +571,180 @@ def test_selects_latest_submission():
         ['Email', 'test contest Grade', 'test contest Feedback'],
         ['a@a.a', '38.0', 'any'],
         ['b@b.b', '30.0', 'any']
+    ]
+
+    response = client.post("/moodle-grades", data=moodle_result_data.model_dump_json())
+
+    assert response.status_code == status.HTTP_200_OK
+    assert_response_with_expected_output(response, expected_output)
+
+
+def test_selects_absolute_best_submission():
+    contest_start_time = datetime.now()
+    moodle_result_data = MoodleResultsData(
+        contest=Contest(
+            id=1,
+            name='test contest',
+            start_time_utc=contest_start_time,
+            duration=timedelta(days=3),
+            problems=[
+                Problem(
+                    name='test problem 1',
+                    index='A',
+                    max_points=50,
+                    submissions=[
+                        Submission(
+                            id=1,
+                            author=Student(
+                                email='a@a.a',
+                                handle='a'
+                            ),
+                            is_successful=False,
+                            passed_test_count=0,
+                            points=0,
+                            programming_language='Python',
+                            submission_time_utc=contest_start_time,
+                        ),
+                        Submission(
+                            id=2,
+                            author=Student(
+                                email='a@a.a',
+                                handle='a'
+                            ),
+                            is_successful=False,
+                            passed_test_count=7,
+                            points=20,
+                            programming_language='Python',
+                            submission_time_utc=contest_start_time + timedelta(hours=1),
+                        ),
+                        Submission(
+                            id=3,
+                            author=Student(
+                                email='a@a.a',
+                                handle='a'
+                            ),
+                            is_successful=False,
+                            passed_test_count=5,
+                            points=26,
+                            programming_language='Python',
+                            submission_time_utc=contest_start_time + timedelta(hours=10),
+                        ),
+                        Submission(
+                            id=5,
+                            author=Student(
+                                email='a@a.a',
+                                handle='a'
+                            ),
+                            is_successful=True,
+                            passed_test_count=5,
+                            points=50,
+                            programming_language='Python',
+                            submission_time_utc=contest_start_time + timedelta(days=3, hours=14),  # After the deadline
+                        )
+                    ]
+                )
+            ],
+        ),
+        problem_max_grade_by_index={'A': 100},
+        legal_excuses={},
+        late_submission_policy=LateSubmissionPolicy(
+            penalty=0.5,
+            extra_time=24 * 60 * 60
+        ),
+        submission_selector_name='absolute best'
+    )
+
+    expected_output = [
+        ['Email', 'test contest Grade', 'test contest Feedback'],
+        ['a@a.a', '52.0', 'any']
+    ]
+
+    response = client.post("/moodle-grades", data=moodle_result_data.model_dump_json())
+
+    assert response.status_code == status.HTTP_200_OK
+    assert_response_with_expected_output(response, expected_output)
+
+
+def test_selects_absolute_best_submission_with_legal_excuse():
+    contest_start_time = datetime.now()
+    moodle_result_data = MoodleResultsData(
+        contest=Contest(
+            id=1,
+            name='test contest',
+            start_time_utc=contest_start_time,
+            duration=timedelta(days=3),
+            problems=[
+                Problem(
+                    name='test problem 1',
+                    index='A',
+                    max_points=50,
+                    submissions=[
+                        Submission(
+                            id=1,
+                            author=Student(
+                                email='a@a.a',
+                                handle='a'
+                            ),
+                            is_successful=False,
+                            passed_test_count=0,
+                            points=0,
+                            programming_language='Python',
+                            submission_time_utc=contest_start_time,
+                        ),
+                        Submission(
+                            id=2,
+                            author=Student(
+                                email='a@a.a',
+                                handle='a'
+                            ),
+                            is_successful=False,
+                            passed_test_count=7,
+                            points=20,
+                            programming_language='Python',
+                            submission_time_utc=contest_start_time + timedelta(hours=1),
+                        ),
+                        Submission(
+                            id=3,
+                            author=Student(
+                                email='a@a.a',
+                                handle='a'
+                            ),
+                            is_successful=False,
+                            passed_test_count=5,
+                            points=26,
+                            programming_language='Python',
+                            submission_time_utc=contest_start_time + timedelta(hours=10),
+                        ),
+                        Submission(
+                            id=5,
+                            author=Student(
+                                email='a@a.a',
+                                handle='a'
+                            ),
+                            is_successful=True,
+                            passed_test_count=5,
+                            points=50,
+                            programming_language='Python',
+                            submission_time_utc=contest_start_time + timedelta(days=3, hours=14),  # After the deadline
+                        )
+                    ]
+                )
+            ],
+        ),
+        problem_max_grade_by_index={'A': 100},
+        legal_excuses={
+            'a@a.a': LegalExcuse(start_time_utc=contest_start_time, duration=timedelta(days=3))
+        },
+        late_submission_policy=LateSubmissionPolicy(
+            penalty=0.5,
+            extra_time=24 * 60 * 60
+        ),
+        submission_selector_name='absolute best'
+    )
+
+    expected_output = [
+        ['Email', 'test contest Grade', 'test contest Feedback'],
+        ['a@a.a', '100.0', 'any']
     ]
 
     response = client.post("/moodle-grades", data=moodle_result_data.model_dump_json())
