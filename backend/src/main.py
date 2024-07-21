@@ -4,7 +4,6 @@ from uvicorn import run
 from src.features.students.route import router as students_router
 from src.features.contests.route import router as contests_router
 from src.features.moodle_grades.route import router as moodle_grades_router
-from src.features.moodle_grades.submissions_archive import router as submissions_archive_router
 
 app = FastAPI(title='CodeForcer')
 
