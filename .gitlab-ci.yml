@@ -18,7 +18,6 @@ pylint:
   except:
     changes:
       - README.md
-  parallel: 2
 
 front_lint:
   stage: lint
@@ -33,7 +32,6 @@ front_lint:
   except:
     changes:
       - README.md
-  parallel: 2
   
 pytest:
   stage: test
@@ -50,7 +48,6 @@ pytest:
   except:
     changes:
       - README.md
-  parallel: 2
 
 deploy:
   stage: deploy
@@ -65,4 +62,3 @@ deploy:
     - pylint
     - pytest
     - front_lint
-  parallel: 2
