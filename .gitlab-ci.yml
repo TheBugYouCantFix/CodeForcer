@@ -48,9 +48,6 @@ pytest:
   except:
     changes:
       - README.md
-  needs:
-    - pylint
-    - front_lint
 
 deploy:
   stage: deploy
