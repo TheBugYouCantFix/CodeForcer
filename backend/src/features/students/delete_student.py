@@ -7,7 +7,7 @@ from .interfaces import IStudentsRepository
 router = APIRouter()
 
 
-@router.delete("/students/{email}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{email}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_student(email: EmailStr) -> None:
     DeleteStudentCommandHandler(
         container[IStudentsRepository]

@@ -3,12 +3,12 @@ from validate_email import validate_email
 
 from src.container import container
 from .interfaces import IStudentsRepository
-from .model import Student
+from .models import Student
 
 router = APIRouter()
 
 
-@router.get("/students/{email_or_handle}", status_code=status.HTTP_200_OK)
+@router.get("/{email_or_handle}", status_code=status.HTTP_200_OK)
 async def get_student(email_or_handle: str) -> Student:
     return GetStudentQueryHandler(
         container[IStudentsRepository]

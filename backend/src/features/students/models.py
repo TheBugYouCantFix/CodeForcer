@@ -15,3 +15,8 @@ class Student(BaseModel):
 
     def __hash__(self):
         return hash(self.handle)
+
+
+class UpdatedOrCreatedStudentsResponse(BaseModel):
+    updated: int
+    created: int

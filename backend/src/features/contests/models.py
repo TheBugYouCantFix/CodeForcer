@@ -5,7 +5,7 @@ from collections import defaultdict
 from typing import Callable
 from pydantic import BaseModel, EmailStr
 
-from src.features.students.model import Student
+from src.features.students.models import Student
 
 
 class Contest(BaseModel):
@@ -19,17 +19,21 @@ class Contest(BaseModel):
         for problem in self.problems:
             problem.map_handles_to_emails(handle_to_email_mapper)
 
-    def select_single_submission_for_each_participant(self, selector: Callable[[list[Submission]], Submission]) -> None:
+    def select_single_submission_for_each_participant(self, selector: SubmissionSelector) -> None:
         for problem in self.problems:
             problem.select_single_submission_for_each_participant(selector)
 
     @property
-    def get_participants(self) -> set[Student]:
+    def participants(self) -> set[Student]:
         return {
             participant
             for problem in self.problems
-            for participant in problem.get_participants
+            for participant in problem.participants
         }
+
+    @property
+    def end_time_utc(self) -> datetime:
+        return self.start_time_utc + self.duration
 
 
 class Problem(BaseModel):
@@ -42,7 +46,7 @@ class Problem(BaseModel):
         for submission in self.submissions:
             submission.map_author_handle_to_email(handle_to_email_mapper)
 
-    def select_single_submission_for_each_participant(self, selector: Callable[[list[Submission]], Submission]) -> None:
+    def select_single_submission_for_each_participant(self, selector: SubmissionSelector) -> None:
         submissions_by_student = defaultdict(list[Submission])
 
         for submission in self.submissions:
@@ -57,7 +61,7 @@ class Problem(BaseModel):
         self.submissions = selected_submissions
 
     @property
-    def get_participants(self) -> set[Student]:
+    def participants(self) -> set[Student]:
         return {submission.author for submission in self.submissions}
 
 
@@ -73,3 +77,11 @@ class Submission(BaseModel):
     def map_author_handle_to_email(self, handle_to_email_mapper: Callable[[str], EmailStr | None]) -> None:
         if self.author.email is None:
             self.author.email = handle_to_email_mapper(self.author.handle)
+
+
+SubmissionSelector = Callable[[list[Submission]], Submission]
+
+
+class ContestResponse(BaseModel):
+    contest: Contest
+    participants: set[Student]
