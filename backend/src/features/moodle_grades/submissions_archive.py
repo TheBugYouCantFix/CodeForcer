@@ -1,12 +1,18 @@
+from __future__ import annotations
+
 import os
 import shutil
-from zipfile import ZipFile, ZIP_DEFLATED
+from datetime import datetime, timedelta
 from io import BytesIO
+from zipfile import ZipFile, ZIP_DEFLATED
 
 from fastapi import APIRouter, status, UploadFile, File, Form, BackgroundTasks
 from fastapi.responses import FileResponse
 
-from src.features.contests.models import Contest
+from src.features.contests.models import Contest, Submission
+from src.features.moodle_grades.models import MoodleResultsData, LateSubmissionPolicy, LegalExcuse
+from src.features.moodle_grades.submission_selectors import submission_selectors, submission_selector
+from src.utils.timed_event import TimedEvent
 
 router = APIRouter()
 
@@ -14,10 +20,21 @@ router = APIRouter()
 @router.post('/with-archive', status_code=status.HTTP_200_OK)
 async def sort_submissions_archive(
         background_tasks: BackgroundTasks,
-        contest: str = Form(...),
+        results_data: str = Form(...),
         submissions_archive: UploadFile = File(...)
 ) -> FileResponse:
-    contest = Contest.model_validate_json(contest)
+    results_data = MoodleResultsData.model_validate_json(results_data)
+
+    contest = results_data.contest
+
+    @submission_selector('absolute best',
+                         'selects the best submission, takes late submission policy and legal excuses into account')
+    def absolute_best_submission_selector(submissions: list[Submission]) -> Submission:
+        return max(submissions, key=lambda submission: calculate_points(results_data, submission))
+
+    contest.select_single_submission_for_each_participant(
+        submission_selectors[results_data.submission_selector_name]
+    )
 
     await handle_sort_submissions_archive(contest, submissions_archive)
     os.rename(
@@ -117,3 +134,47 @@ def get_file_name_without_extension(file_name: str):
 
 def get_file_extension(file_name: str):
     return file_name.split('.')[-1]
+
+
+def calculate_points(
+        results_data: MoodleResultsData,
+        submission: Submission
+) -> float:
+    legal_excuse = results_data.legal_excuses.get(submission.author.email)
+    deadline_offset = get_deadline_offset(legal_excuse, results_data.contest)
+    deadline = results_data.contest.end_time_utc + deadline_offset
+
+    points = apply_late_submission_policy(
+        submission,
+        deadline,
+        results_data.late_submission_policy,
+    )
+
+    return points
+
+
+def apply_late_submission_policy(
+        submission: Submission,
+        deadline: datetime,
+        late_submission_policy: LateSubmissionPolicy
+) -> float:
+    extra_time = timedelta(seconds=late_submission_policy.extra_time)
+    penalty = late_submission_policy.penalty
+
+    submission_time_utc = submission.submission_time_utc
+    late_submission_deadline = deadline + extra_time
+
+    if submission_time_utc > late_submission_deadline:
+        return 0.0
+
+    if submission_time_utc > deadline:
+        return submission.points * (1 - penalty)
+
+    return submission.points
+
+
+def get_deadline_offset(legal_excuse: LegalExcuse | None, contest: TimedEvent) -> timedelta:
+    if legal_excuse is not None and legal_excuse.intersects_with(contest):
+        return legal_excuse.end_time_utc - max(contest.start_time_utc, legal_excuse.start_time_utc)
+
+    return timedelta(0)
