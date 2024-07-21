@@ -280,7 +280,6 @@ function SubmissionsInfo({ info, selectors }) {
     </StyledCover>
   );
 }
-
 function SubmissionsSettings({
   register,
   isGetting,
@@ -363,7 +362,6 @@ function SubmissionsSettings({
     </LateSubmissionsContainer>
   );
 }
-
 function SubmissionItem({ item, children }) {
   return (
     <Item>
