@@ -9,8 +9,9 @@ from datetime import datetime, timedelta
 from fastapi import status, APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 
-from src.features.contests.models import Problem, Submission, Contest
-from .models import MoodleResultsData, LegalExcuse
+from src.utils.timed_event import TimedEvent
+from src.features.contests.models import Problem, Submission
+from .models import MoodleResultsData, LegalExcuse, LateSubmissionPolicy
 from .submission_selectors import submission_selectors, submission_selector
 
 router = APIRouter()
@@ -44,9 +45,9 @@ def handle_create_grades_file(results_data: MoodleResultsData) -> StringIO:
 
     contest = results_data.contest
 
-    @submission_selector("absolute best")
+    @submission_selector('absolute best')
     def absolute_best_submission_selector(submissions: list[Submission]) -> Submission:
-        return max(submissions, key=lambda submission: calculate_grade(10, 10, results_data, submission)[0])
+        return max(submissions, key=lambda submission: calculate_points(results_data, submission)[0])
 
     contest.select_single_submission_for_each_participant(
         submission_selectors[results_data.submission_selector_name]
@@ -83,7 +84,7 @@ def update_grades(
     max_grade = results_data.problem_max_grade_by_index[problem.index]
 
     for submission in problem.submissions:
-        grade, submission_time_type = calculate_grade(max_grade, problem.max_points, results_data, submission)
+        grade, submission_time_type = calculate_grade(results_data, submission, max_grade, problem.max_points)
 
         comment = get_comment_from_submission_time_type(
             submission_time_type,
@@ -97,60 +98,63 @@ def update_grades(
 
 
 def calculate_grade(
+        results_data: MoodleResultsData,
+        submission: Submission,
         max_grade: float,
         max_points: float,
-        results_data: MoodleResultsData,
-        submission: Submission
 ) -> (float, SubmissionTimeType):
-    if submission.points is None or max_points is None:
-        grade = get_grade_by_verdict(submission, max_grade)
-    else:
-        grade = submission.points / max_points * max_grade
+    points, submission_time_type = calculate_points(
+        results_data,
+        submission
+    )
 
-    grade, submission_time_type = apply_late_submission_policy(results_data, submission, grade)
+    grade = points / max_points * max_grade
 
     return grade, submission_time_type
 
 
-def apply_late_submission_policy(
-        moodle_results_data: MoodleResultsData,
-        submission: Submission,
-        grade: float
+def calculate_points(
+        results_data: MoodleResultsData,
+        submission: Submission
 ) -> (float, SubmissionTimeType):
-    contest = moodle_results_data.contest
+    legal_excuse = results_data.legal_excuses.get(submission.author.email)
+    deadline_offset = get_deadline_offset(legal_excuse, results_data.contest)
+    deadline = results_data.contest.end_time_utc + deadline_offset
 
-    extra_time = timedelta(seconds=moodle_results_data.late_submission_policy.extra_time)
-    penalty = moodle_results_data.late_submission_policy.penalty
+    points, submission_time_type = apply_late_submission_policy(
+        submission,
+        deadline,
+        results_data.late_submission_policy,
+    )
+
+    return points, submission_time_type
+
+
+def apply_late_submission_policy(
+        submission: Submission,
+        deadline: datetime,
+        late_submission_policy: LateSubmissionPolicy
+) -> (float, SubmissionTimeType):
+    extra_time = timedelta(seconds=late_submission_policy.extra_time)
+    penalty = late_submission_policy.penalty
 
     submission_time_utc = submission.submission_time_utc
-    legal_excuse = moodle_results_data.legal_excuses.get(submission.author.email)
-    deadline = contest.end_time_utc
     late_submission_deadline = deadline + extra_time
-
-    if legal_excuse is not None:
-        deadline_offset = get_deadline_offset(legal_excuse, contest)
-
-        deadline += deadline_offset
-        late_submission_deadline += deadline_offset
 
     if submission_time_utc > late_submission_deadline:
         return 0.0, SubmissionTimeType.AFTER_LATE_SUBMISSION_POLICY
 
     if submission_time_utc > deadline:
-        return grade * (1 - penalty), SubmissionTimeType.LATE_SUBMISSION_POLICY
+        return submission.points * (1 - penalty), SubmissionTimeType.LATE_SUBMISSION_POLICY
 
-    return grade, SubmissionTimeType.IN_TIME
+    return submission.points, SubmissionTimeType.IN_TIME
 
 
-def get_deadline_offset(legal_excuse: LegalExcuse, contest: Contest) -> timedelta:
-    if legal_excuse.intersects_with(contest):
+def get_deadline_offset(legal_excuse: LegalExcuse | None, contest: TimedEvent) -> timedelta:
+    if legal_excuse is not None and legal_excuse.intersects_with(contest):
         return legal_excuse.end_time_utc - max(contest.start_time_utc, legal_excuse.start_time_utc)
 
     return timedelta(0)
-
-
-def get_grade_by_verdict(submission: Submission, max_grade: float) -> float:
-    return max_grade if submission.is_successful else 0
 
 
 def get_comment_from_submission_time_type(submission_time_type: SubmissionTimeType, penalty: float) -> str:

@@ -6,6 +6,8 @@ from src.features.contests.models import Contest
 
 from pydantic import BaseModel, EmailStr, Field
 
+from src.utils.timed_event import TimedEvent
+
 
 class MoodleResultsData(BaseModel):
     contest: Contest
@@ -28,5 +30,5 @@ class LegalExcuse(BaseModel):
     def end_time_utc(self):
         return self.start_time_utc + self.duration
 
-    def intersects_with(self, contest: Contest):
-        return contest.start_time_utc < self.end_time_utc and self.start_time_utc < contest.end_time_utc
+    def intersects_with(self, other: TimedEvent):
+        return other.start_time_utc < self.end_time_utc and self.start_time_utc < other.end_time_utc

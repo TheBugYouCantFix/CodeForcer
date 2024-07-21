@@ -23,9 +23,10 @@ def submission_selector(name: str):
     return decorator
 
 
-@submission_selector("most passed test count")
-def most_passed_test_count_selector(submissions: list[Submission]) -> Submission:
-    return max(submissions, key=lambda s: (s.passed_test_count, s.submission_time_utc))
+@submission_selector("absolute best")
+def absolute_best_submission_selector(submissions: list[Submission]) -> Submission:
+    raise RuntimeError("Default implementation should not be reachable. "
+                       "If you see this message, something went terribly wrong")
 
 
 @submission_selector("latest")

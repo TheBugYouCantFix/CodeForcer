@@ -6,6 +6,7 @@ from typing import Callable
 from pydantic import BaseModel, EmailStr
 
 from src.features.students.models import Student
+from src.utils.timed_event import TimedEvent
 
 
 class Contest(BaseModel):
@@ -34,6 +35,9 @@ class Contest(BaseModel):
     @property
     def end_time_utc(self) -> datetime:
         return self.start_time_utc + self.duration
+
+    def intersects_with(self, other: TimedEvent) -> bool:
+        return other.start_time_utc < self.end_time_utc and self.start_time_utc < other.end_time_utc
 
 
 class Problem(BaseModel):
