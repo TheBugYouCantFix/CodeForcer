@@ -54,11 +54,7 @@ pytest:
 
 deploy:
   stage: deploy
-  when: manual
-  dependencies:
-    - pylint
-    - pytest
-    - front_lint
+  when: manual    
   tags:
     - server-runner
   before_script:
@@ -66,4 +62,6 @@ deploy:
   script:
     - docker compose up -d --build
   needs:
+    - pylint
     - pytest
+    - front_lint
