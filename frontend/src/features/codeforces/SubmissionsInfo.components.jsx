@@ -211,9 +211,10 @@ export const LateSubmissionsContainer = styled.div`
   margin-bottom: 2rem;
 
   h2:not(:last-child) {
-    margin-bottom: 2.5rem;
+    margin-bottom: 0.5rem;
   }
   h3:not(:last-child) {
+    margin-top: 3rem;
     margin-bottom: 1rem;
   }
 `;
