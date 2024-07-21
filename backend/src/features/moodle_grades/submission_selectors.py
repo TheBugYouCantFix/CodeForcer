@@ -23,22 +23,23 @@ def submission_selector(name: str, description: str = ""):
     return decorator
 
 
-@submission_selector("absolute best")
+@submission_selector("absolute best",
+                     "selects the best submission, takes late submission policy and legal excuses into account")
 def absolute_best_submission_selector(submissions: list[Submission]) -> Submission:
     return most_points_selector(submissions)
 
 
-@submission_selector("latest")
+@submission_selector("latest", "selects the latest submission")
 def latest_submission_selector(submissions: list[Submission]) -> Submission:
     return max(submissions, key=lambda s: s.submission_time_utc)
 
 
-@submission_selector("latest successful")  # returns latest unsuccessful submission if no successful submissions
+@submission_selector("latest successful", "returns latest unsuccessful submission if no successful submissions")
 def latest_successful_submission_selector(submissions: list[Submission]) -> Submission:
     return max(submissions, key=lambda s: (s.is_successful, s.submission_time_utc))
 
 
-@submission_selector("most points")
+@submission_selector("most points", "selects the submission with the most points on CodeForces")
 def most_points_selector(submissions: list[Submission]) -> Submission:
     return max(
         submissions,
