@@ -29,7 +29,7 @@ async def sort_submissions_archive(
     filepath = f'{temp_folder}/{contest.name}.zip'
     response = FileResponse(filepath, filename=f'{contest.name}.zip')
 
-    background_tasks.add_task(lambda path: shutil.rmtree(path), temp_folder)
+    background_tasks.add_task(shutil.rmtree, temp_folder)
 
     return response
 
