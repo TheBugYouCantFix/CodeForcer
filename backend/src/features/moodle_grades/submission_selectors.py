@@ -12,12 +12,14 @@ def submission_name_validator(name: str) -> str:
 
 SubmissionSelectorName = Annotated[str, AfterValidator(submission_name_validator)]
 
-submission_selectors: dict[str, tuple[SubmissionSelector, str]] = {}
+submission_selectors: dict[str, SubmissionSelector] = {}
+submission_selectors_descriptions: dict[str, str] = {}
 
 
 def submission_selector(name: str, description: str = ""):
     def decorator(selector: SubmissionSelector):
-        submission_selectors[name] = selector, description
+        submission_selectors[name] = selector
+        submission_selectors_descriptions[name] = description
         return selector
 
     return decorator
