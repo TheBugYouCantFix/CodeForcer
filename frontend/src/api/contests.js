@@ -4,6 +4,9 @@ export async function getContest(contestID, APIKey, secretKey) {
   const response = await fetch(url);
 
   if (!response.ok) {
+    const data = await response.json();
+    console.log(data);
+
     throw response;
   }
 
@@ -23,7 +26,31 @@ export async function getSelectors() {
   return data;
 }
 
+export async function getLegal(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+  const url = "/api/moodle-grades/legal-excuses-file";
+
+  const response = await fetch(url, {
+    method: "PATCH",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    throw response;
+  }
+
+  const data = await response.json();
+
+  return data;
+}
+
 export async function handlePostRequest(info, data) {
+  let legal_exuses = {};
+  if (data["legal-exuses"].length) {
+    legal_exuses = await getLegal(data["legal-exuses"][0]);
+  }
+
   const penalty = data.penalty ? parseFloat(data.penalty) / 100 : 0;
   const additionTime =
     parseFloat(data["additional-days"] ? data["additional-days"] : 0) * 86400 +
@@ -48,10 +75,13 @@ export async function handlePostRequest(info, data) {
       }),
     },
     problem_max_grade_by_index: info.problems.reduce(
-      (acc, cur, idx) => ({ ...acc, [cur.index]: data[idx.toString()] }),
+      (acc, cur, idx) => ({
+        ...acc,
+        [cur.index]: parseFloat(data[idx.toString()]),
+      }),
       {},
     ),
-    legal_excuses: {},
+    legal_excuses: legal_exuses,
     late_submission_policy: {
       penalty: penalty < 0 ? 0 : penalty > 1 ? 1 : penalty,
       extra_time: additionTime,

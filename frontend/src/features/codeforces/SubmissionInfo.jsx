@@ -26,6 +26,7 @@ import Heading from "../../ui/Heading.jsx";
 import SpinnerMini from "../../ui/SpinnnerMini.jsx";
 import FormElement from "../../ui/FormElement.jsx";
 import Input from "../../ui/Input.jsx";
+import FileInput from "../../ui/FileInput.jsx";
 
 const selectStyles = {
   container: (baseStyles) => ({
@@ -79,12 +80,10 @@ function download(filename, text) {
 
 function SubmissionsInfo({ info, selectors }) {
   const { contest, participants } = info;
-  const options = selectors?.map((el) => {
-    return {
-      value: el,
-      label: el.slice(0, 1).toUpperCase() + el.slice(1),
-    };
-  });
+  const options = selectors?.map((el) => ({
+    value: el,
+    label: el.slice(0, 1).toUpperCase() + el.slice(1),
+  }));
   const definedUsers = {
     ...contest,
     problems: contest.problems.map((item) => {
@@ -114,17 +113,35 @@ function SubmissionsInfo({ info, selectors }) {
     formState: { errors },
     watch,
     control,
-  } = useForm();
+    setError,
+  } = useForm({
+    defaultValues: {
+      selector: options.find((el) => el?.value === "most points") || options[0],
+    },
+  });
 
   useEffect(() => {
     const subscription = watch((value) => {
+      let totalPoints = 0;
+
       for (let key in value) {
         value[key] = parseFloat(value[key]);
+
+        if (!isNaN(parseInt(key))) {
+          totalPoints += parseFloat(value[key]);
+        }
       }
       setContestInfo(value);
+
+      if (totalPoints > 100) {
+        setError("total", {
+          type: "custom",
+          message: "Total number of points must be less or equal to 100",
+        });
+      }
     });
     return () => subscription.unsubscribe();
-  }, [setContestInfo, watch]);
+  }, [setContestInfo, watch, setError]);
 
   const [isGetting, setIsGetting] = useState(false);
 
@@ -132,7 +149,6 @@ function SubmissionsInfo({ info, selectors }) {
 
   const onSubmit = function (data) {
     setIsGetting(true);
-    data = data.selector ? data : { ...data, selector: options[0] };
 
     handlePostRequest(definedUsers, data)
       .then((res) => {
@@ -204,6 +220,7 @@ function SubmissionsInfo({ info, selectors }) {
               <ItemInput
                 placeholder="Maximum points per task"
                 data-index={index}
+                error={errors[`${index}`]}
                 disabled={isGetting}
                 defaultValue={contestInfo[index.toString()] || null}
                 {...register(`${index}`, {
@@ -212,6 +229,7 @@ function SubmissionsInfo({ info, selectors }) {
                     value: /^\d*\.?\d*$/,
                     message: "Incorrect value",
                   },
+                  min: 0,
                 })}
               />
               {errors[`${index}`] && (
@@ -220,10 +238,13 @@ function SubmissionsInfo({ info, selectors }) {
             </>
           </SubmissionItem>
         ))}
+        {errors?.total && <Error>{errors?.total?.message}</Error>}
         <SubmissionsSettings
           isGetting={isGetting}
           register={register}
           contestInfo={contestInfo}
+          errors={errors}
+          watch={watch}
         />
         {unpossibleReqest ? (
           <UndefinedDescription style={{ fontWeight: "400" }}>
@@ -242,6 +263,10 @@ function SubmissionsInfo({ info, selectors }) {
                   placeholder="Choose submission type"
                   theme={selectTheme}
                   styles={selectStyles}
+                  defaultValue={
+                    options.find((el) => el?.value === "most points") ||
+                    options[0]
+                  }
                   options={options}
                 />
               )}
@@ -255,17 +280,34 @@ function SubmissionsInfo({ info, selectors }) {
     </StyledCover>
   );
 }
+function SubmissionsSettings({
+  register,
+  isGetting,
+  contestInfo,
+  errors,
+  watch,
+}) {
+  const watchFileInput = watch("legal-exuses");
 
-function SubmissionsSettings({ register, isGetting, contestInfo }) {
   return (
     <LateSubmissionsContainer>
       <Heading as="h2">Late Submission Configuration</Heading>
+      <FormElement label="Legal excused students" type="file" borderless={true}>
+        <FileInput
+          edited={watchFileInput && "true"}
+          text={watchFileInput?.length ? watchFileInput[0]?.name : "*.csv"}
+          accept={".csv"}
+          register={register("legal-exuses")}
+          disabled={isGetting}
+        />
+      </FormElement>
       <Heading as="h3" style={{ gridColumn: "span 3" }}>
         Additional time for late submission
       </Heading>
       <TimeConfiguration>
         <FormElement label="Days" borderless={true}>
           <Input
+            error={errors["additional-days"]}
             disabled={isGetting}
             placeholder={0}
             defaultValue={contestInfo["additional-days"] || null}
@@ -277,6 +319,7 @@ function SubmissionsSettings({ register, isGetting, contestInfo }) {
         </FormElement>
         <FormElement label="Hours" borderless={true}>
           <Input
+            error={errors["additional-hours"]}
             disabled={isGetting}
             placeholder={0}
             defaultValue={contestInfo["additional-hours"] || null}
@@ -290,6 +333,7 @@ function SubmissionsSettings({ register, isGetting, contestInfo }) {
           <Input
             disabled={isGetting}
             placeholder={0}
+            error={errors["additional-minutes"]}
             defaultValue={contestInfo["additional-minutes"] || null}
             {...register("additional-minutes", {
               min: 0,
@@ -302,15 +346,14 @@ function SubmissionsSettings({ register, isGetting, contestInfo }) {
         <Input
           disabled={isGetting}
           placeholder={20}
+          error={errors?.penalty}
           defaultValue={contestInfo["penalty"] || null}
           {...register("penalty", {
             min: {
               value: 0,
-              message: "Can not be negative",
             },
             max: {
               value: 100,
-              message: "Maxium penalty is 100%",
             },
           })}
           style={{ textAlign: "center" }}
@@ -319,7 +362,6 @@ function SubmissionsSettings({ register, isGetting, contestInfo }) {
     </LateSubmissionsContainer>
   );
 }
-
 function SubmissionItem({ item, children }) {
   return (
     <Item>
