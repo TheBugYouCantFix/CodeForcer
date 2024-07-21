@@ -1,98 +1,100 @@
-import zipfile, shutil, time, os
-
+import os
+import shutil
+from zipfile import ZipFile, ZIP_DEFLATED
 from io import BytesIO
 
-from fastapi import APIRouter, status, UploadFile, File
-from fastapi.responses import StreamingResponse, FileResponse
+from fastapi import APIRouter, status, UploadFile, File, Form
+from fastapi.responses import FileResponse
 
-from src.features.contests.models import Contest, Problem, Submission
-from src.features.contests.get_contest import GetContestQuery
-from src.features.students.get_student import GetStudentQueryHandler
-from src.features.contests.interfaces import IContestsProvider
-from src.features.students.interfaces import IStudentsRepository
+from src.features.contests.models import Contest
 
 router = APIRouter()
 
+
 @router.post('/submissions_archive', status_code=status.HTTP_200_OK)
-async def sort_submissions_archive(api_key: str, api_secret: str, submissions_archive: UploadFile = File(...)) -> FileResponse:
+async def sort_submissions_archive(
+        contest: str = Form(...),
+        submissions_archive: UploadFile = File(...)
+) -> FileResponse:
+    contest = Contest.model_validate_json(contest)
 
-    result_buffer = BytesIO()
+    zipfile = await handle_sort_submissions_archive(contest, submissions_archive)
 
-
-
-
-
-
-
-
-    class SubmissionsArchiveSorterHandler:
-        def handle(self, api_key: str, api_secret: str, submissions_archive: UploadFile = File(...)) -> BytesIO:
-            archive_bytes = submissions_archive.read()
-
-            with zipfile.ZipFile(BytesIO(archive_bytes), 'r') as zip_ref:
-                zip_ref.extractall('features/moodle_grades/submissions_temp/extracted_files/')
-                submissions_names = zip_ref.namelist()
-                contest: Contest = self._get_contest(int(self._get_file_name_without_type(submissions_archive.filename)),
-                                                     api_key, api_secret)
-                self._create_result_folder(contest, submissions_names)
-
-            result = self._create_result_zip_file()
+    return FileResponse(f'features/moodle_grades/submissions_temp/{contest.id}.zip', filename=f'{contest.id}.zip')
 
 
+async def handle_sort_submissions_archive(contest: Contest, submissions_archive: UploadFile = File(...)) -> ZipFile:
+    archive_bytes = await submissions_archive.read()
+
+    with ZipFile(BytesIO(archive_bytes), 'r') as zip_ref:
+        zip_ref.extractall('features/moodle_grades/submissions_temp/extracted_files/')
+        submission_ids = zip_ref.namelist()
+        create_result_folder(contest, submission_ids)
+
+    return create_result_zip_file(contest.id)
 
 
+def create_result_folder(contest: Contest, submission_ids: list[str]):
+    create_problem_folders(contest)
+    fill_problem_folders(contest, submission_ids)
 
-        def _get_contest(self, contest_id: int, api_key: str, api_secret: str) -> Contest:
-            get_contest_query = GetContestQuery(IContestsProvider, IStudentsRepository)
-            return get_contest_query.handle(contest_id, api_key, api_secret)
 
-        def _get_file_name_without_type(self, file_name: str):
-            return file_name.split('.')[0]
+def fill_problem_folders(contest: Contest, submission_file_names: list[str]):
+    parent_dir = f'features/moodle_grades/submissions_temp/{str(contest.id)}'
+    for problem in contest.problems:
+        directory = f'{problem.name}/'
+        problem_path = os.path.join(parent_dir, directory)
 
-        def _get_file_type(self, file_name: str):
-            return file_name.split('.')[1]
+        for submission_file_name in submission_file_names:
+            submission_id = int(get_file_name_without_extension(submission_file_name))
 
-        def _create_result_folder(self, contest: Contest, submissions_names: list[str]):
-            self._create_problem_folders(contest)
-            self._fill_problem_folders(contest, submissions_names)
+            for submission in problem.submissions:
+                if submission.id == submission_id:
+                    break
+            else:
+                continue
 
-        def _create_problem_folders(self, contest: Contest):
-            os.mkdir(f'features/moodle_grades/submissions_temp/{str(contest.id)}')
-            parent_dir = f'features/moodle_grades/submissions_temp/{str(contest.id)}/'
-            for problem in contest.problems:
-                directory = f'{problem.name}'
-                path = os.path.join(parent_dir, directory)
-                os.makedir(path)
+            new_submission_file_path = os.path.join(problem_path, f'{get_file_extension(submission_file_name)}')
+            if os.path.isdir(new_submission_file_path):
+                shutil.move(
+                    src=f'features/moodle_grades/submissions_temp/extracted_files/{submission_file_name}',
+                    dst=new_submission_file_path
+                )
+            else:
+                os.mkdir(os.path.join(problem_path, f'{get_file_extension(submission_file_name)}/'))
 
-        def _fill_problem_folders(self, contest: Contest, submissions_names: list[str]):
-            parent_dir = f'features/moodle_grades/submissions_temp/{str(contest.id)}'
-            for problem in contest.problems:
-                directory = f'{problem.name}/'
-                problem_path = os.path.join(parent_dir, directory)
-                for submission_name in submissions_names:
-                    submission_id = int(self._get_file_name_without_type(submission_name))
-                    if any(submission.id == submission_id for submission in problem.submissions):
-                        if (os.path.isdir(os.path.join(problem_path, f'{self._get_file_type(submission_name)}'))):
-                            shutil.move(f'feature/moodle_grades/submission_temp/extracted_files/{sibmission_name}',
-                                        os.path.join(problem_path, f'{self._get_file_type(submission_name)}'))
-                        else:
-                            os.mkdir(os.path.join(problem_path, f'{self._get_file_type(submission_name)}/'))
+            language_folder = new_submission_file_path
 
-                        language_folder = os.path.join(problem_path, f'{self._get_file_type(submission_name)}')
+            os.rename(
+                os.path.join(language_folder, f'{submission_file_name}'),
+                os.path.join(language_folder, f'{submission.author.email}')
+            )
 
-                        os.rename(os.path.join(language_folder, f'{submission_name}'),
-                                  os.path.join(language_folder, f'{self._get_student_email(submission)}'))
 
-        def _get_student_email(self, submission: Submission):
-            get_student_query_handle = GetStudentQueryHandler(IStudentsRepository)
-            return get_student_query_handle.handle(submission.author.handle).email
+def create_problem_folders(contest: Contest):
+    if not os.path.exists(f'features/moodle_grades/submissions_temp/{contest.id}'):
+        os.mkdir(f'features/moodle_grades/submissions_temp/{contest.id}')
 
-        def _create_result_zip_file(self, contest_id: str) -> zipfile.ZipFile:
-            with zipfile.ZipFile(f'features/moodle_grades/submissions_temp/{contest_id}.zip',
-                                 'w', zipfile.ZIP_DEFLATED) as zip_ref:
-                for dirname, subdirs, files in os.walk(f'features/moodle_grades/submissions_temp/{contest_id}'):
-                    zip_ref.write(dirname)
-                    for file_name in files:
-                        zip_ref.write(os.path.join(dirname, file_name))
+    parent_dir = f'features/moodle_grades/submissions_temp/{contest.id}/'
+    for problem in contest.problems:
+        path = os.path.join(parent_dir, problem.name)
+        if not os.path.exists(path):
+            os.mkdir(path)
 
-            return zip_ref
+
+def create_result_zip_file(contest_id: int) -> ZipFile:
+    with ZipFile(f'features/moodle_grades/submissions_temp/{contest_id}.zip', 'w', ZIP_DEFLATED) as zip_ref:
+        for dirname, subdirs, files in os.walk(f'features/moodle_grades/submissions_temp/{contest_id}'):
+            zip_ref.write(dirname)
+            for file_name in files:
+                zip_ref.write(os.path.join(dirname, file_name))
+
+    return zip_ref
+
+
+def get_file_name_without_extension(file_name: str):
+    return file_name.split('.')[0]
+
+
+def get_file_extension(file_name: str):
+    return file_name.split('.')[-1]
