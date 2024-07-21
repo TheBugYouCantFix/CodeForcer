@@ -1,3 +1,5 @@
+[![React][React.js]][React-url] [![FastAPI][Fastapi]][Fastapi-url] [![Docker][docker]][docker-url] [![SqLite][sqlite]][sqlite-url] [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 <br />
 <div align="center">
   <a href="https://gitlab.pg.innopolis.university/code-forcer-ise-5">
@@ -63,12 +65,6 @@
 <div align="center">
   <img src="assets/CodeForcer.jpeg" alt="Homepage" width="1024"/>
 </div>
-
-### Built With
-- Frontend: [![React][React.js]][React-url]
-- Backend: [![FastAPI][Fastapi]][Fastapi-url]
-- Containerization: [![Docker][docker]][docker-url]
-- Database: [![SqLite][sqlite]][sqlite-url]
 
 
 ## Features
