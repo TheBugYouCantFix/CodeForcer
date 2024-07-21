@@ -17,7 +17,7 @@ router = APIRouter()
 async def create_grades_file(results_data: MoodleResultsData) -> StreamingResponse:
     filename = f"moodle_grades_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.csv"
 
-    file = CreateGradesFileCommand().handle(results_data)
+    file = handle_create_grades_file(results_data)
 
     content_length = len(file.getvalue())
     file.seek(0)
@@ -33,114 +33,103 @@ async def create_grades_file(results_data: MoodleResultsData) -> StreamingRespon
     )
 
 
-class CreateGradesFileCommand:
-    def handle(self, results_data: MoodleResultsData) -> StringIO:
-        student_grade_map: defaultdict[str, list[float | str]] = defaultdict(lambda: [0, ''])
+def handle_create_grades_file(results_data: MoodleResultsData) -> StringIO:
+    student_grade_map: defaultdict[str, list[float | str]] = defaultdict(lambda: [0, ''])
 
-        file = StringIO()
-        writer = csv.writer(file)
+    file = StringIO()
+    writer = csv.writer(file)
 
-        contest = results_data.contest
-        contest.select_single_submission_for_each_participant(
-            submission_selectors[results_data.submission_selector_name]
+    contest = results_data.contest
+    contest.select_single_submission_for_each_participant(
+        submission_selectors[results_data.submission_selector_name]
+    )
+
+    mark_grades(results_data.contest.problems, student_grade_map, results_data)
+
+    writer.writerow(['Email', f'{contest.name} Grade', f'{contest.name} Feedback'])
+    write_grades_to_file(writer, student_grade_map)
+
+    return file
+
+
+def mark_grades(
+        problems: list[Problem],
+        student_grade_map: defaultdict[str, list[float | str]],
+        results_data: MoodleResultsData
+) -> None:
+    for problem in problems:
+        update_grades(problem, student_grade_map, results_data)
+
+
+def update_grades(
+        problem: Problem,
+        student_grade_map: defaultdict[str, list[float | str]],
+        results_data: MoodleResultsData
+) -> None:
+    if problem.index not in results_data.problem_max_grade_by_index:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Problem {problem.index} has no max grade specified"
         )
 
-        writer.writerow(['Email', f'{contest.name} Grade', f'{contest.name} Feedback'])
+    max_grade = results_data.problem_max_grade_by_index[problem.index]
 
-        self._mark_grades(results_data.contest.problems, student_grade_map, results_data)
-        self._write_to_file(writer, student_grade_map)
+    for submission in problem.submissions:
+        if submission.points is None or problem.max_points is None:
+            problem_points = get_grade_by_verdict(submission, max_grade)
+        else:
+            problem_points = submission.points / problem.max_points * max_grade
 
-        for _, feedback in student_grade_map.values():
-            feedback += '"'
+        problem_points, comment = apply_late_submission_policy(results_data, submission, problem_points)
 
-        return file
+        student_grade_map[submission.author.email][0] += problem_points
 
-    def _mark_grades(
-            self,
-            problems: list[Problem],
-            student_grade_map: defaultdict[str, list[float | str]],
-            results_data: MoodleResultsData
-    ) -> None:
-        for problem in problems:
-            self._update_grades(problem, student_grade_map, results_data)
+        comment = f"({comment})" if comment != "" else comment
+        feedback = f"Problem {problem.index}: {problem_points} {comment}\n\n"
+        student_grade_map[submission.author.email][1] += feedback
 
-    @staticmethod
-    def _update_grades(
-            problem: Problem,
-            student_grade_map: defaultdict[str, list[float | str]],
-            results_data: MoodleResultsData
-    ) -> None:
-        if problem.index not in results_data.problem_max_grade_by_index:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Problem {problem.index} has no max grade specified"
-            )
 
-        max_grade = results_data.problem_max_grade_by_index[problem.index]
+def apply_late_submission_policy(
+        moodle_results_data: MoodleResultsData,
+        submission: Submission,
+        points: float
+) -> (float, str):
+    contest = moodle_results_data.contest
 
-        for submission in problem.submissions:
-            if submission.points is None or problem.max_points is None:
-                problem_points = CreateGradesFileCommand._get_grade_by_verdict(submission, max_grade)
-            else:
-                problem_points = submission.points / problem.max_points * max_grade
+    extra_time = timedelta(seconds=moodle_results_data.late_submission_policy.extra_time)
+    penalty = moodle_results_data.late_submission_policy.penalty
 
-            problem_points, comment = CreateGradesFileCommand._apply_late_submission_policy(
-                results_data,
-                submission,
-                problem_points
-            )
+    submission_time_utc = submission.submission_time_utc
+    legal_excuse = moodle_results_data.legal_excuses.get(submission.author.email)
+    deadline = contest.end_time_utc
+    late_submission_deadline = deadline + extra_time
 
-            student_grade_map[submission.author.email][0] += problem_points
+    if legal_excuse is not None:
+        deadline_offset = get_deadline_offset(legal_excuse, contest)
 
-            comment = f"({comment})" if comment != "" else comment
-            feedback = f"Problem {problem.index}: {problem_points} {comment}\n\n"
-            if student_grade_map[submission.author.email][1] is not None:
-                student_grade_map[submission.author.email][1] += feedback
-            else:
-                student_grade_map[submission.author.email][1] = '"' + feedback
+        deadline += deadline_offset
+        late_submission_deadline += deadline_offset
 
-    @staticmethod
-    def _get_grade_by_verdict(submission: Submission, max_grade: float) -> float:
-        return max_grade if submission.is_successful else 0
+    if submission_time_utc > late_submission_deadline:
+        return 0.0, "Submitted after the deadline"
 
-    @staticmethod
-    def _apply_late_submission_policy(
-            moodle_results_data: MoodleResultsData,
-            submission: Submission,
-            points: float
-    ) -> (float, str):
-        contest = moodle_results_data.contest
+    if submission_time_utc > deadline:
+        return points * (1 - penalty), f"Late submission policy applied: {penalty * 100}% grade reduction"
 
-        extra_time = timedelta(seconds=moodle_results_data.late_submission_policy.extra_time)
-        penalty = moodle_results_data.late_submission_policy.penalty
+    return points, ""
 
-        submission_time_utc = submission.submission_time_utc
-        legal_excuse = moodle_results_data.legal_excuses.get(submission.author.email)
-        deadline = contest.end_time_utc
-        late_submission_deadline = deadline + extra_time
 
-        if legal_excuse is not None:
-            deadline_offset = CreateGradesFileCommand._get_deadline_offset(legal_excuse, contest)
+def get_deadline_offset(legal_excuse: LegalExcuse, contest: Contest) -> timedelta:
+    if legal_excuse.intersects_with(contest):
+        return legal_excuse.end_time_utc - max(contest.start_time_utc, legal_excuse.start_time_utc)
 
-            deadline += deadline_offset
-            late_submission_deadline += deadline_offset
+    return timedelta(0)
 
-        if submission_time_utc > late_submission_deadline:
-            return 0.0, "Submitted after the deadline"
 
-        if submission_time_utc > deadline:
-            return points * (1 - penalty), f"Late submission policy applied: {penalty * 100}% grade reduction"
+def get_grade_by_verdict(submission: Submission, max_grade: float) -> float:
+    return max_grade if submission.is_successful else 0
 
-        return points, ""
 
-    @staticmethod
-    def _get_deadline_offset(legal_excuse: LegalExcuse, contest: Contest) -> timedelta:
-        if legal_excuse.intersects_with(contest):
-            return legal_excuse.end_time_utc - max(contest.start_time_utc, legal_excuse.start_time_utc)
-
-        return timedelta(0)
-
-    @staticmethod
-    def _write_to_file(writer: csv.writer, student_grade_map: defaultdict[str, list[float | str]]) -> None:
-        for email, (grade, feedback) in student_grade_map.items():
-            writer.writerow([email, grade, feedback])
+def write_grades_to_file(writer: csv.writer, student_grade_map: defaultdict[str, list[float | str]]) -> None:
+    for email, (grade, feedback) in student_grade_map.items():
+        writer.writerow([email, grade, feedback])
