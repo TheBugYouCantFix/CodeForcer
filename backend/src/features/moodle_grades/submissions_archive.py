@@ -11,7 +11,7 @@ from src.features.contests.models import Contest
 router = APIRouter()
 
 
-@router.post('/submissions_archive', status_code=status.HTTP_200_OK)
+@router.post('/with-archive', status_code=status.HTTP_200_OK)
 async def sort_submissions_archive(
         background_tasks: BackgroundTasks,
         contest: str = Form(...),
