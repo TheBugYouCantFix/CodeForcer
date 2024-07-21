@@ -1,5 +1,4 @@
 import os
-import shutil
 from zipfile import ZipFile, ZIP_DEFLATED
 from io import BytesIO
 
@@ -19,8 +18,12 @@ async def sort_submissions_archive(
     contest = Contest.model_validate_json(contest)
 
     await handle_sort_submissions_archive(contest, submissions_archive)
+    os.rename(
+        f'features/moodle_grades/submissions_temp/{contest.id}.zip',
+        f'features/moodle_grades/submissions_temp/{contest.name}.zip'
+    )
 
-    return FileResponse(f'features/moodle_grades/submissions_temp/{contest.id}.zip', filename=f'{contest.id}.zip')
+    return FileResponse(f'features/moodle_grades/submissions_temp/{contest.name}.zip', filename=f'{contest.name}.zip')
 
 
 async def handle_sort_submissions_archive(contest: Contest, submissions_archive: UploadFile = File(...)) -> ZipFile:
@@ -42,8 +45,7 @@ def create_result_folder(contest: Contest, submission_ids: list[str]):
 def fill_problem_folders(contest: Contest, submission_file_names: list[str]):
     parent_dir = f'features/moodle_grades/submissions_temp/{contest.id}'
     for problem in contest.problems:
-        problem_path = os.path.join(parent_dir, problem.name)
-        print(problem.name)
+        problem_path = os.path.join(parent_dir, f'{problem.name} {problem.index}')
 
         for submission_file_name in submission_file_names:
             submission_id = int(get_file_name_without_extension(submission_file_name))
@@ -59,12 +61,6 @@ def fill_problem_folders(contest: Contest, submission_file_names: list[str]):
 
             if not os.path.isdir(new_submission_file_path):
                 os.mkdir(os.path.join(problem_path, language_name))
-
-            # shutil.move(
-            #     src=f'features/moodle_grades/submissions_temp/extracted_files/{submission_file_name}',
-            #     dst=new_submission_file_path
-            # )
-            # print(f'moved to: {new_submission_file_path}')
 
             old_name = f'features/moodle_grades/submissions_temp/extracted_files/{submission_file_name}'
             new_name = os.path.join(new_submission_file_path, submission.author.email)
@@ -84,17 +80,22 @@ def create_problem_folders(contest: Contest):
         os.mkdir(parent_dir)
 
     for problem in contest.problems:
-        path = os.path.join(parent_dir, problem.name)
+        path = os.path.join(parent_dir, f'{problem.name} {problem.index}')
         if not os.path.exists(path):
             os.mkdir(path)
 
 
 def create_result_zip_file(contest_id: int) -> ZipFile:
     with ZipFile(f'features/moodle_grades/submissions_temp/{contest_id}.zip', 'w', ZIP_DEFLATED) as zip_ref:
-        for dirname, subdirs, files in os.walk(f'features/moodle_grades/submissions_temp/{contest_id}'):
-            zip_ref.write(dirname)
+        for dirname, _, files in os.walk(f'features/moodle_grades/submissions_temp/{contest_id}'):
             for file_name in files:
-                zip_ref.write(os.path.join(dirname, file_name))
+                zip_ref.write(
+                    os.path.join(dirname, file_name),
+                    os.path.relpath(
+                        path=os.path.join(dirname, file_name),
+                        start=f'features/moodle_grades/submissions_temp/{contest_id}'
+                    )
+                )
 
     return zip_ref
 
