@@ -11,9 +11,6 @@ router = APIRouter()
 async def get_submission_selectors() -> list[NameAndDescription]:
     return [
         NameAndDescription(name=name, description=description)
-        for name, description
-        in zip(
-            submission_selectors.keys(),
-            map(lambda x: x[1], submission_selectors.values())
-        )
+        for name, (_, description)
+        in submission_selectors.items()
     ]
