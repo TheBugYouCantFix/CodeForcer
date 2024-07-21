@@ -18,7 +18,7 @@ async def sort_submissions_archive(
 ) -> FileResponse:
     contest = Contest.model_validate_json(contest)
 
-    zipfile = await handle_sort_submissions_archive(contest, submissions_archive)
+    await handle_sort_submissions_archive(contest, submissions_archive)
 
     return FileResponse(f'features/moodle_grades/submissions_temp/{contest.id}.zip', filename=f'{contest.id}.zip')
 
@@ -27,7 +27,7 @@ async def handle_sort_submissions_archive(contest: Contest, submissions_archive:
     archive_bytes = await submissions_archive.read()
 
     with ZipFile(BytesIO(archive_bytes), 'r') as zip_ref:
-        zip_ref.extractall('features/moodle_grades/submissions_temp/extracted_files/')
+        zip_ref.extractall('features/moodle_grades/submissions_temp/extracted_files')
         submission_ids = zip_ref.namelist()
         create_result_folder(contest, submission_ids)
 
@@ -40,10 +40,10 @@ def create_result_folder(contest: Contest, submission_ids: list[str]):
 
 
 def fill_problem_folders(contest: Contest, submission_file_names: list[str]):
-    parent_dir = f'features/moodle_grades/submissions_temp/{str(contest.id)}'
+    parent_dir = f'features/moodle_grades/submissions_temp/{contest.id}'
     for problem in contest.problems:
-        directory = f'{problem.name}/'
-        problem_path = os.path.join(parent_dir, directory)
+        problem_path = os.path.join(parent_dir, problem.name)
+        print(problem.name)
 
         for submission_file_name in submission_file_names:
             submission_id = int(get_file_name_without_extension(submission_file_name))
@@ -54,28 +54,35 @@ def fill_problem_folders(contest: Contest, submission_file_names: list[str]):
             else:
                 continue
 
-            new_submission_file_path = os.path.join(problem_path, f'{get_file_extension(submission_file_name)}')
-            if os.path.isdir(new_submission_file_path):
-                shutil.move(
-                    src=f'features/moodle_grades/submissions_temp/extracted_files/{submission_file_name}',
-                    dst=new_submission_file_path
-                )
-            else:
-                os.mkdir(os.path.join(problem_path, f'{get_file_extension(submission_file_name)}/'))
+            language_name = get_file_extension(submission_file_name) + '/'
+            new_submission_file_path = os.path.join(problem_path, language_name)
 
-            language_folder = new_submission_file_path
+            if not os.path.isdir(new_submission_file_path):
+                os.mkdir(os.path.join(problem_path, language_name))
+
+            # shutil.move(
+            #     src=f'features/moodle_grades/submissions_temp/extracted_files/{submission_file_name}',
+            #     dst=new_submission_file_path
+            # )
+            # print(f'moved to: {new_submission_file_path}')
+
+            old_name = f'features/moodle_grades/submissions_temp/extracted_files/{submission_file_name}'
+            new_name = os.path.join(new_submission_file_path, submission.author.email)
+
+            if os.path.exists(new_name):
+                os.remove(new_name)
 
             os.rename(
-                os.path.join(language_folder, f'{submission_file_name}'),
-                os.path.join(language_folder, f'{submission.author.email}')
+                str(old_name),
+                str(new_name)
             )
 
 
 def create_problem_folders(contest: Contest):
-    if not os.path.exists(f'features/moodle_grades/submissions_temp/{contest.id}'):
-        os.mkdir(f'features/moodle_grades/submissions_temp/{contest.id}')
+    parent_dir = f'features/moodle_grades/submissions_temp/{contest.id}'
+    if not os.path.exists(parent_dir):
+        os.mkdir(parent_dir)
 
-    parent_dir = f'features/moodle_grades/submissions_temp/{contest.id}/'
     for problem in contest.problems:
         path = os.path.join(parent_dir, problem.name)
         if not os.path.exists(path):
@@ -93,7 +100,7 @@ def create_result_zip_file(contest_id: int) -> ZipFile:
 
 
 def get_file_name_without_extension(file_name: str):
-    return file_name.split('.')[0]
+    return ''.join(file_name.split('.')[:-1])
 
 
 def get_file_extension(file_name: str):
