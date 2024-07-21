@@ -45,7 +45,8 @@ def handle_create_grades_file(results_data: MoodleResultsData) -> StringIO:
 
     contest = results_data.contest
 
-    @submission_selector('absolute best')
+    @submission_selector('absolute best',
+                         'selects the best submission, takes late submission policy and legal excuses into account')
     def absolute_best_submission_selector(submissions: list[Submission]) -> Submission:
         return max(submissions, key=lambda submission: calculate_points(results_data, submission)[0])
 
