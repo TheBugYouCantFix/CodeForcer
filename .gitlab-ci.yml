@@ -19,6 +19,20 @@ pylint:
     changes:
       - README.md
 
+front_lint:
+  stage: lint
+  image:
+    name: node:20
+    pull_policy: if-not-present
+  before_script:
+    - cd frontend/
+    - npm install
+  script:
+    - npm run lint
+  except:
+    changes:
+      - README.md
+  
 pytest:
   stage: test
   image:
@@ -35,30 +49,16 @@ pytest:
     changes:
       - README.md
 
-front_lint:
-  stage: lint
-  image:
-    name: node:20
-    pull_policy: if-not-present
-  before_script:
-    - cd frontend/
-    - npm install
-  script:
-    - npm run lint
-  except:
-    changes:
-      - README.md
-
 deploy:
   stage: deploy
-  when: manual
-  dependencies:
-    - pylint
-    - pytest
-    - front_lint
+  when: manual    
   tags:
     - server-runner
   before_script:
     - docker compose down
   script:
     - docker compose up -d --build
+  needs:
+    - pylint
+    - pytest
+    - front_lint
