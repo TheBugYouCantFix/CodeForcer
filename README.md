@@ -79,11 +79,14 @@
 - Creating .csv file with results of the CodeForces contest that can be uploaded to Moodle
 - Centralized students' handles
 - Application of late submissions policy
+- Selection of the absolute best solution that considers late submission policy and legal excuses
+- Full test coverage (unit and integration tests)
 
 ### Frontend 
 - Dark&Light theme
 - Smooth animations
 - Sleek and intuitive design
+- Adaptation for both mobile and web platforms
 
 ## Getting Started
 
