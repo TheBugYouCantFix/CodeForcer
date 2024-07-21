@@ -3,10 +3,9 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 
 from src.features.contests.models import Contest
+from src.utils.timed_event import TimedEvent
 
 from pydantic import BaseModel, EmailStr, Field
-
-from src.utils.timed_event import TimedEvent
 
 
 class MoodleResultsData(BaseModel):
