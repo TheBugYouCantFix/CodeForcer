@@ -1,8 +1,9 @@
 import os
+import shutil
 from zipfile import ZipFile, ZIP_DEFLATED
 from io import BytesIO
 
-from fastapi import APIRouter, status, UploadFile, File, Form
+from fastapi import APIRouter, status, UploadFile, File, Form, BackgroundTasks
 from fastapi.responses import FileResponse
 
 from src.features.contests.models import Contest
@@ -12,6 +13,7 @@ router = APIRouter()
 
 @router.post('/submissions_archive', status_code=status.HTTP_200_OK)
 async def sort_submissions_archive(
+        background_tasks: BackgroundTasks,
         contest: str = Form(...),
         submissions_archive: UploadFile = File(...)
 ) -> FileResponse:
@@ -23,7 +25,13 @@ async def sort_submissions_archive(
         f'features/moodle_grades/submissions_temp/{contest.name}.zip'
     )
 
-    return FileResponse(f'features/moodle_grades/submissions_temp/{contest.name}.zip', filename=f'{contest.name}.zip')
+    temp_folder = 'features/moodle_grades/submissions_temp'
+    filepath = f'{temp_folder}/{contest.name}.zip'
+    response = FileResponse(filepath, filename=f'{contest.name}.zip')
+
+    background_tasks.add_task(lambda path: shutil.rmtree(path), temp_folder)
+
+    return response
 
 
 async def handle_sort_submissions_archive(contest: Contest, submissions_archive: UploadFile = File(...)) -> ZipFile:
