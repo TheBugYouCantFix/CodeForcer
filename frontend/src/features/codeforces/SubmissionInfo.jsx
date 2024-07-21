@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { BsFillArrowLeftSquareFill } from "react-icons/bs";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { handlePostRequest } from "../../api/contests.js";
 import { useLocalStorageState } from "../../hooks/useLocalStorage.js";
 import { Link, useNavigate } from "react-router-dom";
+import Select from "react-select";
+
 import {
   StyledCover,
   ButtonBack,
@@ -14,21 +16,77 @@ import {
   ItemRow,
   ItemInput,
   Error,
-  UndefinedUsersList,
   UndefinedDescription,
   LateSubmissionsContainer,
   TimeConfiguration,
+  SubmissionsAction,
 } from "./SubmissionsInfo.components.jsx";
 import Button from "../../ui/Button.jsx";
 import Heading from "../../ui/Heading.jsx";
 import SpinnerMini from "../../ui/SpinnnerMini.jsx";
 import FormElement from "../../ui/FormElement.jsx";
 import Input from "../../ui/Input.jsx";
+import FileInput from "../../ui/FileInput.jsx";
 
-function SubmissionsInfo({ info }) {
+const selectStyles = {
+  container: (baseStyles) => ({
+    ...baseStyles,
+    fontSize: "1.4rem",
+    height: "4.5rem",
+  }),
+  control: (baseStyles) => ({
+    ...baseStyles,
+    height: "4.5rem",
+  }),
+};
+const selectTheme = (theme) => ({
+  ...theme,
+  colors: {
+    ...theme.colors,
+    primary: "var(--color-brand-600)",
+    primary75: "var(--color-brand-500)",
+    primary50: "var(--color-brand-400)",
+    primary25: "var(--color-brand-400)",
+    danger: "var(--color-red-700)",
+    dangerLight: "var(--color-red-100)",
+    neutral0: "var(--color-grey-0)",
+    neutral5: "var(--color-grey-50)",
+    neutral10: "var(--color-grey-100)",
+    neutral20: "var(--color-grey-200)",
+    neutral30: "var(--color-grey-300)",
+    neutral40: "var(--color-grey-400)",
+    neutral50: "var(--color-grey-500)",
+    neutral60: "var(--color-grey-600)",
+    neutral70: "var(--color-grey-700)",
+    neutral80: "var(--color-grey-800)",
+    neutral90: "var(--color-grey-900)",
+  },
+});
+function download(filename, text) {
+  var element = document.createElement("a");
+  element.setAttribute(
+    "href",
+    "data:text/plain;charset=utf-8," + encodeURIComponent(text),
+  );
+  element.setAttribute("download", filename);
+
+  element.style.display = "none";
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+}
+
+function SubmissionsInfo({ info, selectors }) {
+  const { contest, participants } = info;
+  const options = selectors?.map((el) => ({
+    value: el,
+    label: el.slice(0, 1).toUpperCase() + el.slice(1),
+  }));
   const definedUsers = {
-    ...info,
-    problems: info.problems.map((item) => {
+    ...contest,
+    problems: contest.problems.map((item) => {
       return {
         ...item,
         submissions: item.submissions.filter(
@@ -37,15 +95,16 @@ function SubmissionsInfo({ info }) {
       };
     }),
   };
-  const unpossibleReqest = definedUsers.problems.every(
-    (item) => item.submissions.length === 0,
-  );
+  const undefinedUsers = participants
+    .filter((el) => el?.email === null)
+    .map((el) => el?.handle);
+  const unpossibleReqest = undefinedUsers.length === participants.length;
 
   const navigate = useNavigate();
 
   const [contestInfo, setContestInfo] = useLocalStorageState(
     {},
-    `contest-${info.id}`,
+    `contest-${contest.id}`,
   );
 
   const {
@@ -53,17 +112,36 @@ function SubmissionsInfo({ info }) {
     handleSubmit,
     formState: { errors },
     watch,
-  } = useForm();
+    control,
+    setError,
+  } = useForm({
+    defaultValues: {
+      selector: options.find((el) => el?.value === "most points") || options[0],
+    },
+  });
 
   useEffect(() => {
     const subscription = watch((value) => {
+      let totalPoints = 0;
+
       for (let key in value) {
         value[key] = parseFloat(value[key]);
+
+        if (!isNaN(parseInt(key))) {
+          totalPoints += parseFloat(value[key]);
+        }
       }
       setContestInfo(value);
+
+      if (totalPoints > 100) {
+        setError("total", {
+          type: "custom",
+          message: "Total number of points must be less or equal to 100",
+        });
+      }
     });
     return () => subscription.unsubscribe();
-  }, [setContestInfo, watch]);
+  }, [setContestInfo, watch, setError]);
 
   const [isGetting, setIsGetting] = useState(false);
 
@@ -104,15 +182,36 @@ function SubmissionsInfo({ info }) {
 
   return (
     <StyledCover>
-      <ButtonBack onClick={() => navigate("/submissions")}>
+      <ButtonBack onClick={() => navigate("/contests")}>
         <BsFillArrowLeftSquareFill />
       </ButtonBack>
-      <Heading as="h2">Contest &quot;{info.name}&quot;</Heading>
+      <Heading as="h2">Contest &quot;{contest.name}&quot;</Heading>
       <Description>
-        Total number of problems: {info.problems.length}
+        Total number of problems: {contest.problems.length}
+      </Description>
+      <Description>
+        {undefinedUsers.length > 0 && (
+          <>
+            <span style={{ color: "var(--color-red-400)" }}>
+              Undefined participants: {undefinedUsers.length}
+            </span>
+            <Button
+              onClick={() =>
+                download(
+                  `undefined-participants-${contest.name}`,
+                  undefinedUsers.join("\n"),
+                )
+              }
+              size="small"
+              variation="secondary"
+            >
+              Download
+            </Button>
+          </>
+        )}
       </Description>
       <List onSubmit={handleSubmit(onSubmit)}>
-        {info.problems.map((item, index) => (
+        {contest.problems.map((item, index) => (
           <SubmissionItem key={index} item={item} index={index}>
             <>
               <strong>
@@ -121,6 +220,7 @@ function SubmissionsInfo({ info }) {
               <ItemInput
                 placeholder="Maximum points per task"
                 data-index={index}
+                error={errors[`${index}`]}
                 disabled={isGetting}
                 defaultValue={contestInfo[index.toString()] || null}
                 {...register(`${index}`, {
@@ -129,6 +229,7 @@ function SubmissionsInfo({ info }) {
                     value: /^\d*\.?\d*$/,
                     message: "Incorrect value",
                   },
+                  min: 0,
                 })}
               />
               {errors[`${index}`] && (
@@ -137,10 +238,13 @@ function SubmissionsInfo({ info }) {
             </>
           </SubmissionItem>
         ))}
+        {errors?.total && <Error>{errors?.total?.message}</Error>}
         <SubmissionsSettings
           isGetting={isGetting}
           register={register}
           contestInfo={contestInfo}
+          errors={errors}
+          watch={watch}
         />
         {unpossibleReqest ? (
           <UndefinedDescription style={{ fontWeight: "400" }}>
@@ -149,25 +253,61 @@ function SubmissionsInfo({ info }) {
             <Link to="/handles">download the handles</Link> of the participants
           </UndefinedDescription>
         ) : (
-          <Button disabled={isGetting} type="submit">
-            {isGetting ? <SpinnerMini /> : "Create a rating file"}
-          </Button>
+          <SubmissionsAction>
+            <Controller
+              control={control}
+              name="selector"
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  placeholder="Choose submission type"
+                  theme={selectTheme}
+                  styles={selectStyles}
+                  defaultValue={
+                    options.find((el) => el?.value === "most points") ||
+                    options[0]
+                  }
+                  options={options}
+                />
+              )}
+            />
+            <Button disabled={isGetting} type="submit">
+              {isGetting ? <SpinnerMini /> : "Create a rating file"}
+            </Button>
+          </SubmissionsAction>
         )}
       </List>
     </StyledCover>
   );
 }
+function SubmissionsSettings({
+  register,
+  isGetting,
+  contestInfo,
+  errors,
+  watch,
+}) {
+  const watchFileInput = watch("legal-exuses");
 
-function SubmissionsSettings({ register, isGetting, contestInfo }) {
   return (
     <LateSubmissionsContainer>
       <Heading as="h2">Late Submission Configuration</Heading>
+      <FormElement label="Legal excused students" type="file" borderless={true}>
+        <FileInput
+          edited={watchFileInput && "true"}
+          text={watchFileInput?.length ? watchFileInput[0]?.name : "*.csv"}
+          accept={".csv"}
+          register={register("legal-exuses")}
+          disabled={isGetting}
+        />
+      </FormElement>
       <Heading as="h3" style={{ gridColumn: "span 3" }}>
         Additional time for late submission
       </Heading>
       <TimeConfiguration>
         <FormElement label="Days" borderless={true}>
           <Input
+            error={errors["additional-days"]}
             disabled={isGetting}
             placeholder={0}
             defaultValue={contestInfo["additional-days"] || null}
@@ -179,6 +319,7 @@ function SubmissionsSettings({ register, isGetting, contestInfo }) {
         </FormElement>
         <FormElement label="Hours" borderless={true}>
           <Input
+            error={errors["additional-hours"]}
             disabled={isGetting}
             placeholder={0}
             defaultValue={contestInfo["additional-hours"] || null}
@@ -192,6 +333,7 @@ function SubmissionsSettings({ register, isGetting, contestInfo }) {
           <Input
             disabled={isGetting}
             placeholder={0}
+            error={errors["additional-minutes"]}
             defaultValue={contestInfo["additional-minutes"] || null}
             {...register("additional-minutes", {
               min: 0,
@@ -204,50 +346,32 @@ function SubmissionsSettings({ register, isGetting, contestInfo }) {
         <Input
           disabled={isGetting}
           placeholder={20}
+          error={errors?.penalty}
           defaultValue={contestInfo["penalty"] || null}
-          {...register("penalty", { min: 0 })}
+          {...register("penalty", {
+            min: {
+              value: 0,
+            },
+            max: {
+              value: 100,
+            },
+          })}
           style={{ textAlign: "center" }}
         />
       </FormElement>
     </LateSubmissionsContainer>
   );
 }
-
-function SubmissionItem({ index, item, children }) {
-  const undefinedUsers = item.submissions.filter((item) => !item.author.email);
-  const [isOpen, setIsOpen] = useState(false);
-
+function SubmissionItem({ item, children }) {
   return (
-    <Item undefined={undefinedUsers.length}>
+    <Item>
       {children}
       <ItemRow>
         <span>
           Total number of sumbissions:
           <strong>{item?.submissions?.length}</strong>
         </span>
-
-        {undefinedUsers.length > 0 ? (
-          <span>
-            Undefined participants: <strong>{undefinedUsers?.length}</strong>
-            <Button
-              size="small"
-              type="button"
-              onClick={() => setIsOpen((open) => !open)}
-            >
-              {!isOpen ? "SHOW" : "HIDE"}
-            </Button>
-          </span>
-        ) : (
-          <span>All users are defined</span>
-        )}
       </ItemRow>
-      {isOpen && (
-        <UndefinedUsersList id={`list-${index}`}>
-          {undefinedUsers.map((user) => (
-            <span key={user?.author?.handle}>{user?.author?.handle}</span>
-          ))}
-        </UndefinedUsersList>
-      )}
     </Item>
   );
 }
