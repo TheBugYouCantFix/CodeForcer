@@ -320,7 +320,13 @@ function SourcesConfiguration({
             by following the link
           </a>
         ) : (
-          `by following the link: https://codeforces.com/group/${"<group-id>"}/contest/${contestID}/admin`
+          <span>
+            by following the link:{" "}
+            <span style={{ fontSize: "0.8em" }}>
+              {"https://codeforces.com/group/<group-id>/contest/"}contestID
+              {"/admin"}
+            </span>
+          </span>
         )}
       </SourcesDescription>
       <FormElement

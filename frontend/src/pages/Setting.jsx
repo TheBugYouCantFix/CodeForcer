@@ -16,15 +16,12 @@ export async function loader({ params }) {
     JSON.parse(localStorage.getItem("secret")),
   );
   const selectors = await getSelectors();
-  return {
-    info,
-    selectors,
-    groupID: new URLSearchParams(window.location.search).get("group"),
-  };
+  return { info, selectors };
 }
 
 function Settings() {
-  const { info, selectors, groupID } = useLoaderData();
+  const { info, selectors } = useLoaderData();
+  const groupID = new URLSearchParams(window.location.search).get("group");
 
   return (
     <>

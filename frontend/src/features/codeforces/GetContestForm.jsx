@@ -54,7 +54,7 @@ function GetContestForm() {
     setSecret(secretKey);
 
     if (api && secret) {
-      navigate(`${contestID}?group=${groupID}`);
+      navigate(`${contestID}${groupID ? `?group=${groupID}` : ""}`);
     }
   };
 
