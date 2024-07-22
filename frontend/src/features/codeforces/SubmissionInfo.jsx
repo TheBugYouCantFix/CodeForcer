@@ -20,6 +20,8 @@ import {
   LateSubmissionsContainer,
   TimeConfiguration,
   SubmissionsAction,
+  SelectorDescription,
+  SourcesDescription,
 } from "./SubmissionsInfo.components.jsx";
 import Button from "../../ui/Button.jsx";
 import Heading from "../../ui/Heading.jsx";
@@ -34,8 +36,8 @@ const selectStyles = {
     fontSize: "1.4rem",
     height: "4.5rem",
   }),
-  control: (baseStyles) => ({
-    ...baseStyles,
+  control: (base) => ({
+    ...base,
     height: "4.5rem",
   }),
 };
@@ -62,6 +64,7 @@ const selectTheme = (theme) => ({
     neutral90: "var(--color-grey-900)",
   },
 });
+
 function download(filename, text) {
   var element = document.createElement("a");
   element.setAttribute(
@@ -78,11 +81,12 @@ function download(filename, text) {
   document.body.removeChild(element);
 }
 
-function SubmissionsInfo({ info, selectors }) {
+function SubmissionsInfo({ info, selectors, group }) {
   const { contest, participants } = info;
   const options = selectors?.map((el) => ({
-    value: el,
-    label: el.slice(0, 1).toUpperCase() + el.slice(1),
+    value: el?.name,
+    label: el?.name?.slice(0, 1).toUpperCase() + el?.name?.slice(1),
+    description: el?.description,
   }));
   const definedUsers = {
     ...contest,
@@ -144,40 +148,36 @@ function SubmissionsInfo({ info, selectors }) {
   }, [setContestInfo, watch, setError]);
 
   const [isGetting, setIsGetting] = useState(false);
-
-  let filename;
+  const selectedValue = watch("selector");
 
   const onSubmit = function (data) {
     setIsGetting(true);
 
     handlePostRequest(definedUsers, data)
       .then((res) => {
-        filename = res.headers
-          .get("content-disposition")
-          .match(/(?<=")(?:\\.|[^"\\])*(?=")/)[0];
-        return res.blob();
-      })
-      .then((blob) => {
-        const url = window.URL.createObjectURL(new Blob([blob]));
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", filename || "grades");
+        res
+          .filter((el) => el !== undefined)
+          .forEach((el) => {
+            let filename = el?.headers
+              ?.get("content-disposition")
+              ?.match(/(?<=")(?:\\.|[^"\\])*(?=")/);
+            filename = filename ? filename[0] : `CodeForcer-${Date.now()}`;
+            el.blob().then((blob) => {
+              const url = window.URL.createObjectURL(
+                new Blob([blob], { type: blob.type }),
+              );
+              const link = document.createElement("a");
+              link.href = url;
+              link.setAttribute("download", filename);
 
-        // Append to html link element page
-        document.body.appendChild(link);
-
-        // Start download
-        link.click();
-
-        // Clean up and remove the link
-        link.parentNode.removeChild(link);
+              document.body.appendChild(link);
+              link.click();
+              link.parentNode.removeChild(link);
+            });
+          });
       })
-      .catch((err) => {
-        toast.error(err.message);
-      })
-      .finally(() => {
-        setIsGetting(false);
-      });
+      .catch((err) => toast.error(err.message))
+      .finally(setIsGetting(false));
   };
 
   return (
@@ -238,13 +238,20 @@ function SubmissionsInfo({ info, selectors }) {
             </>
           </SubmissionItem>
         ))}
-        {errors?.total && <Error>{errors?.total?.message}</Error>}
+        {/*errors?.total && <Error>{errors?.total?.message}</Error>*/}
         <SubmissionsSettings
           isGetting={isGetting}
           register={register}
           contestInfo={contestInfo}
           errors={errors}
           watch={watch}
+        />
+        <SourcesConfiguration
+          contestID={info?.contest?.id}
+          isGetting={isGetting}
+          register={register}
+          watch={watch}
+          group={group}
         />
         {unpossibleReqest ? (
           <UndefinedDescription style={{ fontWeight: "400" }}>
@@ -253,31 +260,84 @@ function SubmissionsInfo({ info, selectors }) {
             <Link to="/handles">download the handles</Link> of the participants
           </UndefinedDescription>
         ) : (
-          <SubmissionsAction>
-            <Controller
-              control={control}
-              name="selector"
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  placeholder="Choose submission type"
-                  theme={selectTheme}
-                  styles={selectStyles}
-                  defaultValue={
-                    options.find((el) => el?.value === "most points") ||
-                    options[0]
-                  }
-                  options={options}
-                />
-              )}
-            />
-            <Button disabled={isGetting} type="submit">
-              {isGetting ? <SpinnerMini /> : "Create a rating file"}
-            </Button>
-          </SubmissionsAction>
+          <>
+            <SubmissionsAction>
+              <Controller
+                control={control}
+                name="selector"
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    placeholder="Choose submission type"
+                    theme={selectTheme}
+                    styles={selectStyles}
+                    menuPosition="auto"
+                    defaultValue={
+                      options.find((el) => el?.value === "most points") ||
+                      options[0]
+                    }
+                    options={options}
+                  />
+                )}
+              />
+              <Button disabled={isGetting} type="submit">
+                {isGetting ? <SpinnerMini /> : "Create a rating file"}
+              </Button>
+            </SubmissionsAction>
+            {selectedValue && (
+              <SelectorDescription>
+                {selectedValue?.description?.slice(0, 1).toUpperCase() +
+                  selectedValue.description.slice(1)}
+              </SelectorDescription>
+            )}
+          </>
         )}
       </List>
     </StyledCover>
+  );
+}
+
+function SourcesConfiguration({
+  contestID,
+  register,
+  isGetting,
+  watch,
+  group,
+}) {
+  const watchFileInput = watch("attempts");
+
+  return (
+    <LateSubmissionsContainer>
+      <Heading as="h2">Attempts mapping</Heading>
+      <SourcesDescription>
+        In case you want to get attempts mapped to students emails, please add
+        an archive of attempts, it can be obtained{" "}
+        {group ? (
+          <a
+            href={`https://codeforces.com/group/${group}/contest/${contestID}/admin`}
+            target="_blank"
+          >
+            by following the link
+          </a>
+        ) : (
+          `by following the link: https://codeforces.com/group/${"<group-id>"}/contest/${contestID}/admin`
+        )}
+      </SourcesDescription>
+      <FormElement
+        label="Exported attemps"
+        type="file"
+        borderless={true}
+        style={{ maxWidth: "34rem", marginLeft: "auto", marginRight: "auto" }}
+      >
+        <FileInput
+          edited={watchFileInput && "true"}
+          text={watchFileInput?.length ? watchFileInput[0]?.name : "*.zip"}
+          accept={".zip"}
+          register={register("attempts")}
+          disabled={isGetting}
+        />
+      </FormElement>
+    </LateSubmissionsContainer>
   );
 }
 function SubmissionsSettings({
