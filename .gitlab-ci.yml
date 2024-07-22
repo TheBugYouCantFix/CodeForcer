@@ -50,6 +50,8 @@ pytest:
       - README.md
 
 deploy:
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   stage: deploy
   when: manual    
   tags:
@@ -58,8 +60,4 @@ deploy:
     - docker compose down
   script:
     - docker compose up -d --build
-  needs:
-    - pylint
-    - pytest
-    - front_lint
     
