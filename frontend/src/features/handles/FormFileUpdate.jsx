@@ -45,10 +45,16 @@ export default function FormFileUpdate() {
       .then((res) => {
         return res.json();
       })
-      .then((data) => {
-        toast.success(
-          `Successfully updated ${data.length ? data.length + " items" : ""}`,
-        );
+      .then(({ updated, created }) => {
+        const message =
+          updated && created
+            ? `updated: ${updated}, created: ${created}`
+            : updated
+              ? `updated: ${updated}`
+              : created
+                ? `created: ${created}`
+                : "";
+        toast.success(`Successfully ${message}`);
         reset();
       })
       .catch((err) => {
