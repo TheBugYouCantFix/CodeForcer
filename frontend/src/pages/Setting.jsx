@@ -16,11 +16,15 @@ export async function loader({ params }) {
     JSON.parse(localStorage.getItem("secret")),
   );
   const selectors = await getSelectors();
-  return { info, selectors };
+  return {
+    info,
+    selectors,
+    groupID: new URLSearchParams(window.location.search).get("group"),
+  };
 }
 
 function Settings() {
-  const { info, selectors } = useLoaderData();
+  const { info, selectors, groupID } = useLoaderData();
 
   return (
     <>
@@ -37,7 +41,7 @@ function Settings() {
         </p>
         <p>You can also copy the list of undefined participants</p>
       </Description>
-      <SubmissionsInfo info={info} selectors={selectors} />
+      <SubmissionsInfo info={info} selectors={selectors} group={groupID} />
     </>
   );
 }
