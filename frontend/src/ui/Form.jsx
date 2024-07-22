@@ -24,12 +24,12 @@ const Form = styled.form`
     padding-left: 2rem;
   }
   @media (max-width: 991.98px) {
-    max-width: 80%;
+    width: 80%;
     margin-left: auto;
     margin-right: auto;
   }
   @media (max-width: 767.98px) {
-    max-width: none;
+    width: 100%;
   }
 `;
 

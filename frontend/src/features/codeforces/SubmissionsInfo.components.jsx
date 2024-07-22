@@ -208,7 +208,6 @@ export const LateSubmissionsContainer = styled.div`
   margin-left: auto;
   margin-right: auto;
   margin-top: 2rem;
-  margin-bottom: 2rem;
 
   h2:not(:last-child) {
     margin-bottom: 0.5rem;
@@ -259,6 +258,7 @@ export const SubmissionsAction = styled.div`
   justify-content: center;
   align-items: center;
   gap: 2rem;
+  margin-top: 4rem;
 
   > div {
     flex: 0 0 25rem;
@@ -266,6 +266,7 @@ export const SubmissionsAction = styled.div`
 
   @media (max-width: 567.98px) {
     flex-direction: column;
+    margin-top: 2rem;
 
     > * {
       width: 100%;
@@ -273,5 +274,33 @@ export const SubmissionsAction = styled.div`
     > div {
       flex: auto;
     }
+  }
+`;
+
+export const SelectorDescription = styled.div`
+  font-size: 1.4rem;
+  font-weight: 400;
+  max-width: 64rem;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1rem 2rem;
+  border: 1px solid var(--color-grey-0);
+  border-radius: var(--border-radius-md);
+
+  @media (max-width: 399.98px) {
+    font-size: 1.2rem;
+  }
+`;
+
+export const SourcesDescription = styled.div`
+  text-align: left;
+  font-size: 1.4rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  max-width: 40rem;
+
+  a {
+    text-decoration: underline;
   }
 `;

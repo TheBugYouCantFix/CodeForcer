@@ -40,9 +40,11 @@ function GetContestForm() {
 
   const onSubmit = function (data) {
     // Getting values from form
+    let groupID;
     let { contestID, APIKey, secretKey } = data;
     // Convert URL to id
     if (contestID.startsWith("http")) {
+      groupID = contestID.match(/.*group\/(\w*)/)[1];
       contestID = contestID.match(/.*contest\/([0-9]*)/)[1];
     }
 
@@ -52,7 +54,7 @@ function GetContestForm() {
     setSecret(secretKey);
 
     if (api && secret) {
-      navigate(`${contestID}`);
+      navigate(`${contestID}?group=${groupID}`);
     }
   };
 

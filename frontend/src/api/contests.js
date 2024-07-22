@@ -1,3 +1,5 @@
+import toast from "react-hot-toast";
+
 export async function getContest(contestID, APIKey, secretKey) {
   const url = `/api/contests/${contestID}?key=${APIKey}&secret=${secretKey}`;
 
@@ -5,7 +7,7 @@ export async function getContest(contestID, APIKey, secretKey) {
 
   if (!response.ok) {
     const data = await response.json();
-    console.log(data);
+    console.log("Contest could not be loaded: ", data);
 
     throw response;
   }
@@ -43,6 +45,25 @@ export async function getLegal(file) {
   const data = await response.json();
 
   return data;
+}
+
+export async function getGrouped(json, file) {
+  console.log(json, file);
+  const formData = new FormData();
+  formData.append("submissions_archive", file);
+  formData.append("results_data", JSON.stringify(json));
+
+  const url = "/api/moodle-grades/with-archive";
+  const response = await fetch(url, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    throw response;
+  }
+
+  return response;
 }
 
 export async function handlePostRequest(info, data) {
@@ -91,7 +112,20 @@ export async function handlePostRequest(info, data) {
 
   console.log("Body of request:", body);
 
-  const response = await fetch(url, {
+  let attemptsResponse;
+  if (data["attempts"].length) {
+    attemptsResponse = await getGrouped(body, data["attempts"][0]);
+  }
+
+  console.log("Server answer for grouping: ", attemptsResponse);
+  if (attemptsResponse && !attemptsResponse.ok) {
+    toast.error(
+      "Something went wrong with mapping attempts: ",
+      attemptsResponse?.statusText,
+    );
+  }
+
+  const gradesResponse = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json;charset=utf-8",
@@ -99,10 +133,10 @@ export async function handlePostRequest(info, data) {
     body: JSON.stringify(body),
   });
 
-  console.log("Server answer for file generating", response);
+  console.log("Server answer for file generating", gradesResponse);
 
-  if (!response.ok) {
-    throw new Error(response.statusText);
+  if (!gradesResponse.ok) {
+    throw new Error(gradesResponse.statusText);
   }
-  return response;
+  return [attemptsResponse, gradesResponse];
 }
